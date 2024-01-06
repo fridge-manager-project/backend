@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FridgeApplication {
 
 	public static void main(String[] args) {
-		System.out.println("\"master\" = " + "master");
+		System.out.println("\"master\" = " + "master2");
 		SpringApplication.run(FridgeApplication.class, args);
 	}
-	
+
 }
