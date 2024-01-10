@@ -13,3 +13,8 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+springdoc:
+  swagger-ui:
+    path: /fridge/swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
