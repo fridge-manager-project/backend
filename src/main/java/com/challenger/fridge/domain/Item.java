@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 public class Item {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     @Column(name = "item_id")
     private Long id;
 

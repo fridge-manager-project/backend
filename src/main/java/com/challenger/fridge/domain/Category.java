@@ -12,8 +12,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
-    @Id
-    @GeneratedValue
+
+    @Id @GeneratedValue
     @Column(name = "category_id")
     private Long id;
 
@@ -25,8 +25,10 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Item> itemList= new ArrayList<>();
+
     @OneToMany(mappedBy = "parentCategory")
     List<Category> childCategory = new ArrayList<>();
+
     @Builder
     public Category(String categoryName, Category parentCategory) {
         this.categoryName = categoryName;
