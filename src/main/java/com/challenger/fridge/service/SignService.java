@@ -28,6 +28,9 @@ public class SignService {
         return true;
     }
 
+    /**
+     * 회원가입
+     */
     @Transactional
     public SignUpResponse registerMember(SignUpRequest request) {
         Member member = memberRepository.save(Member.from(request, encoder));
