@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-//@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.challenger\\.fridge\\.util\\..*"))
+@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.challenger\\.fridge\\.util\\..*"))
 public class FridgeApplication {
 
 	public static void main(String[] args) {

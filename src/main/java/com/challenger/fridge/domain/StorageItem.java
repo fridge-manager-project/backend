@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.parameters.P;
 
 @Entity
 @Getter
@@ -37,4 +38,11 @@ public class StorageItem {
 
     private LocalDateTime purchaseDate;
 
+    public StorageItem(Storage storage, Item item, Long quantity, LocalDateTime expirationDate, LocalDateTime purchaseDate) {
+        this.storage = storage;
+        this.item = item;
+        this.quantity = quantity;
+        this.expirationDate = expirationDate;
+        this.purchaseDate = purchaseDate;
+    }
 }

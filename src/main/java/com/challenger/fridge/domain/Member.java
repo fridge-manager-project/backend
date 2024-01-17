@@ -31,4 +31,11 @@ public class Member {
     private MemberType type;
 
     private LocalDateTime createdAt;
+
+    public Member(String email, String password, String name) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
 }
