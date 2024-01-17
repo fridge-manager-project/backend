@@ -1,6 +1,7 @@
-package com.challenger.fridge.dto;
+package com.challenger.fridge.dto.storage.response;
 
 import com.challenger.fridge.common.StorageMethod;
+import com.challenger.fridge.dto.storage.response.CategoryItemResponse;
 
 import java.util.ArrayList;
 import java.util.List;

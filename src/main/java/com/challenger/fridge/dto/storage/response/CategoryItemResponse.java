@@ -1,4 +1,4 @@
-package com.challenger.fridge.dto;
+package com.challenger.fridge.dto.storage.response;
 
 import lombok.Data;
 

@@ -1,14 +1,11 @@
 package com.challenger.fridge.service;
 
 import com.challenger.fridge.common.StorageMethod;
-import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
-import com.challenger.fridge.domain.StorageItem;
-import com.challenger.fridge.dto.StorageRequest;
+import com.challenger.fridge.dto.storage.request.StorageRequest;
 import com.challenger.fridge.repository.StorageRepository;
 import jakarta.persistence.EntityManager;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest

@@ -4,7 +4,7 @@ import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.common.StorageMethod;
 import com.challenger.fridge.common.StorageStatus;
-import com.challenger.fridge.dto.StorageRequest;
+import com.challenger.fridge.dto.storage.request.StorageRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -53,4 +53,6 @@ public class Storage {
                                     member);
         return storage;
     }
+
+
 }

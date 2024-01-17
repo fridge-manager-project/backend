@@ -1,4 +1,4 @@
-package com.challenger.fridge.dto;
+package com.challenger.fridge.dto.storage.request;
 
 import com.challenger.fridge.common.StorageMethod;
 import lombok.Data;

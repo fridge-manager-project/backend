@@ -2,6 +2,7 @@ package com.challenger.fridge.domain;
 
 import static jakarta.persistence.FetchType.*;
 
+import com.challenger.fridge.dto.storage.request.StorageItemRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,11 +39,33 @@ public class StorageItem {
 
     private LocalDateTime purchaseDate;
 
-    public StorageItem(Storage storage, Item item, Long quantity, LocalDateTime expirationDate, LocalDateTime purchaseDate) {
-        this.storage = storage;
+    public void addStorageItem(Storage storage)
+    {
+        this.storage.getStorageItemList().add(this);
+        this.storage=storage;
+
+    }
+    private StorageItem(Item item, Long quantity, LocalDateTime expirationDate, LocalDateTime purchaseDate) {
         this.item = item;
         this.quantity = quantity;
         this.expirationDate = expirationDate;
         this.purchaseDate = purchaseDate;
     }
+
+    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest,Item item)
+    {
+        StorageItem storageItem=new StorageItem(item
+                                                ,storageItemRequest.getItemCount()
+                                                ,storageItemRequest.getExpireDate()
+                                                ,storageItemRequest.getPurchaseDate());
+
+        return storageItem;
+
+    }
+
+
+
+
+
+
 }
