@@ -1,18 +1,16 @@
 package com.challenger.fridge.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.challenger.fridge.common.MemberType;
+import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.sign.SignUpResponse;
 import com.challenger.fridge.repository.MemberRepository;
 import java.time.LocalDateTime;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +70,7 @@ class SignServiceTest {
                 .email("jjw@naver.com")
                 .password("1234")
                 .name("jjw")
-                .type(MemberType.USER)
+                .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

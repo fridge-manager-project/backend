@@ -1,6 +1,6 @@
 package com.challenger.fridge.domain;
 
-import com.challenger.fridge.common.MemberType;
+import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +34,7 @@ public class Member {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private MemberType type;
+    private MemberRole role;
 
     private LocalDateTime createdAt;
 
@@ -43,7 +43,7 @@ public class Member {
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
                 .name(request.getName())
-                .type(MemberType.USER)
+                .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
