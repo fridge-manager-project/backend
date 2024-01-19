@@ -1,5 +1,5 @@
 package com.challenger.fridge.common;
 
-public enum MemberType {
-    USER
+public enum MemberRole {
+    ROLE_USER
 }
