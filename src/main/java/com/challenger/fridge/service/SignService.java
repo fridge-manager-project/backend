@@ -32,10 +32,11 @@ public class SignService {
      * 회원 이메일 중복 확인 요청
      */
     public boolean checkDuplicateEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
-        }
-        return true;
+//        if (memberRepository.existsByEmail(email)) {
+//            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
+//        }
+//        return true;
+        return memberRepository.existsByEmail(email);
     }
 
     /**

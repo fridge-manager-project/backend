@@ -25,7 +25,13 @@ public class SignController {
     @Operation(summary = "회원 이메일 중복 체크")
     @GetMapping("/sign-up")
     public ApiResponse checkEmail(@RequestBody String email) {
-        return ApiResponse.success(signService.checkDuplicateEmail(email));
+//        return ApiResponse.success(signService.checkDuplicateEmail(email));
+        boolean result = signService.checkDuplicateEmail(email);
+        if (result) {
+            return ApiResponse.error("사용중인 이메일입니다. 다시 입력해주세요");
+        } else {
+            return ApiResponse.success(null);
+        }
     }
 
     @Operation(summary = "회원가입")
