@@ -4,7 +4,7 @@ import com.challenger.fridge.common.StorageMethod;
 import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 public class StorageRequest {
     private String storageName;
     private StorageMethod storageMethod;

@@ -29,7 +29,10 @@ class StorageServiceTest {
     @DisplayName("냉장고 추가 테스트")
     public void 냉장고추가() throws Exception {
         //given
-        Member member = new Member("123", "123", "123");
+        Member member = Member.builder()
+                .email("123")
+                .name("123")
+                .password("123").build();
         em.persist(member);
 
         StorageRequest storageRequest = new StorageRequest();
@@ -43,16 +46,19 @@ class StorageServiceTest {
         //then
         assertThat(savedStorage.getId()).isEqualTo(findStorage.getId());
     }
+
     @Test
     @DisplayName("단건냉장고조회")
-    public void 단건냉장고조회()
-    {
-        Member member = new Member("123", "123", "123");
+    public void 단건냉장고조회() {
+        Member member = Member.builder()
+                .email("123")
+                .name("123")
+                .password("123").build();
         em.persist(member);
         StorageRequest storageRequest = new StorageRequest();
         storageRequest.setStorageMethod(StorageMethod.FRIDGE);
         storageRequest.setStorageName("심현석 냉장고");
-        Storage storage=Storage.createStorage(storageRequest,member);
+        Storage storage = Storage.createStorage(storageRequest, member);
         em.persist(storage);
     }
 
