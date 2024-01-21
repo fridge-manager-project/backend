@@ -10,6 +10,7 @@ import com.challenger.fridge.dto.storage.request.StorageItemRequest;
 import com.challenger.fridge.dto.storage.response.CategoryStorageItemResponse;
 import com.challenger.fridge.dto.storage.response.StorageItemDetailsResponse;
 import com.challenger.fridge.dto.storage.request.StorageRequest;
+import com.challenger.fridge.dto.storage.response.StorageItemResponse;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.exception.ItemNotFoundException;
 import com.challenger.fridge.exception.StorageItemNotFountException;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,10 +69,16 @@ public class StorageService {
         int storageItemCount = findStorageItemList.get(0).getStorageItemList().size();
         StorageMethod storageMethod = findStorageItemList.get(0).getMethod();
 
-        List<CategoryStorageItemResponse> storageResponseList = findStorageItemList.stream()
-                .map(storage -> new CategoryStorageItemResponse(storage))
+        Map<String, List<StorageItemResponse>> categoryStorageItemMap = findStorageItemList.stream()
+                .flatMap(storage -> storage.getStorageItemList().stream())
+                .collect(Collectors.groupingBy(
+                        storageItem -> storageItem.getItem().getCategory().getCategoryName(),
+                        Collectors.mapping(storageItem -> new StorageItemResponse(storageItem), Collectors.toList())
+                ));
+        List<CategoryStorageItemResponse> categoryStorageItemList = categoryStorageItemMap.entrySet().stream()
+                .map(storageItem -> new CategoryStorageItemResponse(storageItem.getKey(), storageItem.getValue()))
                 .collect(Collectors.toList());
-        StorageResponse storageResponse = new StorageResponse(storageResponseList);
+        StorageResponse storageResponse = new StorageResponse(categoryStorageItemList);
         storageResponse.setStorageMethod(storageMethod);
         storageResponse.setStorageItemCount(storageItemCount);
         return storageResponse;
