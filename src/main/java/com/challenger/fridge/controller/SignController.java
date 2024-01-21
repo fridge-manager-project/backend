@@ -29,13 +29,15 @@ public class SignController {
     @GetMapping("/sign-up")
     public ApiResponse checkEmail(@RequestParam String email) {
         log.info("Controller : email={}", email);
+        signService.checkDuplicateEmail(email);
+        return ApiResponse.success(null);
 //        return ApiResponse.success(signService.checkDuplicateEmail(email));
-        boolean result = signService.checkDuplicateEmail(email);
-        if (result) {
-            return ApiResponse.error("이미 사용중인 이메일입니다");
-        } else {
-            return ApiResponse.success(null);
-        }
+//        boolean result = signService.checkDuplicateEmail(email);
+//        if (result) {
+//            return ApiResponse.error("이미 사용중인 이메일입니다");
+//        } else {
+//            return ApiResponse.success(null);
+//        }
     }
 
     @Operation(summary = "회원가입")

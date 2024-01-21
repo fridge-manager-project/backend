@@ -34,11 +34,11 @@ public class SignService {
      */
     public boolean checkDuplicateEmail(String email) {
         log.info("Service : email={}", email);
-//        if (memberRepository.existsByEmail(email)) {
-//            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
-//        }
-//        return true;
-        return memberRepository.existsByEmail(email);
+        if (memberRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
+        }
+        return true;
+//        return memberRepository.existsByEmail(email);
     }
 
     /**

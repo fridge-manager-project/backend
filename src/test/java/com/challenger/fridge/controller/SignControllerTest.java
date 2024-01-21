@@ -14,6 +14,7 @@ import com.challenger.fridge.dto.sign.SignUpResponse;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.service.SignService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ class SignControllerTest {
     @DisplayName("GET 이메일 중복 확인 컨틀로러 로직 확인 - 중복 X")
     void checkUniqueEmail() throws Exception {
         String requestEmail = "jjw@test.com";
-        boolean response = false;
+        boolean response = true;
         ApiResponse apiResponse = createApiSuccessResponse(null);
 
         given(signService.checkDuplicateEmail(anyString())).willReturn(response);
@@ -85,16 +86,15 @@ class SignControllerTest {
         String requestEmail = "jjw@test.com";
         String errorMessage = "이미 사용중인 이메일입니다";
 
-        boolean response = true;
         ApiResponse apiResponse = createApiErrorResponse(errorMessage);
 
-        given(signService.checkDuplicateEmail(anyString())).willReturn(response);
+        given(signService.checkDuplicateEmail(anyString())).willThrow(new IllegalArgumentException(errorMessage));
 
         String responseJson = objectMapper.writeValueAsString(apiResponse);
 
         mockMvc.perform(get("/sign-up")
                         .param("email", requestEmail))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().json(responseJson))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
