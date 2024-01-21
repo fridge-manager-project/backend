@@ -9,6 +9,7 @@ import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.security.JwtTokenProvider;
 import com.challenger.fridge.dto.sign.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -32,6 +33,7 @@ public class SignService {
      * 회원 이메일 중복 확인 요청
      */
     public boolean checkDuplicateEmail(String email) {
+        log.info("Service : email={}", email);
 //        if (memberRepository.existsByEmail(email)) {
 //            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
 //        }

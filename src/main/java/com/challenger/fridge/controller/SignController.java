@@ -7,14 +7,17 @@ import com.challenger.fridge.service.SignService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "회원가입 및 로그인")
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping
@@ -24,11 +27,12 @@ public class SignController {
 
     @Operation(summary = "회원 이메일 중복 체크")
     @GetMapping("/sign-up")
-    public ApiResponse checkEmail(@RequestBody String email) {
+    public ApiResponse checkEmail(@RequestParam String email) {
+        log.info("Controller : email={}", email);
 //        return ApiResponse.success(signService.checkDuplicateEmail(email));
         boolean result = signService.checkDuplicateEmail(email);
         if (result) {
-            return ApiResponse.error("사용중인 이메일입니다. 다시 입력해주세요");
+            return ApiResponse.error("이미 사용중인 이메일입니다");
         } else {
             return ApiResponse.success(null);
         }
