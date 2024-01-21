@@ -1,20 +1,19 @@
 package com.challenger.fridge.dto.storage.response;
 
 import com.challenger.fridge.common.StorageMethod;
-import com.challenger.fridge.dto.storage.response.CategoryItemResponse;
+import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@Data
 public class StorageResponse {
     private StorageMethod storageMethod;
-    private Long storageItemCount;
-    private List<CategoryItemResponse> categoriesItems=new ArrayList<>();
+    private int storageItemCount;
+    private List<CategoryStorageItemResponse> categoriesItems;
 
-    public StorageResponse(StorageMethod storageMethod, Long storageItemCount, List<CategoryItemResponse> categoriesItems) {
-        this.storageMethod = storageMethod;
-        this.storageItemCount = storageItemCount;
-        this.categoriesItems = categoriesItems;
+
+    public StorageResponse(List<CategoryStorageItemResponse> categoryStorageItemResponse) {
+        this.categoriesItems = categoryStorageItemResponse;
 
     }
 }

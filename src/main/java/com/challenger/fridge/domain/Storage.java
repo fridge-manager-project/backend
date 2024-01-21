@@ -5,6 +5,7 @@ import static jakarta.persistence.FetchType.*;
 import com.challenger.fridge.common.StorageMethod;
 import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.dto.storage.request.StorageRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

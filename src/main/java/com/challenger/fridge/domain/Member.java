@@ -1,6 +1,6 @@
 package com.challenger.fridge.domain;
 
-import com.challenger.fridge.common.MemberType;
+import com.challenger.fridge.common.MemberRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +28,7 @@ public class Member {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    private MemberType type;
+    private MemberRole role;
 
     private LocalDateTime createdAt;
 

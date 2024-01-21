@@ -3,6 +3,7 @@ package com.challenger.fridge.domain;
 import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.dto.storage.request.StorageItemRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,6 +26,8 @@ public class StorageItem {
     @Column(name = "storage_item_id")
     private Long id;
 
+
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "storage_id")
     private Storage storage;
@@ -41,9 +44,8 @@ public class StorageItem {
 
     public void addStorageItem(Storage storage)
     {
-        this.storage.getStorageItemList().add(this);
         this.storage=storage;
-
+        this.storage.getStorageItemList().add(this);
     }
     private StorageItem(Item item, Long quantity, LocalDateTime expirationDate, LocalDateTime purchaseDate) {
         this.item = item;
@@ -56,8 +58,8 @@ public class StorageItem {
     {
         StorageItem storageItem=new StorageItem(item
                                                 ,storageItemRequest.getItemCount()
-                                                ,storageItemRequest.getExpireDate()
-                                                ,storageItemRequest.getPurchaseDate());
+                                                ,storageItemRequest.getExpireDateAsLocalDateTime()
+                                                ,storageItemRequest.getPurchaseDateAsLocalDateTime());
 
         return storageItem;
 
