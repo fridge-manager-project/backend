@@ -6,6 +6,7 @@ import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.*;
 import com.challenger.fridge.dto.storage.request.StorageItemRequest;
 import com.challenger.fridge.dto.storage.request.StorageRequest;
+import com.challenger.fridge.dto.storage.response.StorageItemDetailsResponse;
 import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
@@ -18,13 +19,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +50,7 @@ class StorageServiceTest {
 
     @Test
     @DisplayName("냉장고 추가 테스트")
-    public void 냉장고추가() throws Exception {
+    public void 냉장고추가() {
         // Given
         StorageRequest storageRequest = new StorageRequest("심현석냉장고", StorageMethod.FRIDGE);
         Member testMember = createTestMember(1L);
@@ -62,16 +67,17 @@ class StorageServiceTest {
 
     @Test
     @DisplayName("보관소로 상품 추가 테스트")
-    public void 보관소에상품추가() throws Exception {
-
-        Item testItem = createTestItem(1L);
-        Storage testStorage = createTestStorage(1L);
-        StorageItem testStorageItem = createTestStorageItem(1L);
+    public void 보관소에상품추가() {
+        Long storageId = 1L;
+        Long storageItemId = 1L;
+        Long itemId = 1L;
+        Long categoryId = 1L;
+        Item testItem = createTestItem(itemId, categoryId);
+        Storage testStorage = createTestStorage(storageId);
+        StorageItem testStorageItem = createTestStorageItem(storageItemId, itemId, categoryId);
         when(storageRepository.findById(anyLong())).thenReturn(Optional.of(testStorage));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(testItem));
         when(storageItemRepository.save(any(StorageItem.class))).thenReturn(testStorageItem);
-
-
         StorageItemRequest storageItemRequest = new StorageItemRequest(
                 1L, "testItem", 3L,
                 "2024-01-27T12:34:56", "2024-01-27T12:34:56");
@@ -82,16 +88,43 @@ class StorageServiceTest {
 
     @Test
     @DisplayName("보관소 안에 있는 상품 단건 삭제")
-    public void 보관소상품삭제() throws Exception {
-        StorageItem testStorageItem = createTestStorageItem(1L);
-        when(storageItemRepository.findById(1L)).thenReturn(Optional.of(testStorageItem));
+    public void 보관소상품삭제() {
+        Long storageId = 1L;
+        Long storageItemId = 1L;
+        Long itemId = 1L;
+        Long categoryId = 1L;
+        StorageItem testStorageItem = createTestStorageItem(storageItemId, itemId, categoryId);
+        when(storageItemRepository.findById(storageItemId)).thenReturn(Optional.of(testStorageItem));
         storageService.deleteStorageItem(testStorageItem.getId());
-        verify(storageItemRepository).delete(testStorageItem);
+        //메소드가 몇번 실행 됬는지 확인
+        verify(storageItemRepository, times(1)).delete(testStorageItem);
 
     }
-    private StorageItem createTestStorageItem(Long storageItemId)
-    {
-        Item testItem = createTestItem(1L);
+
+    @Test
+    @DisplayName("보관소 안에 있는 상품 단건 조회")
+    public void 보관소상품단건조회() {
+        Long storageId = 1L;
+        Long storageItemId = 1L;
+        Long itemId = 1L;
+        Long categoryId = 1L;
+        StorageItem testStorageItem = createTestStorageItem(storageItemId, itemId, categoryId);
+        when(storageItemRepository.findByStorageItemDetails(storageItemId)).thenReturn(Optional.of(testStorageItem));
+        StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItem(storageId, storageItemId);
+        assertThat(storageItemDetailsResponse.getStorageId()).isEqualTo(testStorageItem.getId());
+    }
+
+  /*  @Test
+    @DisplayName("보관소 단건 냉장고 조회 (카테고리별 개수 테스트)")
+    public void 보관소단건냉장고조회() {
+        Long storageId = 1L;
+        Storage testStorage = createTestStorage(1L);
+        when(storageRepository.findByStorageItemList(storageId)).thenReturn(Arrays.asList(testStorage))
+
+    }*/
+
+    private StorageItem createTestStorageItem(Long storageItemId, Long itemId, Long categoryId) {
+        Item testItem = createTestItem(itemId, categoryId);
         Storage testStorage = createTestStorage(1L);
 
         StorageItem storageItem = StorageItem.builder()
@@ -104,12 +137,25 @@ class StorageServiceTest {
                 .build();
         return storageItem;
     }
-    private Item createTestItem(Long itemId) {
+
+    private Item createTestItem(Long itemId, Long categoryId) {
+        Category testCategory = createTestCategory(categoryId);
         Item testItem = Item.builder()
                 .itemName("testItem")
-                .id(1L)
+                .category(testCategory)
+                .id(itemId)
                 .build();
         return testItem;
+    }
+
+    private Category createTestCategory(Long categoryId) {
+        Category testCategory = Category.builder()
+                .categoryName("catest" + categoryId)
+                .parentCategory(Category.builder()
+                        .categoryName("parentCatest" + categoryId).build())
+                .id(categoryId)
+                .build();
+        return testCategory;
     }
 
     private Storage createTestStorage(Long storageId) {

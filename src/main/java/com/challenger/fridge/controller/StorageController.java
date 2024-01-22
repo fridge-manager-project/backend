@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping("/storage")
 public class StorageController {
     private final StorageService storageService;
-
     @PostMapping
     @Operation(summary = "보관소 추가", description = "보관소의 이름과 보관방식을 받고 보관소를 추가합니다.")
     public ApiResponse createStorage(@RequestBody StorageRequest storageRequest

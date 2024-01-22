@@ -2,15 +2,14 @@ package com.challenger.fridge.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
@@ -31,7 +30,7 @@ public class Category {
     @OneToMany(mappedBy = "parentCategory")
     List<Category> childCategory = new ArrayList<>();
 
-    @Builder
+
     public Category(String categoryName, Category parentCategory) {
         this.categoryName = categoryName;
         this.parentCategory = parentCategory;

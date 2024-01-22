@@ -13,7 +13,7 @@ import com.challenger.fridge.dto.storage.request.StorageRequest;
 import com.challenger.fridge.dto.storage.response.StorageItemResponse;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.exception.ItemNotFoundException;
-import com.challenger.fridge.exception.StorageItemNotFountException;
+import com.challenger.fridge.exception.StorageItemNotFoundException;
 import com.challenger.fridge.exception.StorageNotFoundException;
 import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
@@ -59,7 +59,7 @@ public class StorageService {
 
     @Transactional
     public void deleteStorageItem(Long storageItemId) {
-        StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFountException("냉장고에 해당 상품이 들어 있지 않습니다."));
+        StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("냉장고에 해당 상품이 들어 있지 않습니다."));
         storageItemRepository.delete(storageItem);
     }
 
@@ -85,7 +85,7 @@ public class StorageService {
     }
 
     public StorageItemDetailsResponse findStorageItem(Long storageId, Long storageItemId) {
-        StorageItem storageItem = storageItemRepository.findByStorageItemDetails(storageItemId).orElseThrow(() -> new StorageItemNotFountException("해당 하는 상품이 냉장고에 없습니다."));
+        StorageItem storageItem = storageItemRepository.findByStorageItemDetails(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 상품이 냉장고에 없습니다."));
         return new StorageItemDetailsResponse(storageItem.getStorage().getId(),
                 storageItem.getStorage().getName(),
                 storageItem.getId(),

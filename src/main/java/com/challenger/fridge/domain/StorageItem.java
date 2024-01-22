@@ -43,6 +43,10 @@ public class StorageItem {
 
     public void addStorageItem(Storage storage)
     {
+        System.out.println("storageName:"+storage.getName());
+        System.out.println("storageId:"+storage.getId());
+        System.out.println("storageMethod:"+storage.getMethod());
+        System.out.println("storageItemList:"+storage.getStorageItemList());
         this.storage=storage;
         storage.getStorageItemList().add(this);
     }
