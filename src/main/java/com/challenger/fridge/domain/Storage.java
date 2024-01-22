@@ -7,15 +7,15 @@ import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.dto.storage.request.StorageRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Storage {
 
@@ -44,7 +44,6 @@ public class Storage {
         this.status = status;
         this.member = member;
     }
-
     public static Storage createStorage(StorageRequest storageRequest,Member member)
     {
 

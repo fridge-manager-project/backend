@@ -1,11 +1,14 @@
 package com.challenger.fridge.dto.storage.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Data
+@AllArgsConstructor
 public class StorageItemRequest {
     private Long itemId;
     private String itemName;

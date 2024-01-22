@@ -58,7 +58,7 @@ public class StorageService {
     }
 
     @Transactional
-    public void deleteStorageItem(Long storageId, Long storageItemId) {
+    public void deleteStorageItem(Long storageItemId) {
         StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFountException("냉장고에 해당 상품이 들어 있지 않습니다."));
         storageItemRepository.delete(storageItem);
     }
