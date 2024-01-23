@@ -4,6 +4,8 @@ package com.challenger.fridge.controller;
 import com.challenger.fridge.common.StorageMethod;
 import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.storage.request.StorageRequest;
+import com.challenger.fridge.repository.MemberRepository;
+import com.challenger.fridge.repository.StorageRepository;
 import com.challenger.fridge.service.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -30,8 +33,15 @@ class StorageControllerTest {
     @MockBean
     StorageService storageService;
 
+    @MockBean
+    MemberRepository memberRepository;
+
+    @MockBean
+    StorageRepository storageRepository;
+
     @Test
     @DisplayName("POST 보관소 추가 컨트롤러 동작")
+    @WithMockUser
     public void 보관소추가컨트롤러() throws Exception {
         ApiResponse apiSuccessResponse = createApiSuccessResponse(null);
         String userEmail = "123@naver.com";
@@ -40,29 +50,20 @@ class StorageControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/storage")
-                        .content(asJsonString(createStorageJson()))
+                        .content(asJsonString(storageRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(asJsonString(apiSuccessResponse)));
     }
 
-    public String asJsonString(final Object obj) {
+    private String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-    public JSONObject createStorageJson() {
-        Map<String, String> map = new HashMap<>();
-        map.put("storageName", "냉장고");
-        map.put("storageMethod", "FRIDGE");
-        JSONObject jsonObject = new JSONObject(map);
-        return jsonObject;
-    }
-
     private ApiResponse createApiErrorResponse(String message) {
         ApiResponse apiResponse = ApiResponse.error(message);
         return apiResponse;

@@ -1,11 +1,10 @@
 package com.challenger.fridge.controller;
 
-import com.challenger.fridge.domain.Storage;
+
 import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.storage.request.StorageItemRequest;
 import com.challenger.fridge.dto.storage.request.StorageRequest;
 import com.challenger.fridge.dto.storage.response.StorageItemDetailsResponse;
-import com.challenger.fridge.dto.storage.response.StorageItemResponse;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Tag(name = "stoarge", description = "storage API")
 @RequiredArgsConstructor
