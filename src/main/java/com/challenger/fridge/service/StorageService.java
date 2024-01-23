@@ -42,11 +42,11 @@ public class StorageService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public Storage saveStorage(StorageRequest storageRequest, String userEmail) {
+    public Long saveStorage(StorageRequest storageRequest, String userEmail) {
         Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("현재 이메일을 가진 회원이 없습니다."));
         Storage saveStorage = Storage.createStorage(storageRequest, member);
         Storage savedStorage = storageRepository.save(saveStorage);
-        return savedStorage;
+        return savedStorage.getId();
     }
 
     @Transactional
