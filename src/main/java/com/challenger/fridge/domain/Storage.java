@@ -36,8 +36,18 @@ public class Storage {
     private Member member;
 
     @OneToMany(mappedBy = "storage")
-    private List<StorageItem> storageItemList=new ArrayList<>();
+    private List<StorageItem> storageItemList = new ArrayList<>();
 
+    /**
+     * 연관관계 편의 메서드 ver2
+     * @param storageItem
+     */
+    public void addStorageItem(StorageItem storageItem)
+    {
+
+        storageItemList.add(storageItem);
+        storageItem.changeStorage(this);
+    }
     private Storage(String name, StorageMethod method, StorageStatus status, Member member) {
         this.name = name;
         this.method = method;

@@ -1,5 +1,6 @@
 package com.challenger.fridge.dto.storage.request;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,10 +19,11 @@ public class StorageItemRequest {
     private String expireDate;
     private String purchaseDate;
 
+    @Hidden
     public LocalDateTime getExpireDateAsLocalDateTime() {
         return expireDate != null ? LocalDateTime.parse(expireDate, DateTimeFormatter.ISO_DATE_TIME) : null;
     }
-
+    @Hidden
     public LocalDateTime getPurchaseDateAsLocalDateTime() {
         return purchaseDate != null ? LocalDateTime.parse(purchaseDate, DateTimeFormatter.ISO_DATE_TIME) : null;
     }

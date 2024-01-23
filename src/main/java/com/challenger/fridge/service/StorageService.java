@@ -15,6 +15,7 @@ import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.exception.ItemNotFoundException;
 import com.challenger.fridge.exception.StorageItemNotFoundException;
 import com.challenger.fridge.exception.StorageNotFoundException;
+import com.challenger.fridge.exception.UserEmailNotFoundException;
 import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
@@ -22,6 +23,7 @@ import com.challenger.fridge.repository.StorageRepository;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,7 @@ public class StorageService {
 
     @Transactional
     public Storage saveStorage(StorageRequest storageRequest, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("현재 이메일을 가진 회원이 없습니다."));
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("현재 이메일을 가진 회원이 없습니다."));
         Storage saveStorage = Storage.createStorage(storageRequest, member);
         Storage savedStorage = storageRepository.save(saveStorage);
         return savedStorage;
@@ -52,7 +54,7 @@ public class StorageService {
         Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("냉장고가 없습니다."));
         Item item = itemRepository.findById(storageItemRequest.getItemId()).orElseThrow(() -> new ItemNotFoundException("해당 상품이 없습니다."));
         StorageItem storageItem = StorageItem.createStorageItem(storageItemRequest, item);
-        storageItem.addStorageItem(storage);
+        storage.addStorageItem(storageItem);
         StorageItem savedStorageItem = storageItemRepository.save(storageItem);
         return savedStorageItem;
     }
@@ -64,7 +66,7 @@ public class StorageService {
     }
 
     public StorageResponse findStorageItemLists(Long storageId) {
-        List<Storage> findStorageItemList = storageRepository.findByStorageItemList(storageId);
+        List<Storage> findStorageItemList = storageRepository.findStorageItemsById(storageId);
 
         int storageItemCount = findStorageItemList.get(0).getStorageItemList().size();
         StorageMethod storageMethod = findStorageItemList.get(0).getMethod();
@@ -84,8 +86,8 @@ public class StorageService {
         return storageResponse;
     }
 
-    public StorageItemDetailsResponse findStorageItem(Long storageId, Long storageItemId) {
-        StorageItem storageItem = storageItemRepository.findByStorageItemDetails(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 상품이 냉장고에 없습니다."));
+    public StorageItemDetailsResponse findStorageItemV1(Long storageId, Long storageItemId) {
+        StorageItem storageItem = storageItemRepository.findStorageItemDetailsById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 상품이 냉장고에 없습니다."));
         return new StorageItemDetailsResponse(storageItem.getStorage().getId(),
                 storageItem.getStorage().getName(),
                 storageItem.getId(),
@@ -95,5 +97,19 @@ public class StorageService {
                 storageItem.getExpirationDate(),
                 storageItem.getQuantity()
         );
+    }
+    public StorageItemDetailsResponse findStorageItemV2(Long storageId, Long storageItemId) {
+        Storage storage = storageRepository.findStorageItemDetailsById(storageId, storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당하는 상품이 없습니다."));
+        List<StorageItemDetailsResponse> storageItemDetailsResponses = storage.getStorageItemList().stream()
+                .map(storageItem -> new StorageItemDetailsResponse(storageItem.getStorage().getId(),
+                        storageItem.getStorage().getName(),
+                        storageItem.getId(),
+                        storageItem.getItem().getId(),
+                        storageItem.getItem().getItemName(),
+                        storageItem.getItem().getCategory().getCategoryName(),
+                        storageItem.getExpirationDate(),
+                        storageItem.getQuantity()))
+                .collect(Collectors.toList());
+        return storageItemDetailsResponses.get(0);
     }
 }

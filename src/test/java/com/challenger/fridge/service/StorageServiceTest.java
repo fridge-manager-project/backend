@@ -74,7 +74,7 @@ class StorageServiceTest {
         Long categoryId = 1L;
         Item testItem = createTestItem(itemId, categoryId);
         Storage testStorage = createTestStorage(storageId);
-        StorageItem testStorageItem = createTestStorageItem(storageItemId, itemId, categoryId);
+        StorageItem testStorageItem = createTestStorageItem(storageId, storageItemId, itemId, categoryId);
         when(storageRepository.findById(anyLong())).thenReturn(Optional.of(testStorage));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(testItem));
         when(storageItemRepository.save(any(StorageItem.class))).thenReturn(testStorageItem);
@@ -93,7 +93,7 @@ class StorageServiceTest {
         Long storageItemId = 1L;
         Long itemId = 1L;
         Long categoryId = 1L;
-        StorageItem testStorageItem = createTestStorageItem(storageItemId, itemId, categoryId);
+        StorageItem testStorageItem = createTestStorageItem(storageId,storageItemId, itemId, categoryId);
         when(storageItemRepository.findById(storageItemId)).thenReturn(Optional.of(testStorageItem));
         storageService.deleteStorageItem(testStorageItem.getId());
         //메소드가 몇번 실행 됬는지 확인
@@ -108,28 +108,18 @@ class StorageServiceTest {
         Long storageItemId = 1L;
         Long itemId = 1L;
         Long categoryId = 1L;
-        StorageItem testStorageItem = createTestStorageItem(storageItemId, itemId, categoryId);
-        when(storageItemRepository.findByStorageItemDetails(storageItemId)).thenReturn(Optional.of(testStorageItem));
-        StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItem(storageId, storageItemId);
-        assertThat(storageItemDetailsResponse.getStorageId()).isEqualTo(testStorageItem.getId());
+        StorageItem testStorageItem = createTestStorageItem(storageId,storageItemId, itemId, categoryId);
+        Storage testStorage = createTestStorage(storageId);
+        when(storageRepository.findStorageItemDetailsById(storageId, storageItemId)).thenReturn(Optional.of(testStorage));
+        StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItemV2(storageId, storageItemId);
+        assertThat(storageItemDetailsResponse.getStorageItemId()).isEqualTo(testStorageItem.getId());
     }
 
-  /*  @Test
-    @DisplayName("보관소 단건 냉장고 조회 (카테고리별 개수 테스트)")
-    public void 보관소단건냉장고조회() {
-        Long storageId = 1L;
-        Storage testStorage = createTestStorage(1L);
-        when(storageRepository.findByStorageItemList(storageId)).thenReturn(Arrays.asList(testStorage))
-
-    }*/
-
-    private StorageItem createTestStorageItem(Long storageItemId, Long itemId, Long categoryId) {
+    private StorageItem createTestStorageItem(Long storageId,Long storageItemId, Long itemId, Long categoryId) {
         Item testItem = createTestItem(itemId, categoryId);
-        Storage testStorage = createTestStorage(1L);
 
         StorageItem storageItem = StorageItem.builder()
                 .id(storageItemId)
-                .storage(testStorage)
                 .item(testItem)
                 .quantity(3L)
                 .purchaseDate(LocalDateTime.now())
@@ -168,6 +158,7 @@ class StorageServiceTest {
                 .name("테스트냉장고")
                 .status(StorageStatus.NORMAL)
                 .build();
+        testStorage.addStorageItem(createTestStorageItem(1L,1L,1L,1L));
         return testStorage;
     }
 

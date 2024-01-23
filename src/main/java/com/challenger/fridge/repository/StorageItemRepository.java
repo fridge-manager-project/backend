@@ -12,5 +12,6 @@ public interface StorageItemRepository extends JpaRepository<StorageItem,Long> {
     @Query("select si from StorageItem si join fetch si.storage s " +
             "join fetch si.item i " +
             "join fetch i.category where si.id=:storageItemId ")
-    Optional<StorageItem> findByStorageItemDetails(@Param("storageItemId") Long storageItemId);
+    Optional<StorageItem> findStorageItemDetailsById(@Param("storageItemId") Long storageItemId);
+
 }

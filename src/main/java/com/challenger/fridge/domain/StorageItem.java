@@ -10,7 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDateTime;
+
 import lombok.*;
 
 
@@ -21,7 +23,8 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StorageItem {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "storage_item_id")
     private Long id;
 
@@ -41,15 +44,19 @@ public class StorageItem {
 
     private LocalDateTime purchaseDate;
 
-    public void addStorageItem(Storage storage)
-    {
-        System.out.println("storageName:"+storage.getName());
-        System.out.println("storageId:"+storage.getId());
-        System.out.println("storageMethod:"+storage.getMethod());
-        System.out.println("storageItemList:"+storage.getStorageItemList());
-        this.storage=storage;
+    public void changeStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    /**
+     * 연관관계 편의 메서드 ver1
+     * @param storage
+     */
+    public void addStorageItem(Storage storage) {
+        this.storage = storage;
         storage.getStorageItemList().add(this);
     }
+
     private StorageItem(Item item, Long quantity, LocalDateTime expirationDate, LocalDateTime purchaseDate) {
         this.item = item;
         this.quantity = quantity;
@@ -57,20 +64,14 @@ public class StorageItem {
         this.purchaseDate = purchaseDate;
     }
 
-    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest,Item item)
-    {
-        StorageItem storageItem=new StorageItem(item
-                                                ,storageItemRequest.getItemCount()
-                                                ,storageItemRequest.getExpireDateAsLocalDateTime()
-                                                ,storageItemRequest.getPurchaseDateAsLocalDateTime());
-
+    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item) {
+        StorageItem storageItem = new StorageItem(item
+                , storageItemRequest.getItemCount()
+                , storageItemRequest.getExpireDateAsLocalDateTime()
+                , storageItemRequest.getPurchaseDateAsLocalDateTime());
         return storageItem;
 
     }
-
-
-
-
 
 
 }
