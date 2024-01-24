@@ -33,4 +33,9 @@ public class ExceptionResponseHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("토큰이 만료되었습니다. 다시 로그인해주세요."));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleException() {
+        return ResponseEntity.internalServerError().body(ApiResponse.error("서버에 문제가 발생했습니다."));
+    }
+
 }
