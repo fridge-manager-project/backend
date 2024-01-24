@@ -12,20 +12,27 @@ import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.sign.SignUpResponse;
 import com.challenger.fridge.repository.MemberRepository;
+import com.challenger.fridge.repository.StorageRepository;
 import com.challenger.fridge.service.SignService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(SignController.class)
-@MockBean(JpaMetamodelMappingContext.class)
+/*@WebMvcTest(SignController.class)
+@MockBean(JpaMetamodelMappingContext.class)*/
+@SpringBootTest
+@AutoConfigureMockMvc
 class SignControllerTest {
 
     @Autowired
@@ -37,8 +44,11 @@ class SignControllerTest {
     @MockBean
     private SignService signService;
 
-    @MockBean
+   /* @MockBean
     private MemberRepository memberRepository;
+
+    @MockBean
+    private StorageRepository storageRepository;*/
 
     @Test
     @DisplayName("POST 회원 등록 컨트롤러 로직 확인")
