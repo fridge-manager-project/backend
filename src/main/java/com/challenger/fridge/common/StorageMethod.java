@@ -1,5 +1,6 @@
 package com.challenger.fridge.common;
 
+import com.challenger.fridge.exception.StorageMethodMachingException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum StorageMethod {
@@ -18,7 +19,7 @@ public enum StorageMethod {
                 return enumMethod;
             }
         }
-        throw new RuntimeException("json 데이터 변환 실패");
+        throw new StorageMethodMachingException("보관 저장 방식이 잘못되었습니다.");
     }
 
 

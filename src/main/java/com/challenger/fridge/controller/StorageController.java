@@ -9,9 +9,11 @@ import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,12 +26,18 @@ public class StorageController {
 
     @PostMapping
     @Operation(summary = "보관소 추가", description = "보관소의 이름과 보관방식을 받고 보관소를 추가합니다.")
-    public ApiResponse createStorage(@RequestBody StorageRequest storageRequest
-            , @AuthenticationPrincipal User user) {
+    public ApiResponse createStorage(@Valid @RequestBody StorageRequest storageRequest
+            , BindingResult bindingResult
+            , @AuthenticationPrincipal User user
+    ) {
         String userEmail = user.getUsername();
         if (userEmail != null) //로그인 되어져 있으면
         {
             storageService.saveStorage(storageRequest, userEmail);
+        }
+        if (bindingResult.hasErrors()) {
+            return ApiResponse.fail(bindingResult.getFieldError().getDefaultMessage());
+
         }
         return ApiResponse.success(null);
     }
@@ -64,15 +72,4 @@ public class StorageController {
         storageService.saveStorageItem(storageItemRequest, storageId);
         return ApiResponse.success(null);
     }
-
- /*   @PatchMapping("/storage/{storageId}/items/{storageItemId}")
-    @Operation(summary = "보관소 상품 수정", description = "보관소에 있는 상품을 수정한다.")
-    public ApiResponse updateStorageItem(@PathVariable("storageId") Long storageId
-            , @PathVariable Long storageItemId
-            , @RequestBody StorageItemUpdate storageItemUpdate) {
-
-
-    }*/
-
-
 }

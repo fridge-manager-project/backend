@@ -66,26 +66,22 @@ public class StorageService {
     }
 
     public StorageResponse findStorageItemLists(Long storageId) {
-        List<Storage> findStorageItemList = storageRepository.findStorageItemsById(storageId);
-
-        int storageItemCount = findStorageItemList.get(0).getStorageItemList().size();
-        StorageMethod storageMethod = findStorageItemList.get(0).getMethod();
-
-        Map<String, List<StorageItemResponse>> categoryStorageItemMap = findStorageItemList.stream()
-                .flatMap(storage -> storage.getStorageItemList().stream())
+        Storage findStorage = storageRepository.findStorageItemsById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 냉장고가 없습니다."));
+        Map<String, List<StorageItemResponse>> categoryStorageItemMap = findStorage.getStorageItemList().stream()
                 .collect(Collectors.groupingBy(
                         storageItem -> storageItem.getItem().getCategory().getCategoryName(),
                         Collectors.mapping(storageItem -> new StorageItemResponse(storageItem), Collectors.toList())
                 ));
-        List<CategoryStorageItemResponse> categoryStorageItemList = categoryStorageItemMap.entrySet().stream()
+                List<CategoryStorageItemResponse> categoryStorageItemList = categoryStorageItemMap.entrySet().stream()
                 .map(storageItem -> new CategoryStorageItemResponse(storageItem.getKey(), storageItem.getValue()))
                 .collect(Collectors.toList());
         StorageResponse storageResponse = new StorageResponse(categoryStorageItemList);
+        int storageItemCount = findStorage.getStorageItemList().size();
+        StorageMethod storageMethod = findStorage.getMethod();
         storageResponse.setStorageMethod(storageMethod);
         storageResponse.setStorageItemCount(storageItemCount);
         return storageResponse;
     }
-
     public StorageItemDetailsResponse findStorageItemV1(Long storageId, Long storageItemId) {
         StorageItem storageItem = storageItemRepository.findStorageItemDetailsById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 상품이 냉장고에 없습니다."));
         return new StorageItemDetailsResponse(storageItem.getStorage().getId(),

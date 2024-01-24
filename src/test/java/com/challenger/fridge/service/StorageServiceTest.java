@@ -64,7 +64,7 @@ class StorageServiceTest {
 
     }
 
-/*    @Test
+    @Test
     @DisplayName("보관소로 상품 추가 테스트")
     public void 보관소에상품추가() {
         Long storageId = 1L;
@@ -83,7 +83,7 @@ class StorageServiceTest {
         StorageItem savedStorageItem = storageService.saveStorageItem(storageItemRequest, testStorage.getId());
 
         assertThat(testStorageItem.getId()).isEqualTo(savedStorageItem.getId());
-    }*/
+    }
 
     @Test
     @DisplayName("보관소 안에 있는 상품 단건 삭제")
@@ -100,7 +100,7 @@ class StorageServiceTest {
 
     }
 
-/*    @Test
+    @Test
     @DisplayName("보관소 안에 있는 상품 단건 조회")
     public void 보관소상품단건조회() {
         Long storageId = 1L;
@@ -112,8 +112,20 @@ class StorageServiceTest {
         when(storageRepository.findStorageItemDetailsById(storageId, storageItemId)).thenReturn(Optional.of(testStorage));
         StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItemV2(storageId, storageItemId);
         assertThat(storageItemDetailsResponse.getStorageItemId()).isEqualTo(testStorageItem.getId());
+    }
+   /* @Test
+    @DisplayName("보관소 안에 있는 상품 단건 조회")
+    public void 보관소단건조회() {
+        Long storageId = 1L;
+        Long storageItemId = 1L;
+        Long itemId = 1L;
+        Long categoryId = 1L;
+        StorageItem testStorageItem = createTestStorageItem(storageId,storageItemId, itemId, categoryId);
+        Storage testStorage = createTestStorage(storageId);
+        when(storageRepository.findStorageItemsById(storageId)).thenReturn(Optional<List>);
+        StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItemV2(storageId, storageItemId);
+        assertThat(storageItemDetailsResponse.getStorageItemId()).isEqualTo(testStorageItem.getId());
     }*/
-
     private StorageItem createTestStorageItem(Long storageId,Long storageItemId, Long itemId, Long categoryId) {
         Item testItem = createTestItem(itemId, categoryId);
 
@@ -156,6 +168,7 @@ class StorageServiceTest {
                 .method(StorageMethod.FRIDGE)
                 .name("테스트냉장고")
                 .status(StorageStatus.NORMAL)
+                .storageItemList(new ArrayList<>())
                 .build();
         testStorage.addStorageItem(createTestStorageItem(1L,1L,1L,1L));
         return testStorage;

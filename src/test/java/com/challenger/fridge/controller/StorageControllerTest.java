@@ -8,36 +8,33 @@ import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.StorageRepository;
 import com.challenger.fridge.service.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.HashMap;
-import java.util.Map;
+
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(StorageController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class StorageControllerTest {
     @Autowired
     MockMvc mockMvc;
     @MockBean
     StorageService storageService;
-
-    @MockBean
-    MemberRepository memberRepository;
-
-    @MockBean
-    StorageRepository storageRepository;
 
     @Test
     @DisplayName("POST 보관소 추가 컨트롤러 동작")

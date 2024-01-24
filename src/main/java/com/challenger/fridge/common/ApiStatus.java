@@ -2,5 +2,6 @@ package com.challenger.fridge.common;
 
 public enum ApiStatus {
     SUCCESS,
-    ERROR
+    ERROR,
+    FAIL
 }
