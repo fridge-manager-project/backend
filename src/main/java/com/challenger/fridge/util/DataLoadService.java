@@ -59,9 +59,10 @@ public class DataLoadService {
                     categoryRepository.save(category2);
                 }
                 category=categoryRepository.findByCategoryName(childCate);
-                Item item=new Item();
-                item.setItemName(foodData);
-                item.setCategory(category);
+                Item item=Item.builder()
+                        .itemName(foodData)
+                        .category(category)
+                        .build();
                 itemRepository.save(item);
 
 
