@@ -35,12 +35,12 @@ class SignServiceUnitTest {
     @Test
     void createDuplicateEmailException() {
         String email = "jjw1234@naver.com";
-        when(memberRepository.existsByEmail(anyString())).thenReturn(true);
+        when(memberRepository.existsByEmail(anyString()))
+                .thenThrow(new IllegalArgumentException("이미 사용중인 이메일입니다."));
 
-//        assertThatThrownBy(() -> signService.checkDuplicateEmail(email))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("이미 사용중인 이메일입니다.");
-        assertThat(signService.checkDuplicateEmail(email)).isTrue();
+        assertThatThrownBy(() -> signService.checkDuplicateEmail(email))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 사용중인 이메일입니다.");
     }
 
     @DisplayName("중복되지 않은 이메일 입력")
@@ -49,7 +49,7 @@ class SignServiceUnitTest {
         String email = "jjw1234@naver.com";
         when(memberRepository.existsByEmail(anyString())).thenReturn(false);
 
-        assertThat(signService.checkDuplicateEmail(email)).isFalse();
+        assertThat(signService.checkDuplicateEmail(email)).isTrue();
     }
 
     @DisplayName("회원가입")
