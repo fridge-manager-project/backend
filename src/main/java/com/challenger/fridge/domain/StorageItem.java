@@ -3,7 +3,6 @@ package com.challenger.fridge.domain;
 import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.domain.box.StorageBox;
-import com.challenger.fridge.dto.storage.request.StorageItemRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
