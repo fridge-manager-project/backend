@@ -1,6 +1,5 @@
 package com.challenger.fridge.dto.storage.response;
 
-import com.challenger.fridge.common.StorageMethod;
 import lombok.Data;
 
 import java.util.List;

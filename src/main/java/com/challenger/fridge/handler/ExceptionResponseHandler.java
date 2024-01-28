@@ -8,9 +8,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import com.challenger.fridge.exception.ItemNotFoundException;
 import com.challenger.fridge.exception.StorageItemNotFoundException;
-import com.challenger.fridge.exception.StorageMethodMachingException;
 import com.challenger.fridge.exception.StorageNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -62,9 +60,4 @@ public class ExceptionResponseHandler {
         return ApiResponse.error(e.getMessage());
     }
 
-    @ExceptionHandler(StorageMethodMachingException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ApiResponse handleStorageMethodException(StorageMethodMachingException e) {
-        return ApiResponse.error(e.getMessage());
-    }
 }

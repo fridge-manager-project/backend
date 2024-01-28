@@ -1,11 +1,9 @@
 package com.challenger.fridge.dto.storage.request;
 
-import com.challenger.fridge.common.StorageMethod;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
