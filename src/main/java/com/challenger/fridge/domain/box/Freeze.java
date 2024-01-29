@@ -12,4 +12,13 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Freeze extends StorageBox {
+    public Freeze(String name) {
+        super(name);
+    }
+
+    public static Freeze createFridge(String name)
+    {
+        Freeze freeze=new Freeze(name);
+        return freeze;
+    }
 }

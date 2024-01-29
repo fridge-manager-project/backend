@@ -2,6 +2,7 @@ package com.challenger.fridge.handler;
 
 import com.challenger.fridge.dto.ApiResponse;
 
+import com.challenger.fridge.exception.StorageNameDuplicateException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -43,21 +44,23 @@ public class ExceptionResponseHandler {
     }
 
     @ExceptionHandler(StorageItemNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse handleStorageItemNotFoundException(StorageItemNotFoundException e) {
-        return ApiResponse.error(e.getMessage());
+    public ResponseEntity<ApiResponse> handleStorageItemNotFoundException(StorageItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(StorageNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse handleStorageNotFoundException(StorageNotFoundException e) {
-        return ApiResponse.error(e.getMessage());
+    public ResponseEntity<ApiResponse> handleStorageNotFoundException(StorageNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse handleItemNotFoundException(ItemNotFoundException e) {
-        return ApiResponse.error(e.getMessage());
+    public  ResponseEntity<ApiResponse> handleItemNotFoundException(ItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(StorageNameDuplicateException.class)
+    public  ResponseEntity<ApiResponse> handleStorageNameDuplicateException(StorageNameDuplicateException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
 
 }

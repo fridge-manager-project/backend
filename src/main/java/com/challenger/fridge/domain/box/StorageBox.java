@@ -2,6 +2,7 @@ package com.challenger.fridge.domain.box;
 
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
+import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,7 +27,17 @@ public abstract class StorageBox {
     @ManyToOne
     @JoinColumn(name = "storage_id")
     private Storage storage;
+
     @OneToMany(mappedBy = "storageBox")
     private List<StorageItem> storageItemList=new ArrayList<>();
+
+    public StorageBox(String name) {
+        this.name = name;
+    }
+
+    public void setStorage(Storage storage)
+    {
+        this.storage=storage;
+    }
 
 }
