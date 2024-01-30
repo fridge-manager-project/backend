@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,19 +33,8 @@ public class StorageService {
         if (storageRepository.existsByName(storageSaveRequest.getStorageName())) {
             throw new StorageNameDuplicateException("보관소의 이름이 이미 존재합니다.");
         }
-        for (int i = 1; i <= storageSaveRequest.getFridgeCount(); i++) {
-            Fridge fridge = Fridge.createFridge("냉장고" + i);
-            storageBoxes.add(fridge);
-        }
-        for (int i = 1; i <= storageSaveRequest.getFreezeCount(); i++) {
-            Freeze freeze = Freeze.createFridge("냉동고" + i);
-            storageBoxes.add(freeze);
-        }
-        for (int i = 1; i <= storageSaveRequest.getRoomCount(); i++) {
-            Room room = Room.createFridge("실온" + i);
-            storageBoxes.add(room);
-        }
-        Storage storage = Storage.createStorage(storageSaveRequest.getStorageName(), storageBoxes,member);
+        List<StorageBox> storageBoxList = StorageBox.createStorageBox(storageSaveRequest);
+        Storage storage = Storage.createStorage(storageSaveRequest.getStorageName(), storageBoxList,member);
         Storage savedStorage = storageRepository.save(storage);
         return savedStorage.getId();
     }
