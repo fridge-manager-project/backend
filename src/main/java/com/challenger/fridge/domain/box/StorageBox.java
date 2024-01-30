@@ -30,36 +30,34 @@ public abstract class StorageBox {
     private Storage storage;
 
     @OneToMany(mappedBy = "storageBox")
-    private List<StorageItem> storageItemList=new ArrayList<>();
+    private List<StorageItem> storageItemList = new ArrayList<>();
 
     public StorageBox(String name) {
         this.name = name;
     }
 
-    public void setStorage(Storage storage)
-    {
-        this.storage=storage;
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
-    public static List<StorageBox> createStorageBox(StorageSaveRequest storageSaveRequest)
-    {
+
+    public static List<StorageBox> createStorageBox(StorageSaveRequest storageSaveRequest) {
         Long roomCount = storageSaveRequest.getRoomCount();
         Long fridgeCount = storageSaveRequest.getFridgeCount();
         Long freezeCount = storageSaveRequest.getFreezeCount();
-        Long sum=roomCount+freezeCount+fridgeCount;
-        if (sum >= 10)
-        {
+        Long sum = roomCount + freezeCount + fridgeCount;
+        if (sum >= 10) {
             throw new StorageBoxLimitExceededException("세부 보관소를 총합 10개 이상 생성할 수 없습니다.");
         }
         ArrayList<StorageBox> storageBoxes = new ArrayList<>();
-        for (int i = 1; i <= storageSaveRequest.getFridgeCount(); i++) {
+        for (int i = 1; i <= fridgeCount; i++) {
             Fridge fridge = Fridge.createFridge("냉장고" + i);
             storageBoxes.add(fridge);
         }
-        for (int i = 1; i <= storageSaveRequest.getFreezeCount(); i++) {
+        for (int i = 1; i <= freezeCount; i++) {
             Freeze freeze = Freeze.createFridge("냉동고" + i);
             storageBoxes.add(freeze);
         }
-        for (int i = 1; i <= storageSaveRequest.getRoomCount(); i++) {
+        for (int i = 1; i <= roomCount; i++) {
             Room room = Room.createFridge("실온" + i);
             storageBoxes.add(room);
         }

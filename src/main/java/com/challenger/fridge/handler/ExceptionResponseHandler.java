@@ -57,11 +57,11 @@ public class ExceptionResponseHandler {
 
     @ExceptionHandler(StorageNameDuplicateException.class)
     public  ResponseEntity<ApiResponse> handleStorageNameDuplicateException(StorageNameDuplicateException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
     }
     @ExceptionHandler(StorageBoxLimitExceededException.class)
     public ResponseEntity<ApiResponse> handleStorageBoxLimitExceededException(StorageBoxLimitExceededException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
     }
 
 }

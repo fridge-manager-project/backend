@@ -33,10 +33,8 @@ public class StorageController {
         {
             return ApiResponse.fail(bindingResult.getFieldError().getDefaultMessage());
         }
-        if (userEmail!=null)
-        {
-            storageService.saveStorage(storageSaveRequest,userEmail);
-        }
+        storageService.saveStorage(storageSaveRequest,userEmail);
+
 
         return ApiResponse.success(null);
     }
