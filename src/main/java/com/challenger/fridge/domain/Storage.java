@@ -3,7 +3,6 @@ package com.challenger.fridge.domain;
 import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.common.StorageStatus;
-import com.challenger.fridge.domain.box.Fridge;
 import com.challenger.fridge.domain.box.StorageBox;
 import jakarta.persistence.*;
 import lombok.*;
