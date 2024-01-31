@@ -2,13 +2,11 @@ package com.challenger.fridge.handler;
 
 import com.challenger.fridge.dto.ApiResponse;
 
+import com.challenger.fridge.exception.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
-import com.challenger.fridge.exception.ItemNotFoundException;
-import com.challenger.fridge.exception.StorageItemNotFoundException;
-import com.challenger.fridge.exception.StorageNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -43,21 +41,28 @@ public class ExceptionResponseHandler {
     }
 
     @ExceptionHandler(StorageItemNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse handleStorageItemNotFoundException(StorageItemNotFoundException e) {
-        return ApiResponse.error(e.getMessage());
+    public ResponseEntity<ApiResponse> handleStorageItemNotFoundException(StorageItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(StorageNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse handleStorageNotFoundException(StorageNotFoundException e) {
-        return ApiResponse.error(e.getMessage());
+    public ResponseEntity<ApiResponse> handleStorageNotFoundException(StorageNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse handleItemNotFoundException(ItemNotFoundException e) {
-        return ApiResponse.error(e.getMessage());
+    public ResponseEntity<ApiResponse> handleItemNotFoundException(ItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(StorageNameDuplicateException.class)
+    public ResponseEntity<ApiResponse> handleStorageNameDuplicateException(StorageNameDuplicateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(StorageBoxLimitExceededException.class)
+    public ResponseEntity<ApiResponse> handleStorageBoxLimitExceededException(StorageBoxLimitExceededException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
     }
 
 }
