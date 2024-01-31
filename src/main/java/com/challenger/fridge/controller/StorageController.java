@@ -18,27 +18,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/storage")
-@Tag(name = "storage" ,description = "보관소 API")
+@Tag(name = "storage", description = "보관소 API")
 public class StorageController {
     private final StorageService storageService;
 
     @PostMapping
-    @Operation(summary = "보관소 추가",description = "보관소를 추가한다(사용자가 현재 보관소가 하나라도 존재하면 NORMAL로 없으면 회원가입이라고 인식후 MAIN으로 만듬")
+    @Operation(summary = "보관소 추가", description = "보관소를 추가한다(사용자가 현재 보관소가 하나라도 존재하면 NORMAL로 없으면 회원가입이라고 인식후 MAIN으로 만듬")
     public ApiResponse createStorage(@Valid @RequestBody StorageSaveRequest storageSaveRequest
-                                    , BindingResult bindingResult
-                                    , @AuthenticationPrincipal User user)
-    {
+            , BindingResult bindingResult
+            , @AuthenticationPrincipal User user) {
         String userEmail = user.getUsername();
-        if (bindingResult.hasErrors())
-        {
+        if (bindingResult.hasErrors()) {
             return ApiResponse.fail(bindingResult.getFieldError().getDefaultMessage());
         }
-        storageService.saveStorage(storageSaveRequest,userEmail);
+        storageService.saveStorage(storageSaveRequest, userEmail);
 
 
         return ApiResponse.success(null);
     }
-
 
 
 }

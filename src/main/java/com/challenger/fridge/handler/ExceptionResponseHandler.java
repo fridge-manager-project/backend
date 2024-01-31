@@ -51,14 +51,15 @@ public class ExceptionResponseHandler {
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
-    public  ResponseEntity<ApiResponse> handleItemNotFoundException(ItemNotFoundException e) {
+    public ResponseEntity<ApiResponse> handleItemNotFoundException(ItemNotFoundException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(StorageNameDuplicateException.class)
-    public  ResponseEntity<ApiResponse> handleStorageNameDuplicateException(StorageNameDuplicateException e) {
+    public ResponseEntity<ApiResponse> handleStorageNameDuplicateException(StorageNameDuplicateException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
     }
+
     @ExceptionHandler(StorageBoxLimitExceededException.class)
     public ResponseEntity<ApiResponse> handleStorageBoxLimitExceededException(StorageBoxLimitExceededException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));

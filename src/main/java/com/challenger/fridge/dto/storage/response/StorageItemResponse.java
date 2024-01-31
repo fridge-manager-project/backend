@@ -1,10 +1,11 @@
 package com.challenger.fridge.dto.storage.response;
 
 
-
 import com.challenger.fridge.domain.StorageItem;
 import lombok.Data;
+
 import java.time.LocalDateTime;
+
 @Data
 public class StorageItemResponse {
     private Long storageItemId;
