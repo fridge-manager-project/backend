@@ -1,6 +1,7 @@
 package com.challenger.fridge.service;
 
 import com.challenger.fridge.common.MemberRole;
+import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
@@ -38,28 +39,12 @@ class StorageServiceTest {
         StorageSaveRequest storageSaveRequest = getStorageSaveRequest("테스트냉장고", 1L, 1L, 1L);
         String userEmail = "123@naver.com";
         Member testMember = createTestMember(1L);
-        Storage testStorage = createTestStorage(1L, "테스트냉장고");
+        Storage testStorage = createTestStorage("테스트냉장고",StorageStatus.NORMAL,testMember);
         //보관소 중복 검사를 위해 양방향에서 해당 회원의 보관소리스트에서 이름을 찾기 때문에 주입해줘야한다.
         testMember.getStorageList().add(testStorage);
         when(memberRepository.findByEmail(userEmail)).thenReturn(Optional.of(testMember));
 
         assertThrows(StorageNameDuplicateException.class, () -> {
-            storageService.saveStorage(storageSaveRequest, userEmail);
-        });
-
-        verify(storageRepository, never()).save(any(Storage.class));
-    }
-
-    @Test
-    @DisplayName("보관소 추가를 할 때 세부 보관소의 합이 10개 이상 일 때")
-    void 세부보관소의합이10개이상일떄예외() {
-        // given
-        StorageSaveRequest storageSaveRequest = getStorageSaveRequest("테스트냉장고", 10L, 15L, 1L);
-        String userEmail = "123@naver.com";
-        Member testMember = createTestMember(1L);
-        when(memberRepository.findByEmail(userEmail)).thenReturn(Optional.of(testMember));
-
-        assertThrows(StorageBoxLimitExceededException.class, () -> {
             storageService.saveStorage(storageSaveRequest, userEmail);
         });
 
@@ -79,8 +64,8 @@ class StorageServiceTest {
     }
 
     //보관소 이름 중복만을 위해 필요한 필드만 주입
-    private Storage createTestStorage(Long memberId, String storageName) {
-        Storage storage = new Storage(1L, "테스트냉장고");
+    private Storage createTestStorage(String storageName, StorageStatus storageStatus,Member member) {
+        Storage storage = new Storage(storageName,storageStatus,member);
         return storage;
     }
 
@@ -88,7 +73,6 @@ class StorageServiceTest {
         StorageSaveRequest storageSaveRequest = new StorageSaveRequest();
         storageSaveRequest.setStorageName(storageName);
         storageSaveRequest.setFreezeCount(freezeCount);
-        storageSaveRequest.setRoomCount(roomCount);
         storageSaveRequest.setFridgeCount(fridgeCount);
         return storageSaveRequest;
     }

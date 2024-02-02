@@ -42,13 +42,13 @@ public class StorageItem {
 
     private LocalDate purchaseDate;
 
-    public void setStorageBox(StorageBox storageBox)
+    public void addStorageBox(StorageBox storageBox)
     {
         this.storageBox=storageBox;
         storageBox.getStorageItemList().add(this);
     }
 
-    public void setItem(Item item)
+    public void addItem(Item item)
     {
         this.item=item;
     }
@@ -67,8 +67,8 @@ public class StorageItem {
                                             ,storageItemDto.getItemDescription()
                                             ,storageItemDto.getExpireDateAsLocalDate()
                                             ,storageItemDto.getPurchaseDateAsLocalDate());
-        storageItem.setItem(item);
-        storageItem.setStorageBox(storageBox);
+        storageItem.addItem(item);
+        storageItem.addStorageBox(storageBox);
         return storageItem;
     }
 

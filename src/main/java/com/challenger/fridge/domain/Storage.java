@@ -42,12 +42,6 @@ public class Storage {
         this.member = member;
     }
 
-    //보관소 이름 중복 테스트용
-    public Storage(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public void addStorageBox(StorageBox storageBox) {
         storageBoxList.add(storageBox);
         storageBox.setStorage(this);
