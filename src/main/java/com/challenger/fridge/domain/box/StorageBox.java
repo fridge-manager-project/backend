@@ -2,8 +2,9 @@ package com.challenger.fridge.domain.box;
 
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
+import com.challenger.fridge.dto.box.request.StorageMethod;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
-import com.challenger.fridge.exception.StorageBoxLimitExceededException;
+import com.challenger.fridge.exception.StorageMethodMatchingException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,13 +42,8 @@ public abstract class StorageBox {
     }
 
     public static List<StorageBox> createStorageBox(StorageSaveRequest storageSaveRequest) {
-        Long roomCount = storageSaveRequest.getRoomCount();
         Long fridgeCount = storageSaveRequest.getFridgeCount();
         Long freezeCount = storageSaveRequest.getFreezeCount();
-        Long sum = roomCount + freezeCount + fridgeCount;
-        if (sum >= 10) {
-            throw new StorageBoxLimitExceededException("세부 보관소를 총합 10개 이상 생성할 수 없습니다.");
-        }
         ArrayList<StorageBox> storageBoxes = new ArrayList<>();
         for (int i = 1; i <= fridgeCount; i++) {
             Fridge fridge = Fridge.createFridge("냉장고" + i);
@@ -57,11 +53,24 @@ public abstract class StorageBox {
             Freeze freeze = Freeze.createFridge("냉동고" + i);
             storageBoxes.add(freeze);
         }
-        for (int i = 1; i <= roomCount; i++) {
-            Room room = Room.createFridge("실온" + i);
-            storageBoxes.add(room);
-        }
         return storageBoxes;
     }
+
+    public static StorageBox createStorageBox(String storageName, StorageMethod storageMethod, Storage storage) {
+        //사실 유효성 검사에서 보관 방식이 잘못되면 걸러지지만 비즈니스 로직에서도 한번도 검사 하는 부분을 추가
+        switch (storageMethod) {
+            case FRIDGE:
+                Fridge fridge = new Fridge(storageName);
+                fridge.setStorage(storage);
+                return fridge;
+            case FREEZE:
+                Freeze freeze = new Freeze(storageName);
+                freeze.setStorage(storage);
+                return freeze;
+            default:
+                throw new StorageMethodMatchingException("보관 저장 방식이 잘못되었습니다.");
+        }
+    }
+
 
 }

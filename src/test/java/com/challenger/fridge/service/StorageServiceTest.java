@@ -4,7 +4,6 @@ import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
-import com.challenger.fridge.exception.StorageBoxLimitExceededException;
 import com.challenger.fridge.exception.StorageNameDuplicateException;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.StorageRepository;

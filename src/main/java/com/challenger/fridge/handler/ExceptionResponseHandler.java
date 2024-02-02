@@ -8,8 +8,9 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -60,9 +61,23 @@ public class ExceptionResponseHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
     }
 
-    @ExceptionHandler(StorageBoxLimitExceededException.class)
-    public ResponseEntity<ApiResponse> handleStorageBoxLimitExceededException(StorageBoxLimitExceededException e) {
+    @ExceptionHandler(StorageBoxNameDuplicateException.class)
+    public ResponseEntity<ApiResponse> handleStorageBoxNameDuplicateException(StorageBoxNameDuplicateException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
     }
 
+    // 유효성 검사에 통과하지 못한 메시지는 이 예외에서 처리한다.
+    // Controller에서 BindingResult를 사용하지 않아도 됨
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        FieldError fieldError = e.getFieldError();
+
+        String errorMessage = fieldError.getDefaultMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail(errorMessage));
+    }
+
+    @ExceptionHandler(StorageBoxLimitExceededException.class)
+    public ResponseEntity<ApiResponse> handleStorageBoxLimitExceededException(StorageBoxLimitExceededException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+    }
 }
