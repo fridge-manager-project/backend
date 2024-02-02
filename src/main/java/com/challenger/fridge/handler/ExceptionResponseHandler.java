@@ -80,4 +80,9 @@ public class ExceptionResponseHandler {
     public ResponseEntity<ApiResponse> handleStorageBoxLimitExceededException(StorageBoxLimitExceededException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
+
+    @ExceptionHandler(StorageBoxNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleStorageBoxNotFoundException(StorageBoxNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+    }
 }
