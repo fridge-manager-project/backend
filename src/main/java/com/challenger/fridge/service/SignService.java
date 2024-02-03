@@ -1,5 +1,6 @@
 package com.challenger.fridge.service;
 
+import com.challenger.fridge.config.RedisService;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.dto.sign.SignInResponse;
@@ -28,6 +29,7 @@ public class SignService {
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisService redisService;
 
     /**
      * 회원 이메일 중복 확인 요청
@@ -56,18 +58,25 @@ public class SignService {
     @Transactional
     public SignInResponse signIn(SignInRequest request) {
         // 1. email, password 기반 Authentication 객체 생성. -> 인증 여부를 확인하는 authenticated 값이 false
+        log.info("1. email, password 기반 Authentication 객체 생성.");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 request.getEmail(), request.getPassword());
 
         // 2. 검증 진행 - CustomUserDetailsService.loadUserByUsername 메서드가 실행
+        log.info("2. 검증 진행 - CustomUserDetailsService.loadUserByUsername 메서드가 실행");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // 3. member 에 refresh token 저장 - 미완
-        Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
+        // 3. AT, RT 생성 및 Redis 에 RT 저장
+        log.info("3. AT, RT 생성 및 Redis 에 RT 저장");
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-        return new SignInResponse(member.getName(), tokenInfo);
+        saveRefreshToken(authentication.getName(), tokenInfo.getRefreshToken());
+        return new SignInResponse(authentication.getName(), tokenInfo);
+    }
+
+    @Transactional
+    public void saveRefreshToken(String email, String refreshToken) {
+        redisService.setValuesWithTimeout("RT:" + email, refreshToken,
+                jwtTokenProvider.getTokenExpirationTime(refreshToken));
     }
 
 }

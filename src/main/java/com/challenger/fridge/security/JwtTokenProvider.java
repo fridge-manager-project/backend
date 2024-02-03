@@ -30,10 +30,16 @@ import org.springframework.stereotype.Service;
 public class JwtTokenProvider {
 
     private final Key key;
+    private final Long accessTokenValidityInMilliseconds;
+    private final Long refreshTokenValidityInMilliseconds;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
+                            @Value("${jwt.access-token-validity-in-seconds}") Long accessTokenValidityInseconds,
+                            @Value("${jwt.refresh-token-validity-in-seconds}") Long refreshTokenValidityInseconds) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.accessTokenValidityInMilliseconds = accessTokenValidityInseconds * 1000;
+        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInseconds * 1000;
     }
 
     /**
@@ -44,20 +50,21 @@ public class JwtTokenProvider {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        long now = (new Date()).getTime();
+
+        Long now = System.currentTimeMillis();
 
         // access Token 생성
-        Date accessTokenExpiresIn = new Date(now + 30000);
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
-                .setExpiration(accessTokenExpiresIn)
+                .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + 86400000))
+                .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
+                .setSubject("refresh-token")
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -109,5 +116,7 @@ public class JwtTokenProvider {
         return !claims.getBody().getExpiration().before(new Date());
     }
 
-
+    public long getTokenExpirationTime(String refreshToken) {
+        return parseClaims(refreshToken).getExpiration().getTime();
+    }
 }
