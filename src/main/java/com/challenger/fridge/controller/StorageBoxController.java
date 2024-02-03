@@ -1,6 +1,7 @@
 package com.challenger.fridge.controller;
 
 import com.challenger.fridge.dto.ApiResponse;
+import com.challenger.fridge.dto.box.response.StorageBoxResponse;
 import com.challenger.fridge.dto.item.request.StorageItemRequest;
 import com.challenger.fridge.service.StorageBoxService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,8 +25,14 @@ public class StorageBoxController {
         return ApiResponse.success(null);
     }
 
+    @GetMapping("/{storageBoxId}")
+    @Operation(summary = "세부 보관소 상품 카테고리별 단건 조회(필터)", description = "세부 보관소 정보와 상품들을 카테고리 별로 조회(url에 파라미터를 보내면 필터 기능) 파라미터가 없다면 그냥 단건 조회")
+    public ApiResponse getStorageBox(@PathVariable Long storageBoxId,
+                                     @RequestParam(name = "categoryName",required = false) List<String> categoryNames) {
+        StorageBoxResponse storageBoxResponse = storageBoxService.findStorageBox(categoryNames, storageBoxId);
+        return ApiResponse.success(storageBoxResponse);
 
-
+    }
 
 
 }
