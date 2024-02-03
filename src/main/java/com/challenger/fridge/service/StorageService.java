@@ -4,12 +4,18 @@ package com.challenger.fridge.service;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.box.StorageBox;
+import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
+import com.challenger.fridge.dto.box.request.StorageMethod;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.exception.StorageBoxNameDuplicateException;
 import com.challenger.fridge.exception.StorageNameDuplicateException;
+import com.challenger.fridge.exception.StorageNotFoundException;
 import com.challenger.fridge.exception.UserEmailNotFoundException;
 import com.challenger.fridge.repository.MemberRepository;
+import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +24,11 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class StorageService {
     private final StorageRepository storageRepository;
     private final MemberRepository memberRepository;
+    private final StorageBoxRepository storageBoxRepository;
 
     @Transactional
     public Long saveStorage(StorageSaveRequest storageSaveRequest, String userEmail) {
@@ -34,5 +42,22 @@ public class StorageService {
         Storage savedStorage = storageRepository.save(storage);
         return savedStorage.getId();
     }
+
+    @Transactional
+    public Long saveStorageBox(StorageBoxSaveRequest storageBoxSaveRequest, Long storageId) {
+        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 보관소를 찾을 수 없습니다."));
+        StorageMethod storageMethod = storageBoxSaveRequest.getStorageMethod();
+        String storageBoxName = storageBoxSaveRequest.getStorageBoxName();
+        //만약에 보관소안에 있는 세부 보관소들의 이름들 중 하나라도 중복되는 것이 있다면 예외를 던짐
+        if (storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxName))) {
+            throw new StorageBoxNameDuplicateException(storageBoxName + " 은 이미 존재합니다.");
+        }
+        //여기서 해당 보관소에 대해서 세부 보관소 보관방식 별 개수 확인 로직 호출
+        storage.checkStorageBoxCount(storageMethod);
+        StorageBox storageBox = StorageBox.createStorageBox(storageBoxName, storageMethod, storage);
+        StorageBox savedstorageBox = storageBoxRepository.save(storageBox);
+        return savedstorageBox.getId();
+    }
+
 
 }

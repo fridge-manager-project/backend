@@ -3,6 +3,7 @@ package com.challenger.fridge.domain;
 import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.domain.box.StorageBox;
+import com.challenger.fridge.dto.item.StorageItemDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
-import java.time.LocalDateTime;
-
+import java.time.LocalDate;
 import lombok.*;
 
 
@@ -39,10 +38,39 @@ public class StorageItem {
 
     private String itemDescription;
 
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
-    private LocalDateTime purchaseDate;
+    private LocalDate purchaseDate;
 
+    public void addStorageBox(StorageBox storageBox)
+    {
+        this.storageBox=storageBox;
+        storageBox.getStorageItemList().add(this);
+    }
+
+    public void addItem(Item item)
+    {
+        this.item=item;
+    }
+
+    public StorageItem(Long quantity, String itemDescription, LocalDate expirationDate, LocalDate purchaseDate) {
+        this.quantity = quantity;
+        this.itemDescription = itemDescription;
+        this.expirationDate = expirationDate;
+        this.purchaseDate = purchaseDate;
+    }
+
+    public static StorageItem createStorageItem(StorageItemDto storageItemDto,Item item,StorageBox storageBox)
+    {
+        System.out.println(storageItemDto.getPurchaseDateAsLocalDate());
+        StorageItem storageItem=new StorageItem(storageItemDto.getItemCount()
+                                            ,storageItemDto.getItemDescription()
+                                            ,storageItemDto.getExpireDateAsLocalDate()
+                                            ,storageItemDto.getPurchaseDateAsLocalDate());
+        storageItem.addItem(item);
+        storageItem.addStorageBox(storageBox);
+        return storageItem;
+    }
 
 
 }
