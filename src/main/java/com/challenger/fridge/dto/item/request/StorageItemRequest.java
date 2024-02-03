@@ -1,4 +1,4 @@
-package com.challenger.fridge.dto.item;
+package com.challenger.fridge.dto.item.request;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 @Schema(description = "보관 아이템을 나타내는 DTO")
-public class StorageItemDto {
+public class StorageItemRequest {
     @Schema(description = "아이템의 고유 식별자")
     private Long itemId;
 

@@ -3,7 +3,7 @@ package com.challenger.fridge.domain;
 import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.domain.box.StorageBox;
-import com.challenger.fridge.dto.item.StorageItemDto;
+import com.challenger.fridge.dto.item.request.StorageItemRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,13 +60,13 @@ public class StorageItem {
         this.purchaseDate = purchaseDate;
     }
 
-    public static StorageItem createStorageItem(StorageItemDto storageItemDto,Item item,StorageBox storageBox)
+    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item, StorageBox storageBox)
     {
-        System.out.println(storageItemDto.getPurchaseDateAsLocalDate());
-        StorageItem storageItem=new StorageItem(storageItemDto.getItemCount()
-                                            ,storageItemDto.getItemDescription()
-                                            ,storageItemDto.getExpireDateAsLocalDate()
-                                            ,storageItemDto.getPurchaseDateAsLocalDate());
+        System.out.println(storageItemRequest.getPurchaseDateAsLocalDate());
+        StorageItem storageItem=new StorageItem(storageItemRequest.getItemCount()
+                                            ,storageItemRequest.getItemDescription()
+                                            ,storageItemRequest.getExpireDateAsLocalDate()
+                                            ,storageItemRequest.getPurchaseDateAsLocalDate());
         storageItem.addItem(item);
         storageItem.addStorageBox(storageBox);
         return storageItem;
