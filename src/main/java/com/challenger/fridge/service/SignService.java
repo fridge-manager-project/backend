@@ -9,11 +9,14 @@ import com.challenger.fridge.dto.sign.SignUpResponse;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.security.JwtTokenProvider;
 import com.challenger.fridge.dto.sign.TokenInfo;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,7 +59,7 @@ public class SignService {
      * 로그인
      */
     @Transactional
-    public SignInResponse signIn(SignInRequest request) {
+    public TokenInfo signIn(SignInRequest request) {
         // 1. email, password 기반 Authentication 객체 생성. -> 인증 여부를 확인하는 authenticated 값이 false
         log.info("1. email, password 기반 Authentication 객체 생성.");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -70,7 +73,7 @@ public class SignService {
         log.info("3. AT, RT 생성 및 Redis 에 RT 저장");
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         saveRefreshToken(authentication.getName(), tokenInfo.getRefreshToken());
-        return new SignInResponse(authentication.getName(), tokenInfo);
+        return tokenInfo;
     }
 
     @Transactional
@@ -79,4 +82,51 @@ public class SignService {
                 jwtTokenProvider.getTokenExpirationTime(refreshToken));
     }
 
+    /**
+     * 토큰 재발급 : validate() 가 true 반환할 때만 사용
+     */
+    @Transactional
+    public TokenInfo reissue(String requestAccessTokenInHeader, String requestRefreshTokenInHeader) {
+        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(requestAccessToken);
+        String principal = getPrincipal(requestAccessToken);
+
+        String refreshTokenInRedis = redisService.getValues("RT:" + principal);
+
+        // Redis 에 저장되어 있는 RT가 없을 경우 재로그인 요청
+        if(refreshTokenInRedis == null) {
+            return null;
+        }
+
+        // 요청된 RT의 유효성 검사 & Redis 에 저장되어 있는 RT와 같은지 비교
+        log.info("requestRefreshTokenInHeader : {}", requestRefreshTokenInHeader);
+        if (!jwtTokenProvider.validateRefreshToken(requestRefreshTokenInHeader) || !refreshTokenInRedis.equals(
+                requestRefreshTokenInHeader)) {
+            redisService.deleteValues("RT:" + principal);
+            return null;
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 토큰 재발급 및 Redis 에 RT 업데이트
+        redisService.deleteValues("RT:" + principal);
+        log.info("기존 RT 삭제");
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+        saveRefreshToken(principal, tokenInfo.getRefreshToken());
+        log.info("새로운 RT 저장");
+        return tokenInfo;
+    }
+
+
+    public String getPrincipal(String requestAccessToken) {
+        return jwtTokenProvider.getAuthentication(requestAccessToken).getName();
+    }
+
+    public String resolveToken(String requestAccessTokenInHeader) {
+        if (requestAccessTokenInHeader != null && requestAccessTokenInHeader.startsWith("Bearer ")) {
+            return requestAccessTokenInHeader.substring(7);
+        }
+        return null;
+    }
 }
