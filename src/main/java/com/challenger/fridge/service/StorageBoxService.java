@@ -57,7 +57,7 @@ public class StorageBoxService {
         List<CategoryStorageItemResponse> categoryStorageItemList = categoryStorageItemMap.entrySet().stream()
                 .map(storageItem -> new CategoryStorageItemResponse(storageItem.getKey(), storageItem.getValue()))
                 .collect(Collectors.toList());
-        StorageBoxResponse storageBoxResponse = new StorageBoxResponse(storageBox, categoryStorageItemList);
+        StorageBoxResponse storageBoxResponse = StorageBoxResponse.createStorageBoxDetailResponse(storageBox, categoryStorageItemList);
         return storageBoxResponse;
     }
 

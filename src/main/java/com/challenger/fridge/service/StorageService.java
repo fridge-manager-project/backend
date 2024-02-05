@@ -61,16 +61,13 @@ public class StorageService {
         return savedstorageBox.getId();
     }
 
-    public List<StorageResponse> findStorage(String userEmail)
-    {
+    public List<StorageResponse> findStorage(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
-        // 이부분은 쿼리가 많이 나가는 단점이 있다 //추후 수정 예정 member에 찾을 수 있는 장점은 있지만 lazy라 N+1 문제 발생
-        return member.getStorageList().stream().map(storage -> new StorageResponse(storage))
+        List<Storage> storageListByMember = storageRepository.findStorageListByMember(member);
+        return storageListByMember.stream().map(storage -> new StorageResponse(storage))
                 .collect(Collectors.toList());
+
     }
-
-
-
 
 
 }

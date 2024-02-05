@@ -26,7 +26,7 @@ public class StorageResponse {
         this.storageStatus = storage.getStatus();
         this.storageName = storage.getName();
         this.storageBoxes = storage.getStorageBoxList().stream()
-                .map(storageBox -> new StorageBoxResponse(storageBox))
+                .map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox))
                 .collect(Collectors.toList());
     }
 
