@@ -2,7 +2,8 @@ package com.challenger.fridge.domain;
 
 import static jakarta.persistence.FetchType.*;
 
-import com.challenger.fridge.dto.storage.request.StorageItemRequest;
+import com.challenger.fridge.domain.box.StorageBox;
+import com.challenger.fridge.dto.item.request.StorageItemRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,16 +11,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
-import java.time.LocalDateTime;
-
+import java.time.LocalDate;
 import lombok.*;
 
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StorageItem {
 
@@ -28,11 +25,10 @@ public class StorageItem {
     @Column(name = "storage_item_id")
     private Long id;
 
-
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "storage_id")
-    private Storage storage;
+    @JoinColumn(name = "storage_box_id")
+    private StorageBox storageBox;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
@@ -40,37 +36,40 @@ public class StorageItem {
 
     private Long quantity;
 
-    private LocalDateTime expirationDate;
+    private String itemDescription;
 
-    private LocalDateTime purchaseDate;
+    private LocalDate expirationDate;
 
-    public void changeStorage(Storage storage) {
-        this.storage = storage;
+    private LocalDate purchaseDate;
+
+    public void addStorageBox(StorageBox storageBox)
+    {
+        this.storageBox=storageBox;
+        storageBox.getStorageItemList().add(this);
     }
 
-    /**
-     * 연관관계 편의 메서드 ver1
-     * @param storage
-     */
-    public void addStorageItem(Storage storage) {
-        this.storage = storage;
-        storage.getStorageItemList().add(this);
+    public void addItem(Item item)
+    {
+        this.item=item;
     }
 
-    private StorageItem(Item item, Long quantity, LocalDateTime expirationDate, LocalDateTime purchaseDate) {
-        this.item = item;
+    public StorageItem(Long quantity, String itemDescription, LocalDate expirationDate, LocalDate purchaseDate) {
         this.quantity = quantity;
+        this.itemDescription = itemDescription;
         this.expirationDate = expirationDate;
         this.purchaseDate = purchaseDate;
     }
 
-    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item) {
-        StorageItem storageItem = new StorageItem(item
-                , storageItemRequest.getItemCount()
-                , storageItemRequest.getExpireDateAsLocalDateTime()
-                , storageItemRequest.getPurchaseDateAsLocalDateTime());
+    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item, StorageBox storageBox)
+    {
+        System.out.println(storageItemRequest.getPurchaseDateAsLocalDate());
+        StorageItem storageItem=new StorageItem(storageItemRequest.getItemCount()
+                                            ,storageItemRequest.getItemDescription()
+                                            ,storageItemRequest.getExpireDateAsLocalDate()
+                                            ,storageItemRequest.getPurchaseDateAsLocalDate());
+        storageItem.addItem(item);
+        storageItem.addStorageBox(storageBox);
         return storageItem;
-
     }
 
 

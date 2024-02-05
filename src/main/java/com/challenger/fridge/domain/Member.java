@@ -2,14 +2,11 @@ package com.challenger.fridge.domain;
 
 import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.dto.sign.SignUpRequest;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,6 +38,8 @@ public class Member {
 
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "member")
+    public List<Storage> storageList=new ArrayList<>();
 
     public static Member from(SignUpRequest request, PasswordEncoder encoder) {
         return Member.builder()

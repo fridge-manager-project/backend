@@ -1,34 +1,26 @@
 package com.challenger.fridge.service;
 
 
-import com.challenger.fridge.common.StorageMethod;
-import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
-import com.challenger.fridge.domain.StorageItem;
-import com.challenger.fridge.dto.storage.request.StorageItemRequest;
-import com.challenger.fridge.dto.storage.response.CategoryStorageItemResponse;
-import com.challenger.fridge.dto.storage.response.StorageItemDetailsResponse;
-import com.challenger.fridge.dto.storage.request.StorageRequest;
-import com.challenger.fridge.dto.storage.response.StorageItemResponse;
+import com.challenger.fridge.domain.box.StorageBox;
+import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
+import com.challenger.fridge.dto.box.request.StorageMethod;
+import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
-import com.challenger.fridge.exception.ItemNotFoundException;
-import com.challenger.fridge.exception.StorageItemNotFoundException;
+import com.challenger.fridge.exception.StorageBoxNameDuplicateException;
+import com.challenger.fridge.exception.StorageNameDuplicateException;
 import com.challenger.fridge.exception.StorageNotFoundException;
 import com.challenger.fridge.exception.UserEmailNotFoundException;
-import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
-import com.challenger.fridge.repository.StorageItemRepository;
+import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageRepository;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,74 +30,44 @@ import java.util.stream.Collectors;
 public class StorageService {
     private final StorageRepository storageRepository;
     private final MemberRepository memberRepository;
-    private final StorageItemRepository storageItemRepository;
-    private final ItemRepository itemRepository;
+    private final StorageBoxRepository storageBoxRepository;
 
     @Transactional
-    public Long saveStorage(StorageRequest storageRequest, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("현재 이메일을 가진 회원이 없습니다."));
-        Storage saveStorage = Storage.createStorage(storageRequest, member);
-        Storage savedStorage = storageRepository.save(saveStorage);
+    public Long saveStorage(StorageSaveRequest storageSaveRequest, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당 이메일을 가진 사용자가 없습니다."));
+        //anyMatch :최소한 한개의 요소가 주어진 조건에 만족하는가 (member가 가지고 있는 storage 중에 storageName이 중복되는게 있는가)
+        if (member.getStorageList().stream().anyMatch(storage -> storage.getName().equals(storageSaveRequest.getStorageName()))) {
+            throw new StorageNameDuplicateException("보관소의 이름이 중복되었습니다.");
+        }
+        List<StorageBox> storageBoxList = StorageBox.createStorageBox(storageSaveRequest);
+        Storage storage = Storage.createStorage(storageSaveRequest.getStorageName(), storageBoxList, member);
+        Storage savedStorage = storageRepository.save(storage);
         return savedStorage.getId();
     }
 
     @Transactional
-    public StorageItem saveStorageItem(StorageItemRequest storageItemRequest, Long storageId) {
-        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("냉장고가 없습니다."));
-        Item item = itemRepository.findById(storageItemRequest.getItemId()).orElseThrow(() -> new ItemNotFoundException("해당 상품이 없습니다."));
-        StorageItem storageItem = StorageItem.createStorageItem(storageItemRequest, item);
-        storage.addStorageItem(storageItem);
-        StorageItem savedStorageItem = storageItemRepository.save(storageItem);
-        return savedStorageItem;
+    public Long saveStorageBox(StorageBoxSaveRequest storageBoxSaveRequest, Long storageId) {
+        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 보관소를 찾을 수 없습니다."));
+        StorageMethod storageMethod = storageBoxSaveRequest.getStorageMethod();
+        String storageBoxName = storageBoxSaveRequest.getStorageBoxName();
+        //만약에 보관소안에 있는 세부 보관소들의 이름들 중 하나라도 중복되는 것이 있다면 예외를 던짐
+        if (storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxName))) {
+            throw new StorageBoxNameDuplicateException(storageBoxName + " 은 이미 존재합니다.");
+        }
+        //여기서 해당 보관소에 대해서 세부 보관소 보관방식 별 개수 확인 로직 호출
+        storage.checkStorageBoxCount(storageMethod);
+        StorageBox storageBox = StorageBox.createStorageBox(storageBoxName, storageMethod, storage);
+        StorageBox savedstorageBox = storageBoxRepository.save(storageBox);
+        return savedstorageBox.getId();
     }
 
-    @Transactional
-    public void deleteStorageItem(Long storageItemId) {
-        StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("냉장고에 해당 상품이 들어 있지 않습니다."));
-        storageItemRepository.delete(storageItem);
+    public List<StorageResponse> findStorage(String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
+        List<Storage> storageListByMember = storageRepository.findStorageListByMember(member);
+        return storageListByMember.stream().map(storage -> new StorageResponse(storage))
+                .collect(Collectors.toList());
+
     }
 
-    public StorageResponse findStorageItemLists(Long storageId) {
-        Storage findStorage = storageRepository.findStorageItemsById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 냉장고가 없습니다."));
-        Map<String, List<StorageItemResponse>> categoryStorageItemMap = findStorage.getStorageItemList().stream()
-                .collect(Collectors.groupingBy(
-                        storageItem -> storageItem.getItem().getCategory().getCategoryName(),
-                        Collectors.mapping(storageItem -> new StorageItemResponse(storageItem), Collectors.toList())
-                ));
-                List<CategoryStorageItemResponse> categoryStorageItemList = categoryStorageItemMap.entrySet().stream()
-                .map(storageItem -> new CategoryStorageItemResponse(storageItem.getKey(), storageItem.getValue()))
-                .collect(Collectors.toList());
-        StorageResponse storageResponse = new StorageResponse(categoryStorageItemList);
-        int storageItemCount = findStorage.getStorageItemList().size();
-        StorageMethod storageMethod = findStorage.getMethod();
-        storageResponse.setStorageMethod(storageMethod);
-        storageResponse.setStorageItemCount(storageItemCount);
-        return storageResponse;
-    }
-    public StorageItemDetailsResponse findStorageItemV1(Long storageId, Long storageItemId) {
-        StorageItem storageItem = storageItemRepository.findStorageItemDetailsById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 상품이 냉장고에 없습니다."));
-        return new StorageItemDetailsResponse(storageItem.getStorage().getId(),
-                storageItem.getStorage().getName(),
-                storageItem.getId(),
-                storageItem.getItem().getId(),
-                storageItem.getItem().getItemName(),
-                storageItem.getItem().getCategory().getCategoryName(),
-                storageItem.getExpirationDate(),
-                storageItem.getQuantity()
-        );
-    }
-    public StorageItemDetailsResponse findStorageItemV2(Long storageId, Long storageItemId) {
-        Storage storage = storageRepository.findStorageItemDetailsById(storageId, storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당하는 상품이 없습니다."));
-        List<StorageItemDetailsResponse> storageItemDetailsResponses = storage.getStorageItemList().stream()
-                .map(storageItem -> new StorageItemDetailsResponse(storageItem.getStorage().getId(),
-                        storageItem.getStorage().getName(),
-                        storageItem.getId(),
-                        storageItem.getItem().getId(),
-                        storageItem.getItem().getItemName(),
-                        storageItem.getItem().getCategory().getCategoryName(),
-                        storageItem.getExpirationDate(),
-                        storageItem.getQuantity()))
-                .collect(Collectors.toList());
-        return storageItemDetailsResponses.get(0);
-    }
+
 }

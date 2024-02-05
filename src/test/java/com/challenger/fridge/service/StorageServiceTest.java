@@ -1,188 +1,80 @@
 package com.challenger.fridge.service;
 
 import com.challenger.fridge.common.MemberRole;
-import com.challenger.fridge.common.StorageMethod;
 import com.challenger.fridge.common.StorageStatus;
-import com.challenger.fridge.domain.*;
-import com.challenger.fridge.dto.storage.request.StorageItemRequest;
-import com.challenger.fridge.dto.storage.request.StorageRequest;
-import com.challenger.fridge.dto.storage.response.StorageItemDetailsResponse;
-import com.challenger.fridge.repository.ItemRepository;
+import com.challenger.fridge.domain.Member;
+import com.challenger.fridge.domain.Storage;
+import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.exception.StorageNameDuplicateException;
 import com.challenger.fridge.repository.MemberRepository;
-import com.challenger.fridge.repository.StorageItemRepository;
 import com.challenger.fridge.repository.StorageRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class StorageServiceTest {
+    @InjectMocks
+    StorageService storageService;
     @Mock
     StorageRepository storageRepository;
-
-    @Mock
-    StorageItemRepository storageItemRepository;
-
     @Mock
     MemberRepository memberRepository;
 
-    @Mock
-    ItemRepository itemRepository;
-    @InjectMocks
-    StorageService storageService;
-
     @Test
-    @DisplayName("냉장고 추가 테스트")
-    public void 냉장고추가() {
-        // Given
-        StorageRequest storageRequest = new StorageRequest("심현석냉장고", StorageMethod.FRIDGE);
+    @DisplayName("보관소 추가를 할 때 보관소의 이름이 중복될 때")
+    void 보관소이름중복예외() {
+        // given
+        StorageSaveRequest storageSaveRequest = getStorageSaveRequest("테스트냉장고", 1L, 1L, 1L);
+        String userEmail = "123@naver.com";
         Member testMember = createTestMember(1L);
-        Storage storage = Storage.createStorage(storageRequest, testMember);
-        when(memberRepository.findByEmail(testMember.getEmail())).thenReturn(Optional.of(testMember));
-        when(storageRepository.save(any(Storage.class))).thenReturn(storage);
-        // When
-        Long savedId = storageService.saveStorage(storageRequest, testMember.getEmail());
+        Storage testStorage = createTestStorage("테스트냉장고",StorageStatus.NORMAL,testMember);
+        //보관소 중복 검사를 위해 양방향에서 해당 회원의 보관소리스트에서 이름을 찾기 때문에 주입해줘야한다.
+        testMember.getStorageList().add(testStorage);
+        when(memberRepository.findByEmail(userEmail)).thenReturn(Optional.of(testMember));
 
-        assertThat(savedId).isEqualTo(storage.getId());
+        assertThrows(StorageNameDuplicateException.class, () -> {
+            storageService.saveStorage(storageSaveRequest, userEmail);
+        });
 
-    }
-
-    @Test
-    @DisplayName("보관소로 상품 추가 테스트")
-    public void 보관소에상품추가() {
-        Long storageId = 1L;
-        Long storageItemId = 1L;
-        Long itemId = 1L;
-        Long categoryId = 1L;
-        Item testItem = createTestItem(itemId, categoryId);
-        Storage testStorage = createTestStorage(storageId);
-        StorageItem testStorageItem = createTestStorageItem(storageId, storageItemId, itemId, categoryId);
-        when(storageRepository.findById(anyLong())).thenReturn(Optional.of(testStorage));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(testItem));
-        when(storageItemRepository.save(any(StorageItem.class))).thenReturn(testStorageItem);
-        StorageItemRequest storageItemRequest = new StorageItemRequest(
-                1L, "testItem", 3L,
-                "2024-01-27T12:34:56", "2024-01-27T12:34:56");
-        StorageItem savedStorageItem = storageService.saveStorageItem(storageItemRequest, testStorage.getId());
-
-        assertThat(testStorageItem.getId()).isEqualTo(savedStorageItem.getId());
-    }
-
-    @Test
-    @DisplayName("보관소 안에 있는 상품 단건 삭제")
-    public void 보관소상품삭제() {
-        Long storageId = 1L;
-        Long storageItemId = 1L;
-        Long itemId = 1L;
-        Long categoryId = 1L;
-        StorageItem testStorageItem = createTestStorageItem(storageId,storageItemId, itemId, categoryId);
-        when(storageItemRepository.findById(storageItemId)).thenReturn(Optional.of(testStorageItem));
-        storageService.deleteStorageItem(testStorageItem.getId());
-        //메소드가 몇번 실행 됬는지 확인
-        verify(storageItemRepository, times(1)).delete(testStorageItem);
-
-    }
-
-    @Test
-    @DisplayName("보관소 안에 있는 상품 단건 조회")
-    public void 보관소상품단건조회() {
-        Long storageId = 1L;
-        Long storageItemId = 1L;
-        Long itemId = 1L;
-        Long categoryId = 1L;
-        StorageItem testStorageItem = createTestStorageItem(storageId,storageItemId, itemId, categoryId);
-        Storage testStorage = createTestStorage(storageId);
-        when(storageRepository.findStorageItemDetailsById(storageId, storageItemId)).thenReturn(Optional.of(testStorage));
-        StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItemV2(storageId, storageItemId);
-        assertThat(storageItemDetailsResponse.getStorageItemId()).isEqualTo(testStorageItem.getId());
-    }
-   /* @Test
-    @DisplayName("보관소 안에 있는 상품 단건 조회")
-    public void 보관소단건조회() {
-        Long storageId = 1L;
-        Long storageItemId = 1L;
-        Long itemId = 1L;
-        Long categoryId = 1L;
-        StorageItem testStorageItem = createTestStorageItem(storageId,storageItemId, itemId, categoryId);
-        Storage testStorage = createTestStorage(storageId);
-        when(storageRepository.findStorageItemsById(storageId)).thenReturn(Optional<List>);
-        StorageItemDetailsResponse storageItemDetailsResponse = storageService.findStorageItemV2(storageId, storageItemId);
-        assertThat(storageItemDetailsResponse.getStorageItemId()).isEqualTo(testStorageItem.getId());
-    }*/
-    private StorageItem createTestStorageItem(Long storageId,Long storageItemId, Long itemId, Long categoryId) {
-        Item testItem = createTestItem(itemId, categoryId);
-
-        StorageItem storageItem = StorageItem.builder()
-                .id(storageItemId)
-                .item(testItem)
-                .quantity(3L)
-                .purchaseDate(LocalDateTime.now())
-                .expirationDate(LocalDateTime.now())
-                .build();
-        return storageItem;
-    }
-
-    private Item createTestItem(Long itemId, Long categoryId) {
-        Category testCategory = createTestCategory(categoryId);
-        Item testItem = Item.builder()
-                .itemName("testItem")
-                .category(testCategory)
-                .id(itemId)
-                .build();
-        return testItem;
-    }
-
-    private Category createTestCategory(Long categoryId) {
-        Category testCategory = Category.builder()
-                .categoryName("catest" + categoryId)
-                .parentCategory(Category.builder()
-                        .categoryName("parentCatest" + categoryId).build())
-                .id(categoryId)
-                .build();
-        return testCategory;
-    }
-
-    private Storage createTestStorage(Long storageId) {
-
-        Member testMember = createTestMember(1L);
-        Storage testStorage = Storage.builder()
-                .id(storageId)
-                .member(testMember)
-                .method(StorageMethod.FRIDGE)
-                .name("테스트냉장고")
-                .status(StorageStatus.NORMAL)
-                .storageItemList(new ArrayList<>())
-                .build();
-        testStorage.addStorageItem(createTestStorageItem(1L,1L,1L,1L));
-        return testStorage;
+        verify(storageRepository, never()).save(any(Storage.class));
     }
 
     private Member createTestMember(Long memberId) {
         return Member.builder()
                 .id(memberId)
-                .email("shs@naver.com")
+                .email("jjw@naver.com")
                 .password("1234")
-                .name("shs")
+                .name("jjw")
                 .role(MemberRole.ROLE_USER)
+                .storageList(new ArrayList<>())
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    //보관소 이름 중복만을 위해 필요한 필드만 주입
+    private Storage createTestStorage(String storageName, StorageStatus storageStatus,Member member) {
+        Storage storage = new Storage(storageName,storageStatus,member);
+        return storage;
+    }
+
+    private StorageSaveRequest getStorageSaveRequest(String storageName, Long freezeCount, Long roomCount, Long fridgeCount) {
+        StorageSaveRequest storageSaveRequest = new StorageSaveRequest();
+        storageSaveRequest.setStorageName(storageName);
+        storageSaveRequest.setFreezeCount(freezeCount);
+        storageSaveRequest.setFridgeCount(fridgeCount);
+        return storageSaveRequest;
     }
 
 
