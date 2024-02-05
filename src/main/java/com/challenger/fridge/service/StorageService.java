@@ -7,6 +7,7 @@ import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageMethod;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.exception.StorageBoxNameDuplicateException;
 import com.challenger.fridge.exception.StorageNameDuplicateException;
 import com.challenger.fridge.exception.StorageNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,6 +59,14 @@ public class StorageService {
         StorageBox storageBox = StorageBox.createStorageBox(storageBoxName, storageMethod, storage);
         StorageBox savedstorageBox = storageBoxRepository.save(storageBox);
         return savedstorageBox.getId();
+    }
+
+    public List<StorageResponse> findStorage(String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
+        List<Storage> storageListByMember = storageRepository.findStorageListByMember(member);
+        return storageListByMember.stream().map(storage -> new StorageResponse(storage))
+                .collect(Collectors.toList());
+
     }
 
 
