@@ -19,13 +19,14 @@ public class Category {
 
     private String categoryName;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
+
     @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<Item> itemList= new ArrayList<>();
+
     @JsonIgnore
     @OneToMany(mappedBy = "parentCategory")
     List<Category> childCategory = new ArrayList<>();

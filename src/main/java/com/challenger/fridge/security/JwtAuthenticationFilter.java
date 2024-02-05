@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                log.info("SecurityContext 에 인증객체 저장");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Save authentication in SecurityContextHolder.");
             }
