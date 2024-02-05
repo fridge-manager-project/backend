@@ -7,6 +7,8 @@ import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.dto.sign.SignInResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
+import com.challenger.fridge.dto.sign.TokenInfo;
+import com.challenger.fridge.redis.RedisContainerTest;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.security.JwtTokenProvider;
 import org.assertj.core.api.Assertions;
@@ -16,12 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest
-class SignServiceTest {
+class SignServiceTest extends RedisContainerTest {
 
     @Autowired
     SignService signService;
@@ -84,9 +87,11 @@ class SignServiceTest {
         SignUpRequest signUpRequest = new SignUpRequest(email, password, name);
         Member member = memberRepository.findByEmail(email)
                 .orElseGet(() -> memberRepository.save(Member.from(signUpRequest, encoder)));
-        SignInResponse response = signService.signIn(signInRequest);
+        TokenInfo tokenInfo = signService.signIn(signInRequest);
+        Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
 
         //then
-        assertThat(response.getName()).isEqualTo(member.getName());
+        assertThat(authentication.getName()).isEqualTo(email);
+
     }
 }
