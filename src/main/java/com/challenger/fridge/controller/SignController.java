@@ -59,7 +59,7 @@ public class SignController {
                 .httpOnly(true)
                 .secure(true)
                 .domain("localhost")
-                .sameSite("None")
+//                .sameSite("None")
                 .build();
 
         return ResponseEntity.ok()
