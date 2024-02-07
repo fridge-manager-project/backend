@@ -4,6 +4,7 @@ import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxResponse;
 import com.challenger.fridge.dto.item.request.StorageItemRequest;
+import com.challenger.fridge.dto.item.request.StorageItemUpdateRequest;
 import com.challenger.fridge.dto.item.response.StorageItemResponse;
 import com.challenger.fridge.exception.StorageItemNotFoundException;
 import com.challenger.fridge.repository.StorageItemRepository;
@@ -48,6 +49,21 @@ public class StorageBoxController {
         //구지 (컨트롤러 -> 서비스 로직 -> 레포지토리)가 아니라 (컨트롤러 -> 레포지토리 방향으로 가는 것이 나은 것 같다)
         StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당하는 상품이 세부 보관소에 없습니다."));
         return ApiResponse.success(new StorageItemResponse(storageItem));
+    }
+
+    @DeleteMapping("/items/{storageItemId}")
+    @Operation(summary = "상품 단건 삭제", description = "세부 보관소안에 있는 상품을 삭제한다")
+    public ApiResponse cancelStorageItem(@PathVariable Long storageItemId) {
+        storageBoxService.deleteStorageItem(storageItemId);
+        return ApiResponse.success(null);
+    }
+
+    @PatchMapping("/items/{storageItemId}")
+    @Operation(summary = "상품 단건 수정", description = "세부 보관소안에 있는 상품을 수정한다(소비기한,유통기한,구매날짜,개수)")
+    public ApiResponse modifyStorageItem(@RequestBody StorageItemUpdateRequest storageItemUpdateRequest, @PathVariable Long storageItemId) {
+
+        storageBoxService.updateStorageItem(storageItemUpdateRequest,storageItemId);
+        return ApiResponse.success(storageItemRepository.findById(storageItemId).stream().map(StorageItemResponse::new));
     }
 
 

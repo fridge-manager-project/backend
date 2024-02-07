@@ -25,6 +25,9 @@ public abstract class StorageBox {
     private Long id;
 
     private String name;
+    
+    @Column(name = "DTYPE", insertable = false, updatable = false)
+    private String dtype;
 
     @ManyToOne
     @JoinColumn(name = "storage_id")
