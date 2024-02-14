@@ -58,6 +58,8 @@ public class SignController {
                 .maxAge(COOKIE_EXPIRATION)
                 .httpOnly(true)
                 .secure(true)
+//                .domain("localhost")
+//                .sameSite("None")
                 .build();
 
         return ResponseEntity.ok()
@@ -69,6 +71,8 @@ public class SignController {
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
                                      @RequestHeader("Authorization") String requestAccessToken) {
+        log.info("accessTokenInHeader : {}", requestAccessToken);
+        log.info("refreshTokenInHeader : {}", requestRefreshToken);
         TokenInfo reissuedTokenDto = signService.reissue(requestAccessToken, requestRefreshToken);
 
         // 토큰 재발급 성공시 RT 저장
