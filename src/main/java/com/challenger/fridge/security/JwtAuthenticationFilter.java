@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("JwtAuthenticationFilter 통과");
+        log.info("JwtAuthenticationFilter 통과 request url : {}",request.getRequestURI());
 
         // 토큰이 없을 때 허용된 url 인 경우 다음 필터 진행
         if (Arrays.asList(allowedUrl).contains(request.getRequestURI())) {
