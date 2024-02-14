@@ -58,7 +58,7 @@ public class SignController {
                 .maxAge(COOKIE_EXPIRATION)
                 .httpOnly(true)
                 .secure(true)
-                .domain("localhost")
+//                .domain("localhost")
 //                .sameSite("None")
                 .build();
 
