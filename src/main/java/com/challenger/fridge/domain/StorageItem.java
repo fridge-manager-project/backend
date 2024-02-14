@@ -4,6 +4,7 @@ import static jakarta.persistence.FetchType.*;
 
 import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.dto.item.request.StorageItemRequest;
+import com.challenger.fridge.dto.item.request.StorageItemUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDate;
+
 import lombok.*;
 
 
@@ -42,15 +45,14 @@ public class StorageItem {
 
     private LocalDate purchaseDate;
 
-    public void addStorageBox(StorageBox storageBox)
-    {
-        this.storageBox=storageBox;
+
+    public void addStorageBox(StorageBox storageBox) {
+        this.storageBox = storageBox;
         storageBox.getStorageItemList().add(this);
     }
 
-    public void addItem(Item item)
-    {
-        this.item=item;
+    public void addItem(Item item) {
+        this.item = item;
     }
 
     public StorageItem(Long quantity, String itemDescription, LocalDate expirationDate, LocalDate purchaseDate) {
@@ -60,16 +62,36 @@ public class StorageItem {
         this.purchaseDate = purchaseDate;
     }
 
-    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item, StorageBox storageBox)
-    {
-        System.out.println(storageItemRequest.getPurchaseDateAsLocalDate());
-        StorageItem storageItem=new StorageItem(storageItemRequest.getItemCount()
-                                            ,storageItemRequest.getItemDescription()
-                                            ,storageItemRequest.getExpireDateAsLocalDate()
-                                            ,storageItemRequest.getPurchaseDateAsLocalDate());
+    public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item, StorageBox storageBox) {
+        StorageItem storageItem = new StorageItem(storageItemRequest.getItemCount()
+                , storageItemRequest.getItemDescription()
+                , storageItemRequest.getExpireDateAsLocalDate()
+                , storageItemRequest.getPurchaseDateAsLocalDate());
         storageItem.addItem(item);
         storageItem.addStorageBox(storageBox);
         return storageItem;
+    }
+
+    /**
+     * storageItem 변경 로직
+     *
+     * @param storageItemUpdateRequest
+     */
+    //PATCH 메서드로 받아오기 떄문에 어떠한 자원이 넘어오는지는 서비스 로직에서는 알수가 없다 그래서 하나씩 필드마다 NULL체크를 해줘야하는 단점이 있다
+    //개선해야할 방안을 찾아봐야한다.
+    public void changeStorageItem(StorageItemUpdateRequest storageItemUpdateRequest) {
+        if (storageItemUpdateRequest.getItemCount() != null) {
+            this.quantity = storageItemUpdateRequest.getItemCount();
+        }
+        if (storageItemUpdateRequest.getItemDescription() != null) {
+            this.itemDescription = storageItemUpdateRequest.getItemDescription();
+        }
+        if (storageItemUpdateRequest.getExpireDate() != null) {
+            this.expirationDate = storageItemUpdateRequest.getExpireDateAsLocalDate();
+        }
+        if (storageItemUpdateRequest.getPurchaseDate() != null) {
+            this.purchaseDate = storageItemUpdateRequest.getPurchaseDateAsLocalDate();
+        }
     }
 
 
