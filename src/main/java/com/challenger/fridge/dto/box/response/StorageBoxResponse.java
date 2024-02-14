@@ -23,18 +23,16 @@ public class StorageBoxResponse {
     @Schema(description = "세부 보관소 내에 있는 카테고리별 상품 리스트")
     private List<CategoryStorageItemResponse> categoriesItems;
 
-    public static StorageBoxResponse createStorageBoxResponse(StorageBox storageBox)
-    {
-       StorageBoxResponse storageBoxResponse=new StorageBoxResponse();
-       storageBoxResponse.setStorageBoxId(storageBox.getId());
-       storageBoxResponse.setStorageBoxName(storageBox.getName());
-       storageBoxResponse.setStorageBoxType(storageBox.getDtype());
-       return storageBoxResponse;
+    public static StorageBoxResponse createStorageBoxResponse(StorageBox storageBox) {
+        StorageBoxResponse storageBoxResponse = new StorageBoxResponse();
+        storageBoxResponse.setStorageBoxId(storageBox.getId());
+        storageBoxResponse.setStorageBoxName(storageBox.getName());
+        storageBoxResponse.setStorageBoxType(storageBox.getDtype());
+        return storageBoxResponse;
     }
 
-    public static StorageBoxResponse createStorageBoxDetailResponse(StorageBox storageBox,List<CategoryStorageItemResponse> categoriesItems)
-    {
-        StorageBoxResponse storageBoxResponse=new StorageBoxResponse();
+    public static StorageBoxResponse createStorageBoxDetailResponse(StorageBox storageBox, List<CategoryStorageItemResponse> categoriesItems) {
+        StorageBoxResponse storageBoxResponse = new StorageBoxResponse();
         storageBoxResponse.setStorageBoxId(storageBox.getId());
         storageBoxResponse.setStorageBoxName(storageBox.getName());
         storageBoxResponse.setStorageBoxType(storageBox.getDtype());

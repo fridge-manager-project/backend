@@ -55,28 +55,24 @@ public class StorageController {
     @PatchMapping("{storageId}/storagebox/{storageBoxId}")
     @Operation(summary = "세부 보관소 수정", description = "세부 보관소 이름을 수정한다.")
     public ApiResponse modifyStorageBox(@RequestBody StorageBoxUpdateRequest storageBoxUpdateRequest
-                                        ,@PathVariable Long storageBoxId
-                                        ,@PathVariable Long storageId) {
+            , @PathVariable Long storageBoxId
+            , @PathVariable Long storageId) {
         //현재 수정해야할 필드(세부 보관소 이름) 하나이고 만약에 Patch메소드라 자원을 수정하지 않고 넘어오면 null값이 들어오게 된다 그렇다면 그냥 기존의 storageBox 정보를 넘겨준다.
-
-        if (storageBoxUpdateRequest.getStorageBoxName()==null)
-        {
+        if (storageBoxUpdateRequest.getStorageBoxName() == null) {
             return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream().map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
         }
-        storageService.updateStorageBox(storageBoxUpdateRequest, storageBoxId,storageId);
+        storageService.updateStorageBox(storageBoxUpdateRequest, storageBoxId, storageId);
         return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream().map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
     }
 
     @DeleteMapping("{storageId}/storagebox/{storageBoxId}")
     @Operation(summary = "세부 보관소 삭제", description = "세부 보관소를 삭제한다(storageItem들도 모두 삭제 된다.")
     public ApiResponse cancelStorageBox(@PathVariable Long storageId
-                                        ,@PathVariable Long storageBoxId)
-    {
-        storageService.deleteStorageBox(storageBoxId,storageId);
+            , @PathVariable Long storageBoxId) {
+        storageService.deleteStorageBox(storageBoxId, storageId);
 
         return ApiResponse.success(null);
     }
-
 
 
 }

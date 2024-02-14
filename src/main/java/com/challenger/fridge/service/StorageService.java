@@ -68,12 +68,9 @@ public class StorageService {
     }
 
     @Transactional
-    public void updateStorageBox(StorageBoxUpdateRequest storageBoxUpdateRequest, Long storageBoxId,Long storageId)
-    {
-        System.out.println("null값 체크"+storageBoxUpdateRequest.getStorageBoxName());
+    public void updateStorageBox(StorageBoxUpdateRequest storageBoxUpdateRequest, Long storageBoxId, Long storageId) {
         Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
-        if(storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxUpdateRequest.getStorageBoxName())))
-        {
+        if (storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxUpdateRequest.getStorageBoxName()))) {
             throw new StorageBoxNameDuplicateException(storageBoxUpdateRequest.getStorageBoxName() + " 은 이미 존재합니다.");
         }
         StorageBox storageBox = storageBoxRepository.findById(storageBoxId).orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
@@ -81,8 +78,7 @@ public class StorageService {
     }
 
     @Transactional
-    public void deleteStorageBox(Long storageBoxId,Long storageId)
-    {
+    public void deleteStorageBox(Long storageBoxId, Long storageId) {
         StorageBox storageBox = storageBoxRepository.findById(storageBoxId).orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
         storageBoxRepository.delete(storageBox);
     }
