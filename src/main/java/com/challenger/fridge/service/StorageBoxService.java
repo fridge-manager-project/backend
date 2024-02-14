@@ -3,6 +3,7 @@ package com.challenger.fridge.service;
 import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
+import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
 import com.challenger.fridge.dto.box.response.StorageBoxResponse;
 import com.challenger.fridge.dto.item.request.StorageItemRequest;
 import com.challenger.fridge.dto.item.request.StorageItemUpdateRequest;

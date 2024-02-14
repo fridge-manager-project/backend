@@ -24,6 +24,7 @@ public class StorageBoxController {
     private final StorageBoxService storageBoxService;
     private final StorageItemRepository storageItemRepository;
 
+
     @PostMapping("/{storageBoxId}/items/new")
     @Operation(summary = "(검색 탭에서)세부 보관소에 상품 추가", description = "세부 보관소에 상품을 추가한다.(검색 탭에서 냉장고로 바로 추가)")
     public ApiResponse addStorageItemToStorageBox(@RequestBody StorageItemRequest storageItemRequest, @PathVariable("storageBoxId") Long storageBoxId) {
@@ -52,17 +53,16 @@ public class StorageBoxController {
     }
 
     @DeleteMapping("/items/{storageItemId}")
-    @Operation(summary = "상품 단건 삭제", description = "세부 보관소안에 있는 상품을 삭제한다")
+    @Operation(summary = "세부 보관소 상품 단건 삭제", description = "세부 보관소안에 있는 상품을 삭제한다")
     public ApiResponse cancelStorageItem(@PathVariable Long storageItemId) {
         storageBoxService.deleteStorageItem(storageItemId);
         return ApiResponse.success(null);
     }
 
     @PatchMapping("/items/{storageItemId}")
-    @Operation(summary = "상품 단건 수정", description = "세부 보관소안에 있는 상품을 수정한다(소비기한,유통기한,구매날짜,개수)")
+    @Operation(summary = "세부 보관소 상품 단건 수정", description = "세부 보관소안에 있는 상품을 수정한다(소비기한,유통기한,구매날짜,개수)")
     public ApiResponse modifyStorageItem(@RequestBody StorageItemUpdateRequest storageItemUpdateRequest, @PathVariable Long storageItemId) {
-
-        storageBoxService.updateStorageItem(storageItemUpdateRequest,storageItemId);
+        storageBoxService.updateStorageItem(storageItemUpdateRequest, storageItemId);
         return ApiResponse.success(storageItemRepository.findById(storageItemId).stream().map(StorageItemResponse::new));
     }
 
