@@ -70,6 +70,7 @@ public class StorageService {
     @Transactional
     public void updateStorageBox(StorageBoxUpdateRequest storageBoxUpdateRequest, Long storageBoxId,Long storageId)
     {
+        System.out.println("null값 체크"+storageBoxUpdateRequest.getStorageBoxName());
         Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
         if(storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxUpdateRequest.getStorageBoxName())))
         {
