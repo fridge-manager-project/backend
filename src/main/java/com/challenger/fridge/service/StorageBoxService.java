@@ -3,12 +3,15 @@ package com.challenger.fridge.service;
 import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
+import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
 import com.challenger.fridge.dto.box.response.StorageBoxResponse;
 import com.challenger.fridge.dto.item.request.StorageItemRequest;
+import com.challenger.fridge.dto.item.request.StorageItemUpdateRequest;
 import com.challenger.fridge.dto.item.response.CategoryStorageItemResponse;
 import com.challenger.fridge.dto.item.response.StorageItemResponse;
 import com.challenger.fridge.exception.ItemNotFoundException;
 import com.challenger.fridge.exception.StorageBoxNotFoundException;
+import com.challenger.fridge.exception.StorageItemNotFoundException;
 import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
@@ -59,6 +62,20 @@ public class StorageBoxService {
                 .collect(Collectors.toList());
         StorageBoxResponse storageBoxResponse = StorageBoxResponse.createStorageBoxDetailResponse(storageBox, categoryStorageItemList);
         return storageBoxResponse;
+    }
+
+    @Transactional
+    public void deleteStorageItem(Long storageItemId)
+    {
+        StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 세부 보관소 상품이 없습니다"));
+        storageItemRepository.delete(storageItem);
+    }
+
+    @Transactional
+    public void updateStorageItem(StorageItemUpdateRequest storageItemUpdateRequest,Long storageItemId)
+    {
+        StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당하는 세부 보관소 상품이 없습니다."));
+        storageItem.changeStorageItem(storageItemUpdateRequest);
     }
 
 
