@@ -1,6 +1,7 @@
 package com.challenger.fridge.service;
 
 import com.challenger.fridge.config.RedisService;
+import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.dto.sign.SignInResponse;
@@ -43,7 +44,6 @@ public class SignService {
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
         return true;
-//        return memberRepository.existsByEmail(email);
     }
 
     /**
@@ -51,7 +51,8 @@ public class SignService {
      */
     @Transactional
     public SignUpResponse registerMember(SignUpRequest request) {
-        Member member = memberRepository.save(Member.from(request, encoder));
+        Cart cart = Cart.createCart();
+        Member member = memberRepository.save(Member.from(request, encoder, cart));
         return new SignUpResponse(member.getName());
     }
 

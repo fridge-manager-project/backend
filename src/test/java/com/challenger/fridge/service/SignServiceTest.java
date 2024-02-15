@@ -3,12 +3,15 @@ package com.challenger.fridge.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.dto.sign.SignInResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
+import com.challenger.fridge.dto.sign.SignUpResponse;
 import com.challenger.fridge.dto.sign.TokenInfo;
 import com.challenger.fridge.redis.RedisContainerTest;
+import com.challenger.fridge.repository.CartRepository;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.security.JwtTokenProvider;
 import org.assertj.core.api.Assertions;
@@ -22,8 +25,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 class SignServiceTest extends RedisContainerTest {
 
     @Autowired
@@ -36,6 +41,8 @@ class SignServiceTest extends RedisContainerTest {
     JwtTokenProvider jwtTokenProvider;
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Autowired
+    CartRepository cartRepository;
 
     @DisplayName("사용중인 이메일 입력 시 예외 발생")
     @Test
@@ -92,6 +99,26 @@ class SignServiceTest extends RedisContainerTest {
 
         //then
         assertThat(authentication.getName()).isEqualTo(email);
+    }
 
+    @DisplayName("회원가입시 장바구니 생성 테스트")
+    @Test
+    void signUp() {
+        // given
+        String email = "hhh@test.com";
+        String password = "1234";
+        String name = "hhh";
+        SignUpRequest request = new SignUpRequest(email, password, name);
+
+        // when
+        SignUpResponse signUpResponse = signService.registerMember(request);
+        Cart cart = cartRepository.findByMemberEmail(email)
+                .orElseThrow(IllegalArgumentException::new);
+        Member member = cart.getMember();
+
+        // then
+        assertThat(cart).isNotNull();
+        assertThat(member.getEmail()).isEqualTo(email);
+        assertThat(member.getName()).isEqualTo(name);
     }
 }
