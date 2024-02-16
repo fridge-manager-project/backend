@@ -9,8 +9,10 @@ import com.challenger.fridge.repository.CartRepository;
 import com.challenger.fridge.repository.ItemRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -27,13 +29,10 @@ public class CartService {
         return new CartResponse(cartList.get(0));
     }
 
-    public void addItem(String email, Long itemId) {
+    public Long addItem(String email, Long itemId) {
         // 장바구니를 찾는다
-        List<Cart> cartList = cartRepository.findItemsByEmail(email);
-        if(cartList.size() != 1) {
-            throw new IllegalArgumentException("장바구니를 확인할 수 없습니다. 다시 시도해주세요");
-        }
-        Cart cart = cartList.get(0);
+        Cart cart = cartRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니를 찾을 수 없습니다."));
 
         // 이미 있는 상품은 추가하지 않아도 된다. -> "해당 상품은 장바구니에 있습니다." 메시지
         List<CartItem> cartItemList = cart.getCartItemList();
@@ -50,5 +49,6 @@ public class CartService {
         // 장바구니에 상품을 추가한다
         CartItem cartItem = CartItem.createCartItem(cart, item);
         cartItemRepository.save(cartItem);
+        return cartItem.getId();
     }
 }
