@@ -65,16 +65,20 @@ public class StorageBoxService {
     }
 
     @Transactional
-    public void deleteStorageItem(Long storageItemId)
-    {
+    public void deleteStorageItem(Long storageItemId) {
         StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당 하는 세부 보관소 상품이 없습니다"));
         storageItemRepository.delete(storageItem);
     }
 
     @Transactional
-    public void updateStorageItem(StorageItemUpdateRequest storageItemUpdateRequest,Long storageItemId)
-    {
+    public void updateStorageItem(StorageItemUpdateRequest storageItemUpdateRequest, Long storageItemId) {
         StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당하는 세부 보관소 상품이 없습니다."));
+        //변경할 세부 보관소 Id값을 받는다 해당 id값에 대한 null 체크 후에 storageItem에서 storageBox를 옮긴다.
+        if (storageItemUpdateRequest.getStorageBoxId() != null) {
+            StorageBox storageBox = storageBoxRepository.findById(storageItemUpdateRequest.getStorageBoxId())
+                    .orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
+            storageItem.moveStorageItem(storageBox);
+        }
         storageItem.changeStorageItem(storageItemUpdateRequest);
     }
 
