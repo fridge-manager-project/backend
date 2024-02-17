@@ -11,17 +11,17 @@ import java.util.Optional;
 
 public interface StorageBoxRepository extends JpaRepository<StorageBox, Long> {
     @Query("select distinct sb from StorageBox sb " +
-            "join fetch sb.storageItemList sl " +
-            "join fetch sl.item i " +
-            "join fetch i.category c " +
+            "left join fetch sb.storageItemList sl " +
+            "left join fetch sl.item i " +
+            "left join fetch i.category c " +
             "where sb.id=:storageBoxId " +
             "and c.categoryName in :categories")
     Optional<StorageBox> findStorageItemsByIdAndCategories(@Param("storageBoxId") Long storageBoxId, @Param("categories") List<String> categories);
 
     @Query("select distinct sb from StorageBox sb " +
-            "join fetch sb.storageItemList sl " +
-            "join fetch sl.item i " +
-            "join fetch i.category c " +
+            "left join fetch sb.storageItemList sl " +
+            "left join fetch sl.item i " +
+            "left join fetch i.category c " +
             "where sb.id=:storageBoxId ")
     Optional<StorageBox> findStorageItemsById(@Param("storageBoxId") Long storageBoxId);
 }
