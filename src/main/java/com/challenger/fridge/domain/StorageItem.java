@@ -45,7 +45,6 @@ public class StorageItem {
 
     private LocalDate purchaseDate;
 
-
     public void addStorageBox(StorageBox storageBox) {
         this.storageBox = storageBox;
         storageBox.getStorageItemList().add(this);
@@ -73,13 +72,14 @@ public class StorageItem {
     }
 
     /**
-     * storageItem 변경 로직
+     * storageItem 필드 변경 로직
      *
      * @param storageItemUpdateRequest
      */
     //PATCH 메서드로 받아오기 떄문에 어떠한 자원이 넘어오는지는 서비스 로직에서는 알수가 없다 그래서 하나씩 필드마다 NULL체크를 해줘야하는 단점이 있다
     //개선해야할 방안을 찾아봐야한다.
     public void changeStorageItem(StorageItemUpdateRequest storageItemUpdateRequest) {
+
         if (storageItemUpdateRequest.getItemCount() != null) {
             this.quantity = storageItemUpdateRequest.getItemCount();
         }
@@ -92,6 +92,15 @@ public class StorageItem {
         if (storageItemUpdateRequest.getPurchaseDate() != null) {
             this.purchaseDate = storageItemUpdateRequest.getPurchaseDateAsLocalDate();
         }
+    }
+    /**
+     * storageItem 다른 StorageBox로 이동
+     *
+     * @param storageBox
+     */
+    public void moveStorageItem(StorageBox storageBox)
+    {
+        this.storageBox=storageBox;
     }
 
 
