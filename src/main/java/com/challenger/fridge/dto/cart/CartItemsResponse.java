@@ -11,13 +11,12 @@ public class CartItemsResponse {
     private Long cartItemId;
     private Long itemId;
     private String itemName;
-
-//    private String subCategoryName;
-//    private String mainCategoryName;
+    private String subCategoryName;
 
     public CartItemsResponse(CartItem cartItem) {
         this.cartItemId = cartItem.getId();
-        this.cartItemId = cartItem.getItem().getId();
+        this.itemId = cartItem.getItem().getId();
         this.itemName = cartItem.getItem().getItemName();
+        this.subCategoryName = cartItem.getItem().getCategory().getCategoryName();
     }
 }

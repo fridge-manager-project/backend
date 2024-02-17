@@ -11,8 +11,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -21,12 +23,13 @@ public class CartService {
     private final ItemRepository itemRepository;
     private final CartItemRepository cartItemRepository;
 
+    @Transactional(readOnly = true)
     public CartResponse findItems(String email) {
-        List<Cart> cartList = cartRepository.findItemsByEmail(email);
-        if(cartList.size() == 0) {
-            throw new IllegalArgumentException("장바구니를 찾을 수 없습니다.");
-        }
-        return new CartResponse(cartList.get(0));
+        Cart cart = cartRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니를 찾을 수 없습니다."));
+        List<CartItem> cartItems = cart.getCartItemList().stream()
+                .map(cartItem -> cartItemRepository.findItemsById(cartItem.getId())).toList();
+        return new CartResponse(cart, cartItems);
     }
 
     public Long addItem(String email, Long itemId) {
