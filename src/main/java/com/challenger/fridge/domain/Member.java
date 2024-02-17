@@ -39,7 +39,10 @@ public class Member {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "member")
-    public List<Storage> storageList=new ArrayList<>();
+    private List<Storage> storageList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private Cart cart;
 
     public static Member from(SignUpRequest request, PasswordEncoder encoder) {
         return Member.builder()
@@ -49,5 +52,22 @@ public class Member {
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    public static Member from(SignUpRequest request, PasswordEncoder encoder, Cart cart) {
+        Member member = Member.builder()
+                .email(request.getEmail())
+                .password(encoder.encode(request.getPassword()))
+                .name(request.getName())
+                .role(MemberRole.ROLE_USER)
+                .createdAt(LocalDateTime.now())
+                .cart(cart)
+                .build();
+        cart.allocateMember(member);
+        return member;
+    }
+
+    public void allocateCart(Cart cart) {
+        this.cart = cart;
     }
 }

@@ -51,7 +51,7 @@ public class SignController {
 
     @Operation(summary = "로그인")
     @PostMapping("/sign-in")
-    public ResponseEntity<ApiResponse> signUp(@RequestBody SignInRequest request) {
+    public ResponseEntity<ApiResponse> signIn(@RequestBody SignInRequest request) {
         TokenInfo tokenInfo = signService.signIn(request);
 
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenInfo.getRefreshToken())

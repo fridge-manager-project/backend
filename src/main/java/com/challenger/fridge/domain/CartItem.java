@@ -30,6 +30,16 @@ public class CartItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private Long count;
+//    private Long count;
 
+    protected CartItem(Cart cart, Item item) {
+        this.cart = cart;
+        this.item = item;
+    }
+
+    public static CartItem createCartItem(Cart cart, Item item) {
+        CartItem cartItem = new CartItem(cart, item);
+        cart.getCartItemList().add(cartItem);
+        return cartItem;
+    }
 }
