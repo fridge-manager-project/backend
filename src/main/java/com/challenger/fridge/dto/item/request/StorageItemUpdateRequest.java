@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 public class StorageItemUpdateRequest {
+    @Schema(description = "이동할 세부 보관소 고유 id")
+    private Long storageBoxId;
     @Schema(description = "수정할 아이템 개수")
     private Long itemCount;
     @Schema(description = "수정할 아이템 설명")
