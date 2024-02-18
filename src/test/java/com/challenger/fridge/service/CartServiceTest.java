@@ -114,7 +114,7 @@ class CartServiceTest {
         cartService.deleteAllItemsInCart(emailWithThreeItems);
         em.clear();
 
-        CartResponse deletedResponse = cartService.findItems(memberWithThreeItems);
+        CartResponse deletedResponse = cartService.findItems(emailWithThreeItems);
 
         assertThat(deletedResponse.getCount()).isEqualTo(0);
         assertThat(deletedResponse.getCartItems().size()).isEqualTo(0);

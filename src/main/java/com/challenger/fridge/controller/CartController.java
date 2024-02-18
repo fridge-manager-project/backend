@@ -35,7 +35,7 @@ public class CartController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @DeleteMapping("/items")
+    @DeleteMapping
     public ResponseEntity<ApiResponse> deleteAllItemsInCart(@AuthenticationPrincipal User user) {
         cartService.deleteAllItemsInCart(user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
