@@ -13,6 +13,8 @@ import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -118,5 +120,18 @@ class CartServiceTest {
 
         assertThat(deletedResponse.getCount()).isEqualTo(0);
         assertThat(deletedResponse.getCartItems().size()).isEqualTo(0);
+    }
+
+    @DisplayName("장바구니에 담긴 상품 단건 삭제")
+    @Test
+    void deleteSelectedItem() {
+        String emailWithItems = memberWithThreeItems;
+        List<CartItem> cartItemList = cartItemRepository.findByEmail(emailWithItems);
+        Long cartItemId = cartItemList.get(1).getId();
+
+        cartService.deleteItem(cartItemId);
+
+        assertThrows(NoSuchElementException.class,
+                () -> cartItemRepository.findById(cartItemId).get());
     }
 }
