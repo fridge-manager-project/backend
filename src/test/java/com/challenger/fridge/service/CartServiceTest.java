@@ -110,7 +110,7 @@ class CartServiceTest {
 
     @DisplayName("장바구니 비우기")
     @Test
-    void deleteSelectedItems() {
+    void deleteAllItemsInCart() {
         String emailWithThreeItems = memberWithThreeItems;
 
         cartService.deleteAllItemsInCart(emailWithThreeItems);
