@@ -54,4 +54,15 @@ public class CartService {
         cartItemRepository.save(cartItem);
         return cartItem.getId();
     }
+
+    public void deleteCartItem(List<Long> cartItemIdList) {
+        cartItemRepository.deleteCartItemByIds(cartItemIdList);
+    }
+
+    @Transactional
+    public void deleteAllItemsInCart(String email) {
+        List<CartItem> cartItemList = cartItemRepository.findByEmail(email);
+        cartItemRepository.deleteAllInBatch(cartItemList);
+    }
+
 }
