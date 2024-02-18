@@ -65,4 +65,9 @@ public class CartService {
         cartItemRepository.deleteAllInBatch(cartItemList);
     }
 
+    @Transactional
+    public void deleteItem(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
+    }
+
 }
