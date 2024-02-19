@@ -1,7 +1,7 @@
 package com.challenger.fridge.repository;
 
 import com.challenger.fridge.domain.CartItem;
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,4 +11,10 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
             + " join fetch  i.category"
             + " where ci.id = :id")
     CartItem findItemsById(@Param("id") Long id);
+
+    @Query("select ci from CartItem ci join fetch ci.cart c"
+            + " join fetch c.member m"
+            + " where m.email = :email")
+    List<CartItem> findByEmail(@Param("email") String email);
+
 }

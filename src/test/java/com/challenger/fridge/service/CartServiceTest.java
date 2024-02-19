@@ -1,5 +1,6 @@
 package com.challenger.fridge.service;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.challenger.fridge.domain.CartItem;
@@ -10,13 +11,15 @@ import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.repository.CartItemRepository;
 import com.challenger.fridge.repository.ItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -39,6 +42,8 @@ class CartServiceTest {
     SignService signService;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    EntityManager em;
 
     @BeforeEach
     void beforeEach() {
@@ -101,5 +106,32 @@ class CartServiceTest {
         CartResponse cartResponseWithoutItems = cartService.findItems(emailWithoutItems);
 
         assertEquals(0, cartResponseWithoutItems.getCount());
+    }
+
+    @DisplayName("장바구니 비우기")
+    @Test
+    void deleteAllItemsInCart() {
+        String emailWithThreeItems = memberWithThreeItems;
+
+        cartService.deleteAllItemsInCart(emailWithThreeItems);
+        em.clear();
+
+        CartResponse deletedResponse = cartService.findItems(emailWithThreeItems);
+
+        assertThat(deletedResponse.getCount()).isEqualTo(0);
+        assertThat(deletedResponse.getCartItems().size()).isEqualTo(0);
+    }
+
+    @DisplayName("장바구니에 담긴 상품 단건 삭제")
+    @Test
+    void deleteSelectedItem() {
+        String emailWithItems = memberWithThreeItems;
+        List<CartItem> cartItemList = cartItemRepository.findByEmail(emailWithItems);
+        Long cartItemId = cartItemList.get(1).getId();
+
+        cartService.deleteItem(cartItemId);
+
+        assertThrows(NoSuchElementException.class,
+                () -> cartItemRepository.findById(cartItemId).get());
     }
 }

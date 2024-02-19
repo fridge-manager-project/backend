@@ -4,11 +4,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL57Dialect
+    database: mysql
+  #        dialect: org.hibernate.dialect.MySQL57Dialect
 
   data:
     redis:
