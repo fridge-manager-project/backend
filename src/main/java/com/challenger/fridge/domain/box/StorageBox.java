@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public abstract class StorageBox {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "storage_box_id")
     private Long id;
 

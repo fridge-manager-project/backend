@@ -20,7 +20,7 @@ import java.util.List;
 public class Storage {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "storage_id")
     private Long id;
 

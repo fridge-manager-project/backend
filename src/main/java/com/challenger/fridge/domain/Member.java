@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Member {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -65,6 +65,15 @@ public class Member {
                 .build();
         cart.allocateMember(member);
         return member;
+    }
+
+    public Member(SignUpRequest request, PasswordEncoder encoder, Cart cart) {
+        this.email = request.getEmail();
+        this.password = encoder.encode(request.getPassword());
+        this.name = request.getName();
+        this.role = MemberRole.ROLE_USER;
+        this.createdAt = LocalDateTime.now();
+        this.cart = cart;
     }
 
     public void allocateCart(Cart cart) {
