@@ -15,6 +15,7 @@ import com.challenger.fridge.repository.CartRepository;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.security.JwtTokenProvider;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +45,19 @@ class SignServiceTest extends RedisContainerTest {
     @Autowired
     CartRepository cartRepository;
 
+    @BeforeEach
+    void setUp() {
+        String registeredEmail = "jjw@test.com";
+        String password = "1234";
+        String name = "jjw";
+        signService.registerMember(new SignUpRequest(registeredEmail, password, name));
+    }
+
     @DisplayName("사용중인 이메일 입력 시 예외 발생")
     @Test
     void createDuplicateEmailException() {
-        String email = "jjw@test.com";
-        assertThatThrownBy(() -> signService.checkDuplicateEmail(email))
+        String registeredEmail = "jjw@test.com";
+        assertThatThrownBy(() -> signService.checkDuplicateEmail(registeredEmail))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 사용중인 이메일입니다.");
     }
@@ -56,16 +65,16 @@ class SignServiceTest extends RedisContainerTest {
     @DisplayName("사용중이지 않은 이메일 입력")
     @Test
     void failByDuplicateEmail() {
-        String email = "cjw@test.com";
-        assertThat(signService.checkDuplicateEmail(email)).isTrue();
+        String unregisteredEmail = "cjw@test.com";
+        assertThat(signService.checkDuplicateEmail(unregisteredEmail)).isTrue();
     }
 
     @DisplayName("등록되지 않은 이메일로 로그인")
     @Test
     void signInWithWrongEmail() {
-        String wrongEmail = "ccc@test.com";
+        String unregisteredEmail = "cjw@test.com";
         String password = "1234";
-        SignInRequest request = new SignInRequest(wrongEmail, password);
+        SignInRequest request = new SignInRequest(unregisteredEmail, password);
 
         assertThrows(BadCredentialsException.class, () -> signService.signIn(request));
     }
@@ -73,9 +82,9 @@ class SignServiceTest extends RedisContainerTest {
     @DisplayName("틀린 비밀번호로 로그인")
     @Test
     void signInWithWrongPassword() {
-        String email = "jjw@test.com";
+        String registeredEmail = "jjw@test.com";
         String wrongPassword = "12345";
-        SignInRequest request = new SignInRequest(email, wrongPassword);
+        SignInRequest request = new SignInRequest(registeredEmail, wrongPassword);
 
         assertThrows(BadCredentialsException.class, () -> signService.signIn(request));
         assertThrows(AuthenticationException.class, () -> signService.signIn(request));
@@ -87,14 +96,9 @@ class SignServiceTest extends RedisContainerTest {
         //given
         String email = "jjw@test.com";
         String password = "1234";
-        String name = "jjw";
-        SignInRequest signInRequest = new SignInRequest(email, password);
 
         //when
-        SignUpRequest signUpRequest = new SignUpRequest(email, password, name);
-        Member member = memberRepository.findByEmail(email)
-                .orElseGet(() -> memberRepository.save(Member.from(signUpRequest, encoder)));
-        TokenInfo tokenInfo = signService.signIn(signInRequest);
+        TokenInfo tokenInfo = signService.signIn(new SignInRequest(email, password));
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
 
         //then
