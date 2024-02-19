@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,18 @@ public class CartController {
     public ResponseEntity<ApiResponse> addItemInCart(@PathVariable Long itemId, @AuthenticationPrincipal User user) {
         String email = user.getUsername();
         cartService.addItem(email, itemId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> deleteAllItemsInCart(@AuthenticationPrincipal User user) {
+        cartService.deleteAllItemsInCart(user.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @DeleteMapping("/{cartItemId}")
+    public ResponseEntity<ApiResponse> deleteItemInCart(@PathVariable Long cartItemId) {
+        cartService.deleteItem(cartItemId);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

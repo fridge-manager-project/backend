@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -23,7 +23,6 @@ public class CartService {
     private final ItemRepository itemRepository;
     private final CartItemRepository cartItemRepository;
 
-    @Transactional(readOnly = true)
     public CartResponse findItems(String email) {
         Cart cart = cartRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니를 찾을 수 없습니다."));
@@ -32,6 +31,7 @@ public class CartService {
         return new CartResponse(cart, cartItems);
     }
 
+    @Transactional
     public Long addItem(String email, Long itemId) {
         // 장바구니를 찾는다
         Cart cart = cartRepository.findByMemberEmail(email)
@@ -54,4 +54,16 @@ public class CartService {
         cartItemRepository.save(cartItem);
         return cartItem.getId();
     }
+
+    @Transactional
+    public void deleteAllItemsInCart(String email) {
+        List<CartItem> cartItemList = cartItemRepository.findByEmail(email);
+        cartItemRepository.deleteAllInBatch(cartItemList);
+    }
+
+    @Transactional
+    public void deleteItem(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
+    }
+
 }
