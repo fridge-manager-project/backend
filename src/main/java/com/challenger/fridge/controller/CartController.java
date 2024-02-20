@@ -1,8 +1,10 @@
 package com.challenger.fridge.controller;
 
 import com.challenger.fridge.dto.ApiResponse;
+import com.challenger.fridge.dto.cart.CartItemToStorageRequest;
 import com.challenger.fridge.dto.cart.CartResponse;
 import com.challenger.fridge.service.CartService;
+import com.challenger.fridge.service.CartStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CartController {
 
     private final CartService cartService;
+    private final CartStorageService cartStorageService;
 
     @GetMapping
     public ResponseEntity<ApiResponse> cartItemList(@AuthenticationPrincipal User user) {
@@ -44,6 +48,12 @@ public class CartController {
     @DeleteMapping("/{cartItemId}")
     public ResponseEntity<ApiResponse> deleteItemInCart(@PathVariable Long cartItemId) {
         cartService.deleteItem(cartItemId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PostMapping("/items")
+    public ResponseEntity<ApiResponse> moveItemToStorage(@RequestBody CartItemToStorageRequest request) {
+
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
