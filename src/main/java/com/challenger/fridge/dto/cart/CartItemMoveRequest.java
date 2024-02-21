@@ -6,14 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CartItemToStorageRequest {
+public class CartItemMoveRequest {
     private Long boxId;
     private List<CartItemRequest> cartItemRequests;
-
-    @Data
-    @AllArgsConstructor
-    public static class CartItemRequest {
-        private Long cartItemId;
-        private Long count;
-    }
 }

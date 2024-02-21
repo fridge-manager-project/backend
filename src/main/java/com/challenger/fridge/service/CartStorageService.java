@@ -3,13 +3,12 @@ package com.challenger.fridge.service;
 import com.challenger.fridge.domain.CartItem;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
-import com.challenger.fridge.dto.cart.CartItemToStorageRequest;
-import com.challenger.fridge.dto.cart.CartItemToStorageRequest.CartItemRequest;
+import com.challenger.fridge.dto.cart.CartItemRequest;
+import com.challenger.fridge.dto.cart.CartItemMoveRequest;
 import com.challenger.fridge.repository.CartItemRepository;
 import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,7 @@ public class CartStorageService {
     private final StorageItemRepository storageItemRepository;
 
     @Transactional
-    public void moveItems(CartItemToStorageRequest request) {
+    public void moveItems(CartItemMoveRequest request) {
         StorageBox storageBox = storageBoxRepository.findById(request.getBoxId())
                 .orElseThrow(() -> new IllegalArgumentException("세부 보관소를 찾을 수 없습니다."));
 
@@ -42,6 +41,6 @@ public class CartStorageService {
         List<Long> cartItemIdList = request.getCartItemRequests().stream()
                 .map(CartItemRequest::getCartItemId)
                 .toList();
-        cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
+        cartItemRepository.deleteSelectedItems(cartItemIdList);
     }
 }

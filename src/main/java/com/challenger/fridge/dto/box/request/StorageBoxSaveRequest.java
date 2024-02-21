@@ -3,8 +3,10 @@ package com.challenger.fridge.dto.box.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 @Schema(description = "세부 보관소 추가 Request")
 public class StorageBoxSaveRequest {
