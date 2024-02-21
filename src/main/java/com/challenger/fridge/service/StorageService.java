@@ -59,12 +59,17 @@ public class StorageService {
         return savedstorageBox.getId();
     }
 
-    public List<StorageResponse> findStorage(String userEmail) {
+    public List<StorageResponse> findStorageList(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
         List<Storage> storageListByMember = storageRepository.findStorageListByMember(member);
         return storageListByMember.stream().map(storage -> new StorageResponse(storage))
                 .collect(Collectors.toList());
 
+    }
+
+    public StorageResponse findStorage(Long storageId) {
+        Storage storage = storageRepository.findStorageById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 하는 보관소가 없습니다."));
+        return new StorageResponse(storage);
     }
 
     @Transactional

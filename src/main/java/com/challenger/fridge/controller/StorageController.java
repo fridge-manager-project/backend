@@ -38,10 +38,17 @@ public class StorageController {
 
     @GetMapping
     @Operation(summary = "보관소 전체 조회", description = "보관소들의 정보들을 전체 조회한다.")
-    public ApiResponse getStorage(@AuthenticationPrincipal User user) {
+    public ApiResponse getStorageList(@AuthenticationPrincipal User user) {
         String userEmail = user.getUsername();
-        List<StorageResponse> storageList = storageService.findStorage(userEmail);
+        List<StorageResponse> storageList = storageService.findStorageList(userEmail);
         return ApiResponse.success(storageList);
+    }
+
+    @GetMapping("/{storageId}")
+    @Operation(summary = "보관소 단건 조회", description = "보관소 정보를 단건 조회한다.")
+    public ApiResponse getStorage(@PathVariable("storageId") Long storageId) {
+        StorageResponse storageResponse = storageService.findStorage(storageId);
+        return ApiResponse.success(storageResponse);
     }
 
     @PostMapping("/{storageId}/storagebox/new")
