@@ -44,12 +44,14 @@ class CartStorageServiceTest {
     void setUp() {
         String email = "jjw@test.com";
         signService.registerMember(new SignUpRequest("jjw@test.com", "1234", "jjj"));
-        storageId = storageService.saveStorage(new StorageSaveRequest("퍼스트 보관소", 3L, 2L), email);
-        Item item1 = em.createQuery("select i from Item i where i.itemName  = '돼지고기'", Item.class).getSingleResult();
-        Item item2 = em.createQuery("select i from Item i where i.itemName  = '양파'", Item.class).getSingleResult();
-        Item item3 = em.createQuery("select i from Item i where i.itemName  = '대파'", Item.class).getSingleResult();
-        Item item4 = em.createQuery("select i from Item i where i.itemName  = '마늘'", Item.class).getSingleResult();
-        itemList.addAll(Arrays.asList(item1, item2, item3, item4));
+        StorageSaveRequest storageSaveRequest = new StorageSaveRequest("퍼스트 냉장고", 3L, 2L);
+        storageId = createStorageConfig(email, storageSaveRequest);
+
+        Item pork = findItem("돼지고기");
+        Item onion = findItem("양파");
+        Item greenOnion = findItem("대파");
+        Item garlic = findItem("마늘");
+        itemList.addAll(Arrays.asList(pork, onion, greenOnion, garlic));
 
         cartItemIdList = itemList.stream()
                 .map(item -> cartService.addItem(email, item.getId())).toList();
@@ -58,27 +60,30 @@ class CartStorageServiceTest {
     @DisplayName("장바구니에서 모든 상품을 보관소로 옮기기")
     @Test
     void moveItemsToBox() {
+        //given
         Storage storage = storageRepository.findById(storageId)
                 .orElseThrow(IllegalArgumentException::new);
         Long boxId = storage.getStorageBoxList().get(1).getId();
+        List<CartItemRequest> cartItemRequests = new ArrayList<>();
         CartItemRequest pork = new CartItemRequest(cartItemIdList.get(0), 1L);
         CartItemRequest onion = new CartItemRequest(cartItemIdList.get(1), 2L);
         CartItemRequest greenOnion = new CartItemRequest(cartItemIdList.get(2), 3L);
         CartItemRequest garlic = new CartItemRequest(cartItemIdList.get(3), 4L);
-        List<CartItemRequest> cartItemRequests = new ArrayList<>();
         cartItemRequests.add(pork);
         cartItemRequests.add(onion);
         cartItemRequests.add(greenOnion);
         cartItemRequests.add(garlic);
         CartItemMoveRequest cartItemMoveRequest = new CartItemMoveRequest(boxId, cartItemRequests);
 
+        //when
         cartStorageService.moveItems(cartItemMoveRequest);
-        CartResponse res = cartService.findItems("jjw@test.com");
+        CartResponse cartResponse = cartService.findItems("jjw@test.com");
         StorageBox storageBox = storageBoxRepository.findStorageItemsById(boxId)
                 .orElseThrow(IllegalArgumentException::new);
         List<StorageItem> storageItemList = storageBox.getStorageItemList();
 
-        assertThat(res.getCartItems().size()).isEqualTo(0);
+        //then
+        assertThat(cartResponse.getCartItems().size()).isEqualTo(0);
 
         assertThat(storageItemList.get(0).getItem().getItemName()).isEqualTo("돼지고기");
         assertThat(storageItemList.get(1).getItem().getItemName()).isEqualTo("양파");
@@ -94,24 +99,26 @@ class CartStorageServiceTest {
     @DisplayName("장바구니에서 선택한 상품을 보관소로 옮기기")
     @Test
     void moveSelectedItemsToBox() {
+        //given
         Storage storage = storageRepository.findById(storageId)
                 .orElseThrow(IllegalArgumentException::new);
         Long boxId = storage.getStorageBoxList().get(1).getId();
+        List<CartItemRequest> cartItemRequests = new ArrayList<>();
         CartItemRequest onion = new CartItemRequest(cartItemIdList.get(1), 2L);
         CartItemRequest greenOnion = new CartItemRequest(cartItemIdList.get(2), 3L);
-        List<CartItemRequest> cartItemRequests = new ArrayList<>();
         cartItemRequests.add(onion);
         cartItemRequests.add(greenOnion);
         CartItemMoveRequest cartItemMoveRequest = new CartItemMoveRequest(boxId, cartItemRequests);
 
+        //when
         cartStorageService.moveItems(cartItemMoveRequest);
-
-        CartResponse res = cartService.findItems("jjw@test.com");
+        CartResponse cartResponse = cartService.findItems("jjw@test.com");
         StorageBox storageBox = storageBoxRepository.findStorageItemsById(boxId)
                 .orElseThrow(IllegalArgumentException::new);
         List<StorageItem> storageItemList = storageBox.getStorageItemList();
 
-        assertThat(res.getCartItems().size()).isEqualTo(2);
+        //then
+        assertThat(cartResponse.getCartItems().size()).isEqualTo(2);
 
         assertThat(storageItemList.get(0).getItem().getItemName()).isEqualTo("양파");
         assertThat(storageItemList.get(1).getItem().getItemName()).isEqualTo("대파");
@@ -120,4 +127,13 @@ class CartStorageServiceTest {
         assertThat(storageItemList.get(1).getQuantity()).isEqualTo(3);
     }
 
+    private Item findItem(String itemName) {
+        return em.createQuery("select i from Item i where i.itemName  = :itemName", Item.class)
+                .setParameter("itemName", itemName)
+                .getSingleResult();
+    }
+
+    private Long createStorageConfig(String email, StorageSaveRequest storageSaveRequest) {
+        return storageService.saveStorage(storageSaveRequest, email);
+    }
 }
