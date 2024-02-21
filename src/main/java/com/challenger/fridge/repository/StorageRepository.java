@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StorageRepository extends JpaRepository<Storage, Long> {
-    @Query("select s from Storage s join fetch s.storageBoxList where s.member=:member")
+    @Query("select s from Storage s left join fetch s.storageBoxList where s.member=:member")
     List<Storage> findStorageListByMember(@Param("member") Member member);
 
     @Query("select s from Storage s left join fetch s.storageBoxList where s.id=:storageId")
