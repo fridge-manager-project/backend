@@ -26,7 +26,7 @@ class CartRepositoryTest {
     @DisplayName("장바구니 조회")
     @Test
     void findCart() {
-        String email = "bbb@test.com";
+        String email = "aaa@test.com";
 
         Cart cart = cartRepository.findByMemberEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
