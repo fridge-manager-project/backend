@@ -62,6 +62,13 @@ public class StorageItem {
         this.purchaseDate = purchaseDate;
     }
 
+    public StorageItem(Long quantity, Item item, StorageBox storageBox) {
+        this.quantity = quantity;
+        this.storageBox = storageBox;
+        this.item = item;
+        this.purchaseDate = LocalDate.now();
+    }
+
     public static StorageItem createStorageItem(StorageItemRequest storageItemRequest, Item item, StorageBox storageBox) {
         StorageItem storageItem = new StorageItem(storageItemRequest.getItemCount()
                 , storageItemRequest.getItemDescription()
