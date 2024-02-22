@@ -90,4 +90,9 @@ public class ExceptionResponseHandler {
     public ResponseEntity<ApiResponse> handleStorageBoxNotFoundException(StorageBoxNotFoundException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
     }
+
+    @ExceptionHandler(CannotDeleteException.class)
+    public ResponseEntity<ApiResponse> handleCannotDeleteException(CannotDeleteException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+    }
 }

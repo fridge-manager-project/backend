@@ -1,6 +1,7 @@
 package com.challenger.fridge.service;
 
 
+import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.box.StorageBox;
@@ -8,6 +9,7 @@ import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
 import com.challenger.fridge.dto.box.request.StorageMethod;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.dto.storage.request.StorageUpdateRequest;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.exception.*;
 import com.challenger.fridge.repository.MemberRepository;
@@ -59,12 +61,26 @@ public class StorageService {
         return savedstorageBox.getId();
     }
 
-    public List<StorageResponse> findStorage(String userEmail) {
+    @Transactional
+    public void updateStorageStatus(StorageUpdateRequest storageUpdateRequest, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
+        if (storageUpdateRequest.getStorageId() != null) {
+            Storage storage = storageRepository.findById(storageUpdateRequest.getStorageId()).orElseThrow(() -> new StorageNotFoundException("해당 하는 냉장고가 없습니다"));
+            member.changeMainStorage(storage);
+        }
+    }
+
+    public List<StorageResponse> findStorageList(String userEmail) {
         Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
         List<Storage> storageListByMember = storageRepository.findStorageListByMember(member);
         return storageListByMember.stream().map(storage -> new StorageResponse(storage))
                 .collect(Collectors.toList());
 
+    }
+
+    public StorageResponse findStorage(Long storageId) {
+        Storage storage = storageRepository.findStorageById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 하는 보관소가 없습니다."));
+        return new StorageResponse(storage);
     }
 
     @Transactional
@@ -81,6 +97,19 @@ public class StorageService {
     public void deleteStorageBox(Long storageBoxId, Long storageId) {
         StorageBox storageBox = storageBoxRepository.findById(storageBoxId).orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
         storageBoxRepository.delete(storageBox);
+    }
+
+    @Transactional
+    public void deleteStorage(Long storageId) {
+        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
+
+        //메인 냉장고는 삭제할 수 없다 --> 메인 보관소 수정 후 삭제 가능
+        if (storage.getStatus() == StorageStatus.MAIN) {
+            throw new CannotDeleteException("메인 냉장고는 삭제할 수 없습니다.");
+        }
+
+        storageRepository.delete(storage);
+
     }
 
 }

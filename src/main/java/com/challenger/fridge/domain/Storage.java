@@ -33,7 +33,7 @@ public class Storage {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StorageBox> storageBoxList = new ArrayList<>();
 
     public Storage(String name, StorageStatus status, Member member) {
@@ -77,12 +77,17 @@ public class Storage {
     //으로 변경 가능성 있음
     public void checkStorageBoxCount(StorageMethod storageMethod) {
         Long boxCount = storageMethod == StorageMethod.FRIDGE ? getStorageBoxFridgeCount() : getStorageBoxFreezeCount();
-        if (boxCount > 10)
-        {
-            throw new StorageBoxLimitExceededException(storageMethod+" 의 개수가 초과하였습니다.");
+        if (boxCount > 10) {
+            throw new StorageBoxLimitExceededException(storageMethod + " 의 개수가 초과하였습니다.");
         }
 
     }
+
+    public void changeStorageStatus(StorageStatus storageStatus) {
+        this.status = storageStatus;
+    }
+
+
 }
 
 

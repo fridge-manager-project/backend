@@ -34,7 +34,7 @@ public abstract class StorageBox {
     @JoinColumn(name = "storage_id")
     private Storage storage;
 
-    @OneToMany(mappedBy = "storageBox", cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @OneToMany(mappedBy = "storageBox", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<StorageItem> storageItemList = new ArrayList<>();
 
     public StorageBox(String name) {
