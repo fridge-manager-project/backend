@@ -1,6 +1,7 @@
 package com.challenger.fridge.domain;
 
 import com.challenger.fridge.common.MemberRole;
+import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import jakarta.persistence.*;
 
@@ -80,4 +81,18 @@ public class Member {
     public void allocateCart(Cart cart) {
         this.cart = cart;
     }
+
+    public void changeMainStorage(Storage storage) {
+        storageList.stream()
+                .filter(mainStorage -> mainStorage.getStatus() == StorageStatus.MAIN)
+                .findFirst()
+                .ifPresent(mainStorage -> {
+                    // 현재 Main 보관소를 찾았으므로 현재 MAIN을 NORMAL로 바꾼다.
+                    mainStorage.changeStorageStatus(StorageStatus.NORMAL);
+
+                });
+        // MAIN으로 바꿀 보관소의 Status를 MAIN으로으로 바꾼다
+        storage.changeStorageStatus(StorageStatus.MAIN);
+    }
+
 }

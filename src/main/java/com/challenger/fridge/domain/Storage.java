@@ -77,12 +77,17 @@ public class Storage {
     //으로 변경 가능성 있음
     public void checkStorageBoxCount(StorageMethod storageMethod) {
         Long boxCount = storageMethod == StorageMethod.FRIDGE ? getStorageBoxFridgeCount() : getStorageBoxFreezeCount();
-        if (boxCount > 10)
-        {
-            throw new StorageBoxLimitExceededException(storageMethod+" 의 개수가 초과하였습니다.");
+        if (boxCount > 10) {
+            throw new StorageBoxLimitExceededException(storageMethod + " 의 개수가 초과하였습니다.");
         }
 
     }
+
+    public void changeStorageStatus(StorageStatus storageStatus) {
+        this.status = storageStatus;
+    }
+
+
 }
 
 

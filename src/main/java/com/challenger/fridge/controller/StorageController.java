@@ -5,6 +5,7 @@ import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
 import com.challenger.fridge.dto.box.response.StorageBoxResponse;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.dto.storage.request.StorageUpdateRequest;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
 import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.service.StorageService;
@@ -34,6 +35,16 @@ public class StorageController {
         String userEmail = user.getUsername();
         storageService.saveStorage(storageSaveRequest, userEmail);
         return ApiResponse.success(null);
+    }
+
+    @PatchMapping
+    @Operation(summary = "메인 보관소 바꾸기", description = "메인 보관소를 바꿀 수 있다.")
+    public ApiResponse modifyStorage(@RequestBody StorageUpdateRequest storageUpdateRequest
+            , @AuthenticationPrincipal User user) {
+        String userEmail = user.getUsername();
+        storageService.updateStorageStatus(storageUpdateRequest, userEmail);
+        return ApiResponse.success(null);
+
     }
 
     @GetMapping
@@ -66,7 +77,7 @@ public class StorageController {
         return ApiResponse.success(null);
     }
 
-    @PatchMapping("{storageId}/storagebox/{storageBoxId}")
+    @PatchMapping("/{storageId}/storagebox/{storageBoxId}")
     @Operation(summary = "세부 보관소 수정", description = "세부 보관소 이름을 수정한다.")
     public ApiResponse modifyStorageBox(@RequestBody StorageBoxUpdateRequest storageBoxUpdateRequest
             , @PathVariable Long storageBoxId
@@ -79,7 +90,7 @@ public class StorageController {
         return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream().map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
     }
 
-    @DeleteMapping("{storageId}/storagebox/{storageBoxId}")
+    @DeleteMapping("/{storageId}/storagebox/{storageBoxId}")
     @Operation(summary = "세부 보관소 삭제", description = "세부 보관소를 삭제한다(storageItem들도 모두 삭제 된다.")
     public ApiResponse cancelStorageBox(@PathVariable Long storageId
             , @PathVariable Long storageBoxId) {
