@@ -33,7 +33,7 @@ public class Storage {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StorageBox> storageBoxList = new ArrayList<>();
 
     public Storage(String name, StorageStatus status, Member member) {

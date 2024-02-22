@@ -51,6 +51,13 @@ public class StorageController {
         return ApiResponse.success(storageResponse);
     }
 
+    @DeleteMapping("/{storageId}")
+    @Operation(summary = "보관소 삭제", description = "보관소를 삭제한다.")
+    public ApiResponse cancelStorage(@PathVariable("storageId") Long storageId) {
+        storageService.deleteStorage(storageId);
+        return ApiResponse.success(null);
+    }
+
     @PostMapping("/{storageId}/storagebox/new")
     @Operation(summary = "세부 보관소 추가", description = "세부 보관소를 추가한다(사용자가 FRIDGE,FREEZE 둘 중 하나를 선택해서 추가 할 수 있다.")
     public ApiResponse createStorageBox(@Valid @RequestBody StorageBoxSaveRequest storageBoxSaveRequest

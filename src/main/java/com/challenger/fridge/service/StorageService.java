@@ -1,6 +1,7 @@
 package com.challenger.fridge.service;
 
 
+import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.box.StorageBox;
@@ -86,6 +87,20 @@ public class StorageService {
     public void deleteStorageBox(Long storageBoxId, Long storageId) {
         StorageBox storageBox = storageBoxRepository.findById(storageBoxId).orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
         storageBoxRepository.delete(storageBox);
+    }
+
+    @Transactional
+    public void deleteStorage(Long storageId) {
+        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
+        
+        //메인 냉장고는 삭제할 수 없다 --> 메인 보관소 수정 후 삭제 가능
+        if(storage.getStatus()==StorageStatus.MAIN)
+        {
+            throw new CannotDeleteException("메인 냉장고는 삭제할 수 없습니다.");
+        }
+
+        storageRepository.delete(storage);
+        
     }
 
 }
