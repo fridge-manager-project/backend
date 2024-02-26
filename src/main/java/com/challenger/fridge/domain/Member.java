@@ -44,7 +44,10 @@ public class Member {
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private Cart cart;
-
+    //해당 회원의 푸쉬 토큰
+    private String pushToken;
+    //해당 회원의 알림 설정 유무
+    private boolean allowNotification;
 //    public static Member from(SignUpRequest request, PasswordEncoder encoder) {
 //        return Member.builder()
 //                .email(request.getEmail())
