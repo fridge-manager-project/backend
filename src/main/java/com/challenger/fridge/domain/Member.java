@@ -95,4 +95,12 @@ public class Member {
         storage.changeStorageStatus(StorageStatus.MAIN);
     }
 
+    public void changeInfo(Storage newMainStorage, String encodedPassword) {
+        changePassword(encodedPassword);
+        changeMainStorage(newMainStorage);
+    }
+
+    private void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }
