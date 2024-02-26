@@ -101,6 +101,9 @@ public class Member {
     }
 
     private void changePassword(String encodedPassword) {
+        if (this.password.equals(encodedPassword)) {
+            throw new IllegalArgumentException("새로운 비밀번호를 입력하세요");
+        }
         this.password = encodedPassword;
     }
 }
