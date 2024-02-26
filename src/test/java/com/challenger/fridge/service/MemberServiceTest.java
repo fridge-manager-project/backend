@@ -26,13 +26,15 @@ class MemberServiceTest {
     private static final String EMAIL = "jjw@test.com";
     private static final String PASSWORD = "1234";
     private static final String NAME = "jjw";
+    private static final Long fridgeCount = 2L;
+    private static final Long freezerCount = 3L;
     private Long mainStorageId;
     private Long subStorageId;
 
     @BeforeEach
     void setUp() {
         signService.registerMember(new SignUpRequest(EMAIL, PASSWORD, NAME));
-        mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", 1L, 1L), EMAIL);
+        mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", fridgeCount, freezerCount), EMAIL);
         subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
     }
 
@@ -48,7 +50,13 @@ class MemberServiceTest {
         assertThat(memberInfo.getEmail()).isEqualTo("jjw@test.com");
         assertThat(memberInfo.getMainStorageId()).isEqualTo(mainStorageId);
         assertThat(memberInfo.getMainStorageName()).isEqualTo("메인저장소");
-        assertThat(storageBoxes.size()).isEqualTo(2);
+
+        assertThat(storageBoxes.size()).isEqualTo(fridgeCount + freezerCount);
+        assertThat(storageBoxes.get(0).getStorageBoxName()).isEqualTo("냉장고1");
+        assertThat(storageBoxes.get(1).getStorageBoxName()).isEqualTo("냉장고2");
+        assertThat(storageBoxes.get(2).getStorageBoxName()).isEqualTo("냉동고1");
+        assertThat(storageBoxes.get(3).getStorageBoxName()).isEqualTo("냉동고2");
+        assertThat(storageBoxes.get(4).getStorageBoxName()).isEqualTo("냉동고3");
     }
 
 }
