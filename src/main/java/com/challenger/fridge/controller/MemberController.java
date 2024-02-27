@@ -26,10 +26,10 @@ public class MemberController {
 
     @Operation(summary = "회원 정보 조회")
     @GetMapping("/info")
-    public ApiResponse userInfo(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse> userInfo(@AuthenticationPrincipal User user) {
         String email = user.getUsername();
         MemberInfoDto userInfo = memberService.findUserInfo(email);
-        return ApiResponse.success(userInfo);
+        return ResponseEntity.ok(ApiResponse.success(userInfo));
     }
 
     @Operation(summary = "회원 정보 수정")
