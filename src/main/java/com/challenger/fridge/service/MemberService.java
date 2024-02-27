@@ -3,13 +3,12 @@ package com.challenger.fridge.service;
 import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
-import com.challenger.fridge.dto.MemberInfoDto;
+import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.member.MemberInfoRequest;
 import com.challenger.fridge.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
@@ -20,10 +19,10 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberInfoDto findUserInfo(String email) {
+    public MemberInfoResponse findUserInfo(String email) {
         Member member = memberRepository.findMemberStorageByEmail(email, StorageStatus.MAIN)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        return new MemberInfoDto(member);
+        return new MemberInfoResponse(member);
     }
 
     @Transactional

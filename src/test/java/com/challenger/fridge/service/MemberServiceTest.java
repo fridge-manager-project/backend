@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
-import com.challenger.fridge.dto.MemberInfoDto;
+import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
 import com.challenger.fridge.dto.member.MemberInfoRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
@@ -61,7 +61,7 @@ class MemberServiceTest {
     void memberInfo() {
         String email = EMAIL;
 
-        MemberInfoDto memberInfo = memberService.findUserInfo(email);
+        MemberInfoResponse memberInfo = memberService.findUserInfo(email);
         List<StorageBoxNameResponse> storageBoxes = memberInfo.getStorageBoxes();
 
         assertThat(memberInfo.getUsername()).isEqualTo("jjw");

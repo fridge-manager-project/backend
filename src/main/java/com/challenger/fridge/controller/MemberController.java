@@ -1,7 +1,7 @@
 package com.challenger.fridge.controller;
 
 import com.challenger.fridge.dto.ApiResponse;
-import com.challenger.fridge.dto.MemberInfoDto;
+import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.member.MemberInfoRequest;
 import com.challenger.fridge.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ public class MemberController {
     @GetMapping("/info")
     public ResponseEntity<ApiResponse> userInfo(@AuthenticationPrincipal User user) {
         String email = user.getUsername();
-        MemberInfoDto userInfo = memberService.findUserInfo(email);
+        MemberInfoResponse userInfo = memberService.findUserInfo(email);
         return ResponseEntity.ok(ApiResponse.success(userInfo));
     }
 
