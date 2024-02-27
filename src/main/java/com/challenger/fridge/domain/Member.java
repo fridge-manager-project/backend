@@ -95,15 +95,15 @@ public class Member {
         storage.changeStorageStatus(StorageStatus.MAIN);
     }
 
-    public void changeInfo(Storage newMainStorage, String encodedPassword) {
-        changePassword(encodedPassword);
+    public void changeInfo(Storage newMainStorage, String newPassword, PasswordEncoder encoder) {
+        changePassword(newPassword, encoder);
         changeMainStorage(newMainStorage);
     }
 
-    private void changePassword(String encodedPassword) {
-        if (this.password.equals(encodedPassword)) {
+    private void changePassword(String newPassword, PasswordEncoder encoder) {
+        if (encoder.matches(newPassword, password)) {
             throw new IllegalArgumentException("새로운 비밀번호를 입력하세요");
         }
-        this.password = encodedPassword;
+        this.password = encoder.encode(newPassword);
     }
 }

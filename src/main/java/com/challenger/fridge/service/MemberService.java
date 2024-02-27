@@ -9,6 +9,7 @@ import com.challenger.fridge.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
@@ -29,13 +30,12 @@ public class MemberService {
     public void changeUserInfo(String email, MemberInfoRequest memberInfoRequest) {
         Member member = memberRepository.findMemberAndStorageByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        if(member.getStorageList().size() < 1) {
-            throw new IllegalArgumentException("보관소가 없습니다.");
-        }
+
         Storage newMainStorage = member.getStorageList().stream()
                 .filter(storage -> storage.getId().equals(memberInfoRequest.getMainStorageId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("바꾸려는 저장소를 찾을 수 없습니다. 다시 시도해주세요"));
-        member.changeInfo(newMainStorage, passwordEncoder.encode(memberInfoRequest.getPassword()));
+
+        member.changeInfo(newMainStorage, memberInfoRequest.getPassword(), passwordEncoder);
     }
 }
