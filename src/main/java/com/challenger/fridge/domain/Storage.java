@@ -53,6 +53,7 @@ public class Storage {
             storageStatus = StorageStatus.MAIN;
         }
         Storage storage = new Storage(storageName, storageStatus, member);
+        member.getStorageList().add(storage);
         for (StorageBox storageBox : storageBoxList) {
             storage.addStorageBox(storageBox);
         }
