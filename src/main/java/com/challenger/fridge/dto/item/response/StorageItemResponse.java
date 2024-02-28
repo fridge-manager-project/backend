@@ -23,7 +23,8 @@ public class StorageItemResponse {
     private String itemDescription;
     @Schema(description = "유통 기한")
     private LocalDate expirationDate;
-
+    @Schema(description = "구매 일자")
+    private LocalDate purchaseDate;
     public StorageItemResponse(StorageItem storageItem) {
         this.storageItemId = storageItem.getId();
         this.itemId = storageItem.getItem().getId();
@@ -31,6 +32,7 @@ public class StorageItemResponse {
         this.itemCount = storageItem.getQuantity();
         this.itemDescription = storageItem.getItemDescription();
         this.expirationDate=storageItem.getExpirationDate();
+        this.purchaseDate=storageItem.getPurchaseDate();
     }
 
 
