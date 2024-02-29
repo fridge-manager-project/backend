@@ -94,7 +94,7 @@ public class StorageItem {
         if (storageItemUpdateRequest.getItemDescription() != null) {
             this.itemDescription = storageItemUpdateRequest.getItemDescription();
         }
-        if (storageItemUpdateRequest.getExpireDate() != null) {
+        if (storageItemUpdateRequest.getExpirationDate() != null) {
             this.expirationDate = storageItemUpdateRequest.getExpireDateAsLocalDate();
         }
         if (storageItemUpdateRequest.getPurchaseDate() != null) {
