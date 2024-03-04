@@ -48,7 +48,7 @@ public class StorageService {
     @Transactional
     public Long saveStorageBox(StorageBoxSaveRequest storageBoxSaveRequest, Long storageId) {
         Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 보관소를 찾을 수 없습니다."));
-        StorageMethod storageMethod = storageBoxSaveRequest.getStorageMethod();
+        StorageMethod storageMethod = storageBoxSaveRequest.getStorageBoxType();
         String storageBoxName = storageBoxSaveRequest.getStorageBoxName();
         //만약에 보관소안에 있는 세부 보관소들의 이름들 중 하나라도 중복되는 것이 있다면 예외를 던짐
         if (storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxName))) {
