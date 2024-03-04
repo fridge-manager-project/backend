@@ -3,7 +3,6 @@ package com.challenger.fridge.service;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Notice;
 import com.challenger.fridge.dto.notice.FcmMessage;
-import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.NoticeRepository;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,10 +29,11 @@ public class FirebaseCloudMessageService {
     private final ObjectMapper objectMapper;
 
 
-    public void sendEexpireMessageTo(List<Member> memberList) throws IOException {
+    public void sendExpirationMessageTo(List<Member> memberList) throws IOException {
         for(Member member : memberList) {
             if(member.getPushToken() != null) {
-                String message = makeMessage(member.getPushToken(),"유통기한 알림","유통기한이 임박한 상품이 있습니다.");
+                String message = makeMessage(member.getPushToken(), "유통기한 알림", "유통기한이 임박한 상품이 있습니다.");
+
                 OkHttpClient client = new OkHttpClient();
                 RequestBody requestBody = RequestBody.create(message,
                         MediaType.get("application/json; charset=utf-8"));
@@ -43,7 +43,9 @@ public class FirebaseCloudMessageService {
                         .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
                         .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                         .build();
+
                 Response response = client.newCall(request).execute();
+
                 noticeRepository.save(Notice.createNotice(member,"유통기한이 임박한 상품이 있습니다."));
                 log.info(Objects.requireNonNull(response.body()).string());
             }
@@ -53,11 +55,11 @@ public class FirebaseCloudMessageService {
         }
     }
 
-    public void sendCartMessageTo(List<Member> memberList) throws IOException
-    {
+    public void sendCartMessageTo(List<Member> memberList) throws IOException {
         for(Member member : memberList) {
             if(member.getPushToken() != null) {
-                String message = makeMessage(member.getPushToken(),"장바구니 알림","장바구니에 상품이 담겨져 있습니다.");
+                String message = makeMessage(member.getPushToken(), "장바구니 알림", "장바구니에 상품이 담겨져 있습니다.");
+
                 OkHttpClient client = new OkHttpClient();
                 RequestBody requestBody = RequestBody.create(message,
                         MediaType.get("application/json; charset=utf-8"));
@@ -67,8 +69,10 @@ public class FirebaseCloudMessageService {
                         .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
                         .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                         .build();
+
                 Response response = client.newCall(request).execute();
-                noticeRepository.save(Notice.createNotice(member,"장바구니에 상품이 담겨져 있습니다."));
+
+                noticeRepository.save(Notice.createNotice(member, "장바구니에 상품이 담겨져 있습니다."));
                 log.info(Objects.requireNonNull(response.body()).string());
             }
             else {
@@ -76,7 +80,9 @@ public class FirebaseCloudMessageService {
             }
         }
     }
-    private String makeMessage(String targetToken,String title,String body) throws JsonParseException, JsonProcessingException {
+
+    private String makeMessage(String targetToken, String title, String body)
+            throws JsonParseException, JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
                         .token(targetToken)

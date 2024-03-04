@@ -31,7 +31,7 @@ public class NoticeService {
         }
         //호출
         try {
-            firebaseCloudMessageService.sendEexpireMessageTo(memberList);
+            firebaseCloudMessageService.sendExpirationMessageTo(memberList);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
