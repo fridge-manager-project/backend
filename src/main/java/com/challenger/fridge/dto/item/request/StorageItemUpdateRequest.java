@@ -16,12 +16,12 @@ public class StorageItemUpdateRequest {
     @Schema(description = "수정할 아이템 설명")
     private String itemDescription;
     @Schema(description = "바꿀 유통기한")
-    private String expireDate;
+    private String expirationDate;
     @Schema(description = "바꿀 구매날짜")
     private String purchaseDate;
     @Hidden
     public LocalDate getExpireDateAsLocalDate() {
-        return LocalDate.parse(expireDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        return LocalDate.parse(expirationDate, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     @Hidden

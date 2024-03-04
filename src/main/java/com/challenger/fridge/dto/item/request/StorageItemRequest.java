@@ -25,14 +25,14 @@ public class StorageItemRequest {
     private String itemDescription;
 
     @Schema(description = "아이템의 유통 기한")
-    private String expireDate;
+    private String expirationDate;
 
     @Schema(description = "아이템의 구매 일자")
     private String purchaseDate;
 
     @Hidden
     public LocalDate getExpireDateAsLocalDate() {
-        return LocalDate.parse(expireDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        return LocalDate.parse(expirationDate, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     @Hidden

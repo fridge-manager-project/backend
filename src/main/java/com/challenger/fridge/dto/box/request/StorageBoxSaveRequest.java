@@ -18,5 +18,5 @@ public class StorageBoxSaveRequest {
 
     @Schema(description = "보관방식(FRIDGE,FREEZE)")
     @NotNull(message = "보관방식은(FRIDGE,FREEZE)만 가능합니다.")
-    private StorageMethod storageMethod;
+    private StorageMethod storageBoxType;
 }
