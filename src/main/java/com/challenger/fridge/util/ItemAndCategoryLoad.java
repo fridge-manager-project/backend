@@ -7,11 +7,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ItemAndCategoryLoad {
+
     private final DataLoadService dataLoadService;
+
     @PostConstruct
     public void init() {
         try {
@@ -19,7 +22,7 @@ public class ItemAndCategoryLoad {
             dataLoadService.saveDataFromCSV(new ClassPathResource("static/itemData.csv").getFile());
         } catch (IOException e) {
             e.printStackTrace();
-            log.info("fileNotFound={}","파일을 찾을수 없습니다.");
+            log.info("fileNotFound={}", "파일을 찾을수 없습니다.");
         }
     }
 
