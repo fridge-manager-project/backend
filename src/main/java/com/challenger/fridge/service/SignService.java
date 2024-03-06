@@ -60,7 +60,7 @@ public class SignService {
      * 로그인
      */
     @Transactional
-    public TokenInfo signIn(SignInRequest request) {
+    public TokenInfo signIn(SignInRequest request, String deviceToken) {
         // 1. email, password 기반 Authentication 객체 생성. -> 인증 여부를 확인하는 authenticated 값이 false
         log.info("1. email, password 기반 Authentication 객체 생성.");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -74,7 +74,14 @@ public class SignService {
         log.info("3. AT, RT 생성 및 Redis 에 RT 저장");
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         saveRefreshToken(authentication.getName(), tokenInfo.getRefreshToken());
+        saveDeviceToken(authentication.getName(), deviceToken);
         return tokenInfo;
+    }
+
+    private void saveDeviceToken(String email, String deviceToken) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        member.addDeviceToken(deviceToken);
     }
 
     @Transactional

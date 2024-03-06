@@ -47,16 +47,7 @@ public class Member {
     //해당 회원의 푸쉬 토큰
     private String pushToken;
     //해당 회원의 알림 설정 유무
-    private boolean allowNotification;
-//    public static Member from(SignUpRequest request, PasswordEncoder encoder) {
-//        return Member.builder()
-//                .email(request.getEmail())
-//                .password(encoder.encode(request.getPassword()))
-//                .name(request.getName())
-//                .role(MemberRole.ROLE_USER)
-//                .createdAt(LocalDateTime.now())
-//                .build();
-//    }
+//    private boolean allowNotification;
 
     public static Member from(SignUpRequest request, PasswordEncoder encoder, Cart cart) {
         Member member = Member.builder()
@@ -67,6 +58,7 @@ public class Member {
                 .createdAt(LocalDateTime.now())
                 .cart(cart)
                 .storageList(new ArrayList<>())
+                .pushToken("")
                 .build();
         cart.allocateMember(member);
         return member;
@@ -108,5 +100,9 @@ public class Member {
             throw new IllegalArgumentException("새로운 비밀번호를 입력하세요");
         }
         this.password = encoder.encode(newPassword);
+    }
+
+    public void addDeviceToken(String deviceToken) {
+        this.pushToken = deviceToken;
     }
 }

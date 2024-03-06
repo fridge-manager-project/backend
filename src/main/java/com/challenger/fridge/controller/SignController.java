@@ -51,8 +51,8 @@ public class SignController {
 
     @Operation(summary = "로그인")
     @PostMapping("/sign-in")
-    public ResponseEntity<ApiResponse> signIn(@RequestBody SignInRequest request) {
-        TokenInfo tokenInfo = signService.signIn(request);
+    public ResponseEntity<ApiResponse> signIn(@RequestBody SignInRequest request, @RequestHeader("device_token") String deviceToken) {
+        TokenInfo tokenInfo = signService.signIn(request, deviceToken);
 
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenInfo.getRefreshToken())
                 .maxAge(COOKIE_EXPIRATION)

@@ -15,8 +15,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class NoticeService {
-    private final FirebaseCloudMessageService firebaseCloudMessageService;
+    private final FCMService fcmService;
     private final MemberRepository memberRepository;
+
+    @Scheduled(fixedRate = 10000) // 10초
+    public void sendTestNotification() {
+        List<Member> memberList = memberRepository.findAll();
+        try {
+            fcmService.sendTestMessage(memberList);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
 
     @Scheduled(cron = "0 0 17 * * *")    // 매일 17:00에 실행
     public void sendExpirationNotifications() {
@@ -31,7 +41,7 @@ public class NoticeService {
         }
         //호출
         try {
-            firebaseCloudMessageService.sendExpirationMessageTo(memberList);
+            fcmService.sendExpirationMessageTo(memberList);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -49,7 +59,7 @@ public class NoticeService {
         }
         //호출
         try {
-            firebaseCloudMessageService.sendCartMessageTo(memberList);
+            fcmService.sendCartMessageTo(memberList);
         } catch (IOException e) {
             log.error(e.getMessage());
         }

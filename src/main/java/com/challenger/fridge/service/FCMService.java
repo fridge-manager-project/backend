@@ -22,12 +22,37 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class FirebaseCloudMessageService {
+public class FCMService {
     private final NoticeRepository noticeRepository;
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/" +
             "naenggeul-d0686/messages:send";
     private final ObjectMapper objectMapper;
 
+    public void sendTestMessage(List<Member> memberList) throws IOException {
+        for(Member member : memberList) {
+            if(member.getPushToken() != null) {
+                String message = makeMessage(member.getPushToken(), "테스트 알림", "테스트알림입니다.");
+
+                OkHttpClient client = new OkHttpClient();
+                RequestBody requestBody = RequestBody.create(message,
+                        MediaType.get("application/json; charset=utf-8"));
+                Request request = new Request.Builder()
+                        .url(API_URL)
+                        .post(requestBody)
+                        .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
+                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
+                        .build();
+
+                Response response = client.newCall(request).execute();
+
+                noticeRepository.save(Notice.createNotice(member,"유통기한이 임박한 상품이 있습니다."));
+                log.info(Objects.requireNonNull(response.body()).string());
+            }
+            else {
+                log.info("테스트용 : 알림은 허용이지만, 토큰이 없는 유저");
+            }
+        }
+    }
 
     public void sendExpirationMessageTo(List<Member> memberList) throws IOException {
         for(Member member : memberList) {
