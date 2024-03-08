@@ -68,6 +68,7 @@ class CartServiceTest {
                 .orElseThrow(IllegalArgumentException::new);
 
         assertEquals(item.getItemName(), itemName);
+        assertEquals(cartItem.getItemCount(), 1L);
     }
 
     @DisplayName("장바구니에 있는 상품 추가시 예외 발생")
