@@ -18,48 +18,39 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class DataLoadService {
+
     private final CategoryRepository categoryRepository;
     private final ItemRepository itemRepository;
-    public void saveDataFromCSV(File file)
-    {
-        log.info("fileLoadCheck={}",file.exists());
+
+    public void saveDataFromCSV(File file) {
+
+        log.info("fileLoadCheck={}", file.exists());
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            int dataCount=0;
-            Category rootCategory=Category.builder()
+            int dataCount = 0;
+            Category rootCategory = Category.builder()
                     .categoryName("ROOT")
                     .build();
             categoryRepository.save(rootCategory);
             while ((line = reader.readLine()) != null) {
                 System.out.println("line = " + line);
                 dataCount++;
-                String[] data=line.split(",");
-                String parentCate=data[0];
-                String childCate=data[1];
-                String foodData=data[2];
-                Category category=null;
-                if (!categoryRepository.existsByCategoryName(parentCate))//최상위 카테고리가 없을 때
-                {
-                    Category findCategory = categoryRepository.findByCategoryName(parentCate);
-                    category=findCategory;
-                    Category category1=Category.builder()
-                            .categoryName(parentCate)
+                String[] data = line.split(",");
+
+                String categoryName = data[0];
+                String foodData = data[1];
+                Category category = null;
+
+                if (!categoryRepository.existsByCategoryName(categoryName)) {
+                    Category mainCategory = Category.builder()
+                            .categoryName(categoryName)
                             .parentCategory(rootCategory)
                             .build();
-                    categoryRepository.save(category1);
+                    category = categoryRepository.save(mainCategory);
+                } else {
+                    category = categoryRepository.findByCategoryName(categoryName);
                 }
-                category=categoryRepository.findByCategoryName(parentCate);
-                if (!categoryRepository.existsByCategoryName(childCate))
-                {
-
-                    Category category2=Category.builder()
-                            .categoryName(childCate)
-                            .parentCategory(category)
-                            .build();
-                    categoryRepository.save(category2);
-                }
-                category=categoryRepository.findByCategoryName(childCate);
-                Item item=Item.builder()
+                Item item = Item.builder()
                         .itemName(foodData)
                         .category(category)
                         .build();
@@ -67,7 +58,7 @@ public class DataLoadService {
 
 
             }
-            log.info("총 데이터 개수={}",dataCount);
+            log.info("총 데이터 개수={}", dataCount);
         } catch (IOException e) {
             e.printStackTrace();
             // 예외 처리
