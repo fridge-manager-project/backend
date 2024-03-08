@@ -58,7 +58,6 @@ public class Member {
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .cart(cart)
-//                .storageList(new ArrayList<>())
                 .pushToken(null)
                 .allowNotification(false)
                 .build();

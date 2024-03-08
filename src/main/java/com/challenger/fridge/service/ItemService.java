@@ -19,7 +19,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
-    @Cacheable(key = "'all'")
+    @Cacheable(value = "items", key = "'all'")
     public List<ItemInfoResponse> itemInfo() {
         log.info("상품 전체 데이터 조회");
         List<Item> items = itemRepository.findAllWithCategory();

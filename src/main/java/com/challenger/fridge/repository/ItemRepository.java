@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("select i from Item i join fetch Category c")
+    @Query("select i from Item i join fetch i.category c")
     List<Item> findAllWithCategory();
 }
