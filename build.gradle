@@ -27,6 +27,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0' // 스웨거 라이브러리 추가
 	//알림 관련 라이브러리 추가
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
@@ -37,6 +39,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
