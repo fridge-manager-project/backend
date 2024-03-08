@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.challenger.fridge.domain.CartItem;
 import com.challenger.fridge.domain.Item;
-import com.challenger.fridge.dto.cart.CartItemsResponse;
+import com.challenger.fridge.dto.cart.CartItemResponse;
 import com.challenger.fridge.dto.cart.CartResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.repository.CartItemRepository;
@@ -14,7 +14,6 @@ import com.challenger.fridge.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,7 +89,7 @@ class CartServiceTest {
         String emailWithItems = memberWithThreeItems;
 
         CartResponse cartResponse = cartService.findItems(emailWithItems);
-        List<CartItemsResponse> itemsResponses = cartResponse.getCartItems();
+        List<CartItemResponse> itemsResponses = cartResponse.getCartItems();
 
         assertEquals(3, cartResponse.getCount());
         assertEquals(1, itemsResponses.get(0).getItemId());

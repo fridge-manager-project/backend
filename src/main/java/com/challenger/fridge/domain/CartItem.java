@@ -36,7 +36,7 @@ public class CartItem {
     protected CartItem(Cart cart, Item item) {
         this.cart = cart;
         this.item = item;
-        this.itemCount = 0L;
+        this.itemCount = 1L;
     }
 
     public static CartItem createCartItem(Cart cart, Item item) {
