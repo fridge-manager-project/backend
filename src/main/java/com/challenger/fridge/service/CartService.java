@@ -39,9 +39,9 @@ public class CartService {
 
         // 이미 있는 상품은 추가하지 않아도 된다. -> "해당 상품은 장바구니에 있습니다." 메시지
         List<CartItem> cartItemList = cart.getCartItemList();
-        List<CartItem> collect = cartItemList.stream()
+        List<CartItem> duplicateCartItem = cartItemList.stream()
                 .filter(cartItem -> cartItem.getItem().getId().equals(itemId)).toList();
-        if (!collect.isEmpty()) {
+        if (!duplicateCartItem.isEmpty()) {
             throw new IllegalArgumentException("해당 상품은 장바구니에 있습니다.");
         }
 

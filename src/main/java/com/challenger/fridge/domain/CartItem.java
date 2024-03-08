@@ -31,11 +31,12 @@ public class CartItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
-//    private Long count;
+    private Long itemCount;
 
     protected CartItem(Cart cart, Item item) {
         this.cart = cart;
         this.item = item;
+        this.itemCount = 0L;
     }
 
     public static CartItem createCartItem(Cart cart, Item item) {
