@@ -5,8 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.challenger.fridge.domain.CartItem;
 import com.challenger.fridge.domain.Item;
-import com.challenger.fridge.dto.cart.CartItemsResponse;
+import com.challenger.fridge.dto.cart.CartItemResponse;
 import com.challenger.fridge.dto.cart.CartResponse;
+import com.challenger.fridge.dto.cart.ItemCountRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.repository.CartItemRepository;
 import com.challenger.fridge.repository.ItemRepository;
@@ -14,7 +15,6 @@ import com.challenger.fridge.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,6 +69,7 @@ class CartServiceTest {
                 .orElseThrow(IllegalArgumentException::new);
 
         assertEquals(item.getItemName(), itemName);
+        assertEquals(cartItem.getItemCount(), 1L);
     }
 
     @DisplayName("장바구니에 있는 상품 추가시 예외 발생")
@@ -90,7 +91,7 @@ class CartServiceTest {
         String emailWithItems = memberWithThreeItems;
 
         CartResponse cartResponse = cartService.findItems(emailWithItems);
-        List<CartItemsResponse> itemsResponses = cartResponse.getCartItems();
+        List<CartItemResponse> itemsResponses = cartResponse.getCartItems();
 
         assertEquals(3, cartResponse.getCount());
         assertEquals(1, itemsResponses.get(0).getItemId());
@@ -133,5 +134,19 @@ class CartServiceTest {
 
         assertThrows(NoSuchElementException.class,
                 () -> cartItemRepository.findById(cartItemId).get());
+    }
+
+    @DisplayName("장바구니에 담긴 상품 수량 조절")
+    @Test
+    void changeItemCount() {
+        String emailWithThreeItems = memberWithThreeItems;
+        Long cartItemId = cartService.addItem(emailWithThreeItems, 4L);
+        ItemCountRequest itemCountRequest = new ItemCountRequest(5L);
+
+        Long fiveCartItemId = cartService.changeItemCount(cartItemId, itemCountRequest);
+        CartItem cartItem = cartItemRepository.findById(fiveCartItemId)
+                .orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(cartItem.getItemCount()).isEqualTo(5L);
     }
 }

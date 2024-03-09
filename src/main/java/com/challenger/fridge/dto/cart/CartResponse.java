@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.toList;
 
 import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.CartItem;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,13 +13,13 @@ import lombok.Data;
 public class CartResponse {
     private Long count;
     private Long cartId;
-    private List<CartItemsResponse> cartItems;
+    private List<CartItemResponse> cartItems;
 
     public CartResponse(Cart cart, List<CartItem> cartItemList) {
         this.cartId = cart.getId();
         this.count = (long) cartItemList.size();
         this.cartItems = cartItemList.stream()
-                .map(CartItemsResponse::new)
+                .map(CartItemResponse::new)
                 .collect(toList());
 
     }
