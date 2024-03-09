@@ -3,6 +3,7 @@ package com.challenger.fridge.controller;
 import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.cart.CartItemMoveRequest;
 import com.challenger.fridge.dto.cart.CartResponse;
+import com.challenger.fridge.dto.cart.ItemCountRequest;
 import com.challenger.fridge.service.CartService;
 import com.challenger.fridge.service.CartStorageService;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,12 @@ public class CartController {
     @PostMapping("/items")
     public ResponseEntity<ApiResponse> moveItemToStorage(@RequestBody CartItemMoveRequest cartItemMoveRequest) {
         cartStorageService.moveItems(cartItemMoveRequest);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PatchMapping("/{cartItemId}")
+    public ResponseEntity<ApiResponse> changeCartItemCount(@PathVariable Long cartItemId, @RequestBody ItemCountRequest itemCountRequest) {
+        cartService.changeItemCount(cartItemId, itemCountRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

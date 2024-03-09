@@ -2,6 +2,7 @@ package com.challenger.fridge.domain;
 
 import static jakarta.persistence.FetchType.*;
 
+import com.challenger.fridge.dto.cart.ItemCountRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,5 +44,9 @@ public class CartItem {
         CartItem cartItem = new CartItem(cart, item);
         cart.getCartItemList().add(cartItem);
         return cartItem;
+    }
+
+    public void changeCount(ItemCountRequest itemCountRequest) {
+        this.itemCount = itemCountRequest.getItemCount();
     }
 }

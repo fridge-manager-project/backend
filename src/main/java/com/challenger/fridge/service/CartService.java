@@ -4,6 +4,7 @@ import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.CartItem;
 import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.dto.cart.CartResponse;
+import com.challenger.fridge.dto.cart.ItemCountRequest;
 import com.challenger.fridge.repository.CartItemRepository;
 import com.challenger.fridge.repository.CartRepository;
 import com.challenger.fridge.repository.ItemRepository;
@@ -66,4 +67,11 @@ public class CartService {
         cartItemRepository.deleteById(cartItemId);
     }
 
+    @Transactional
+    public Long changeItemCount(Long cartItemId, ItemCountRequest itemCountRequest) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니에서 해당 상품을 찾을 수 없습니다."));
+        cartItem.changeCount(itemCountRequest);
+        return cartItem.getId();
+    }
 }
