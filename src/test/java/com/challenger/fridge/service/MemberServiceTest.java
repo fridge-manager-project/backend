@@ -9,6 +9,7 @@ import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
+import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.repository.MemberRepository;
@@ -103,5 +104,30 @@ class MemberServiceTest {
                 .orElseThrow(IllegalArgumentException::new);
 
         assertThat(encoder.matches(newPassword, member.getPassword())).isTrue();
+    }
+
+    @DisplayName("현재 닉네임과 같은 닉네임 입력시 예외 발생")
+    @Test
+    void changeToSameNickname() {
+        String email = EMAIL;
+        String newNickname = NAME;
+        MemberNicknameRequest memberNicknameRequest = new MemberNicknameRequest(newNickname);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                memberService.changeUserNickname(email, memberNicknameRequest));
+    }
+
+    @DisplayName("닉네임 변경 테스트")
+    @Test
+    void changeNickname() {
+        String email = EMAIL;
+        String newNickname = "newNickname";
+        MemberNicknameRequest memberNicknameRequest = new MemberNicknameRequest(newNickname);
+
+        Long memberId = memberService.changeUserNickname(email, memberNicknameRequest);
+        Member memberWithNewNickname = memberRepository.findById(memberId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(memberWithNewNickname.getNickname()).isEqualTo(newNickname);
     }
 }
