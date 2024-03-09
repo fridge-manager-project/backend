@@ -2,6 +2,8 @@ package com.challenger.fridge.domain;
 
 import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.common.StorageStatus;
+import com.challenger.fridge.dto.member.ChangePasswordRequest;
+import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import jakarta.persistence.*;
 
@@ -32,7 +34,7 @@ public class Member {
 
     private String password;
 
-    private String name;
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
@@ -54,7 +56,7 @@ public class Member {
         Member member = Member.builder()
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
-                .name(request.getName())
+                .nickname(request.getNickname())
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .cart(cart)
@@ -82,15 +84,17 @@ public class Member {
         storage.changeStorageStatus(StorageStatus.MAIN);
     }
 
-    public void changeInfo(Storage newMainStorage, String newPassword, PasswordEncoder encoder) {
-        changePassword(newPassword, encoder);
-        changeMainStorage(newMainStorage);
+    public void changePassword(ChangePasswordRequest changePasswordRequest, PasswordEncoder encoder) {
+        if (!encoder.matches(changePasswordRequest.getCurrentPassword(), password)) {
+            throw new IllegalArgumentException("현재 비밀번호와 같지 않습니다. 다시 입력해주세요.");
+        }
+        this.password = encoder.encode(changePasswordRequest.getNewPassword());
     }
 
-    private void changePassword(String newPassword, PasswordEncoder encoder) {
-        if (encoder.matches(newPassword, password)) {
-            throw new IllegalArgumentException("새로운 비밀번호를 입력하세요");
+    public void changeNickname(MemberNicknameRequest memberNicknameRequest) {
+        if (this.nickname.equals(memberNicknameRequest.getNickname())) {
+            throw new IllegalArgumentException("다른 닉네임을 입력해주세요");
         }
-        this.password = encoder.encode(newPassword);
+        this.nickname = memberNicknameRequest.getNickname();
     }
 }

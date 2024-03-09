@@ -7,6 +7,7 @@ import com.challenger.fridge.dto.cart.ItemCountRequest;
 import com.challenger.fridge.service.CartService;
 import com.challenger.fridge.service.CartStorageService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -67,7 +68,7 @@ public class CartController {
 
     @Operation(summary = "장바구니 상품 수량 조절 API")
     @PatchMapping("/{cartItemId}")
-    public ResponseEntity<ApiResponse> changeCartItemCount(@PathVariable Long cartItemId, @RequestBody ItemCountRequest itemCountRequest) {
+    public ResponseEntity<ApiResponse> changeCartItemCount(@PathVariable Long cartItemId, @Valid @RequestBody ItemCountRequest itemCountRequest) {
         cartService.changeItemCount(cartItemId, itemCountRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
