@@ -7,6 +7,7 @@ import com.challenger.fridge.domain.CartItem;
 import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.dto.cart.CartItemResponse;
 import com.challenger.fridge.dto.cart.CartResponse;
+import com.challenger.fridge.dto.cart.ItemCountRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.repository.CartItemRepository;
 import com.challenger.fridge.repository.ItemRepository;
@@ -133,5 +134,19 @@ class CartServiceTest {
 
         assertThrows(NoSuchElementException.class,
                 () -> cartItemRepository.findById(cartItemId).get());
+    }
+
+    @DisplayName("장바구니에 담긴 상품 수량 조절")
+    @Test
+    void changeItemCount() {
+        String emailWithThreeItems = memberWithThreeItems;
+        Long cartItemId = cartService.addItem(emailWithThreeItems, 4L);
+        ItemCountRequest itemCountRequest = new ItemCountRequest(5L);
+
+        Long fiveCartItemId = cartService.changeItemCount(cartItemId, itemCountRequest);
+        CartItem cartItem = cartItemRepository.findById(fiveCartItemId)
+                .orElseThrow(IllegalArgumentException::new);
+        
+        assertThat(cartItem.getItemCount()).isEqualTo(5L);
     }
 }
