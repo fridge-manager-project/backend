@@ -31,7 +31,7 @@ public class CartStorageService {
         List<StorageItem> storageItemList = request.getCartItemRequests().stream()
                 .map(r -> {
                     CartItem cartItem = cartItemRepository.findItemsById(r.getCartItemId());
-                    return new StorageItem(r.getCount(), cartItem.getItem(), storageBox);
+                    return new StorageItem(cartItem.getItemCount(), cartItem.getItem(), storageBox);
                 }).toList();
 
         // bulk insert
