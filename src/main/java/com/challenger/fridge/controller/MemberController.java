@@ -2,10 +2,12 @@ package com.challenger.fridge.controller;
 
 import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
-import com.challenger.fridge.dto.member.MemberInfoRequest;
+import com.challenger.fridge.dto.member.ChangePasswordRequest;
+import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,11 +34,19 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(userInfo));
     }
 
-    @Operation(summary = "회원 정보 수정")
+    @Operation(summary = "회원 비밀번호 수정")
     @PatchMapping("/info")
-    public ResponseEntity<ApiResponse> modifyUserInfo(@AuthenticationPrincipal User user,
-                                      @RequestBody MemberInfoRequest memberInfoRequest) {
-        memberService.changeUserInfo(user.getUsername(), memberInfoRequest);
+    public ResponseEntity<ApiResponse> changeMemberPassword(@AuthenticationPrincipal User user,
+                                                            @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        memberService.changeUserInfo(user.getUsername(), changePasswordRequest);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @Operation(summary = "회원 닉네임 수정")
+    @PatchMapping("/info/nickname")
+    public ResponseEntity<ApiResponse> changeNickname(@AuthenticationPrincipal User user,
+                                                      @Valid @RequestBody MemberNicknameRequest memberNicknameRequest) {
+        memberService.changeUserNickname(user.getUsername(), memberNicknameRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

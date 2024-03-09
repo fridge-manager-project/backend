@@ -45,6 +45,6 @@ class CartRepositoryTest {
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
 
-        assertThat(member.getName()).isEqualTo(findMember.getName());
+        assertThat(member.getNickname()).isEqualTo(findMember.getNickname());
     }
 }
