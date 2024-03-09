@@ -77,12 +77,14 @@ class MemberServiceTest {
         assertThat(storageBoxes.get(4).getStorageBoxName()).isEqualTo("냉동고3");
     }
 
-    @DisplayName("저장된 비밀번호로 회원 정보 수정시 예외 발생")
+    @DisplayName("현재 비밀번호칸에 틀린 비밀번호 입력시 예외 발생")
     @Test
     void changeMemberInfoWithSamePassword() {
         String email = EMAIL;
+        String currentPassword = "4321";
+        String newPassword = "newPassword";
 
-        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(PASSWORD, subStorageId);
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(currentPassword, newPassword);
 
         assertThrows(IllegalArgumentException.class, () ->
                 memberService.changeUserInfo(email, changePasswordRequest));
@@ -92,20 +94,14 @@ class MemberServiceTest {
     @Test
     void changeMemberInfoWithNewPassword() {
         String email = EMAIL;
-        String oldPassword = PASSWORD;
-        String newPassword = "4321";
-        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(newPassword, subStorageId);
+        String currentPassword = PASSWORD;
+        String newPassword = "newPassword";
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(currentPassword, newPassword);
         
         memberService.changeUserInfo(email, changePasswordRequest);
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
-        Storage currentMainStorage = storageRepository.findById(subStorageId)
-                .orElseThrow(IllegalArgumentException::new);
-        Storage currentSubStorage = storageRepository.findById(mainStorageId)
-                .orElseThrow(IllegalArgumentException::new);
 
         assertThat(encoder.matches(newPassword, member.getPassword())).isTrue();
-        assertThat(currentMainStorage.getStatus()).isEqualTo(StorageStatus.MAIN);
-        assertThat(currentSubStorage.getStatus()).isEqualTo(StorageStatus.NORMAL);
     }
 }

@@ -25,7 +25,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void changeUserInfo(String email, ChangePasswordRequest changePasswordRequest) {
+    public void    changeUserInfo(String email, ChangePasswordRequest changePasswordRequest) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         member.changePassword(changePasswordRequest, passwordEncoder);

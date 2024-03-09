@@ -83,13 +83,8 @@ public class Member {
         storage.changeStorageStatus(StorageStatus.MAIN);
     }
 
-//    public void changeInfo(Storage newMainStorage, String newPassword, PasswordEncoder encoder) {
-//        changePassword(newPassword, encoder);
-//        changeMainStorage(newMainStorage);
-//    }
-
     public void changePassword(ChangePasswordRequest changePasswordRequest, PasswordEncoder encoder) {
-        if (encoder.matches(changePasswordRequest.getCurrentPassword(), password)) {
+        if (!encoder.matches(changePasswordRequest.getCurrentPassword(), password)) {
             throw new IllegalArgumentException("현재 비밀번호와 같지 않습니다. 다시 입력해주세요.");
         }
         this.password = encoder.encode(changePasswordRequest.getNewPassword());
