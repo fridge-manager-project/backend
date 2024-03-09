@@ -7,6 +7,7 @@ import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,7 +37,7 @@ public class MemberController {
     @Operation(summary = "회원 비밀번호 수정")
     @PatchMapping("/info")
     public ResponseEntity<ApiResponse> changeMemberPassword(@AuthenticationPrincipal User user,
-                                                            @RequestBody ChangePasswordRequest changePasswordRequest) {
+                                                            @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         memberService.changeUserInfo(user.getUsername(), changePasswordRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -44,7 +45,7 @@ public class MemberController {
     @Operation(summary = "회원 닉네임 수정")
     @PatchMapping("/info/nickname")
     public ResponseEntity<ApiResponse> changeNickname(@AuthenticationPrincipal User user,
-                                                      @RequestBody MemberNicknameRequest memberNicknameRequest) {
+                                                      @Valid @RequestBody MemberNicknameRequest memberNicknameRequest) {
         memberService.changeUserNickname(user.getUsername(), memberNicknameRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
