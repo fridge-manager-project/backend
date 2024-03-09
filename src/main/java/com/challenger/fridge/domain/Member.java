@@ -3,6 +3,7 @@ package com.challenger.fridge.domain;
 import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
+import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import jakarta.persistence.*;
 
@@ -88,5 +89,12 @@ public class Member {
             throw new IllegalArgumentException("현재 비밀번호와 같지 않습니다. 다시 입력해주세요.");
         }
         this.password = encoder.encode(changePasswordRequest.getNewPassword());
+    }
+
+    public void changeNickname(MemberNicknameRequest memberNicknameRequest) {
+        if (this.nickname.equals(memberNicknameRequest.getNickname())) {
+            throw new IllegalArgumentException("다른 닉네임을 입력해주세요");
+        }
+        this.nickname = memberNicknameRequest.getNickname();
     }
 }

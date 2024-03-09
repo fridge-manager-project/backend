@@ -4,6 +4,7 @@ import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
+import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,5 +30,12 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         member.changePassword(changePasswordRequest, passwordEncoder);
+    }
+
+    @Transactional
+    public void changeUserNickname(String email, MemberNicknameRequest memberNicknameRequest) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        member.changeNickname(memberNicknameRequest);
     }
 }
