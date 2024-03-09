@@ -46,9 +46,9 @@ class SignControllerTest {
     @Test
     @DisplayName("POST 회원 등록 컨트롤러 로직 확인")
     void signUpTest() throws Exception {
-        String name = "jjw";
-        SignUpRequest request = createSignUpRequest(name);
-        SignUpResponse response = createSignUpResponse(name);
+        String nickname = "jjw";
+        SignUpRequest request = createSatisfiedSignUpRequest();
+        SignUpResponse response = createSignUpResponse(nickname);
         ApiResponse apiResponse = createApiSuccessResponse(response);
 
         given(signService.registerMember(any(SignUpRequest.class))).willReturn(response);
@@ -62,6 +62,69 @@ class SignControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(responseJson))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("POST - 회원 등록 컨트롤러 : 잘못된 이메일 요청")
+    void signUpTestWithWrongRequest() throws Exception {
+        String wrongEmail = "wrongEmail";
+        String password = "jjwPassword1!";
+        String nickname = "jjw";
+        SignUpRequest requestWithWrongEmail = createSignUpRequest(wrongEmail, password, nickname);
+
+        ApiResponse apiResponseWithWrongEmail = createApiFailResponse("이메일 형식에 맞지 않습니다.");
+        String requestJsonWithWrongEmail = objectMapper.writeValueAsString(requestWithWrongEmail);
+        String responseJsonWithWrongEmail = objectMapper.writeValueAsString(apiResponseWithWrongEmail);
+
+        mockMvc.perform(post("/sign-up")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestJsonWithWrongEmail)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(responseJsonWithWrongEmail))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("POST - 회원 등록 컨트롤러 : 잘못된 비밀번호 요청")
+    void signUpTestWithWrongPassword() throws Exception {
+        String email = "jjw@test.com";
+        String wrongPassword = "wrongpw";
+        String nickname = "jjw";
+        SignUpRequest requestWithWrongPassword = createSignUpRequest(email, wrongPassword, nickname);
+
+        ApiResponse apiResponseWithWrongPassword = createApiFailResponse("비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8 ~20자의 비밀번호여야 합니다.");
+        String requestJsonWithWrongPassword = objectMapper.writeValueAsString(requestWithWrongPassword);
+        String responseJsonWithWrongPassword = objectMapper.writeValueAsString(apiResponseWithWrongPassword);
+
+        mockMvc.perform(post("/sign-up")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonWithWrongPassword)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(responseJsonWithWrongPassword))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("POST - 회원 등록 컨트롤러 : 잘못된 닉네임 요청")
+    void signUpTestWithWrongNickname() throws Exception {
+        String email = "jjw@test.com";
+        String password = "jjwPassword1!";
+        String wrongNickname = "틀린닉네임";
+        SignUpRequest requestWithWrongNickname = createSignUpRequest(email, password, wrongNickname);
+
+        ApiResponse apiResponseWithWrongNickname = createApiFailResponse("닉네임은 영어랑 숫자만 가능합니다.");
+        String requestJsonWithWrongNickname = objectMapper.writeValueAsString(requestWithWrongNickname);
+        String responseJsonWithWrongNickname = objectMapper.writeValueAsString(apiResponseWithWrongNickname);
+
+        mockMvc.perform(post("/sign-up")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJsonWithWrongNickname)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(responseJsonWithWrongNickname))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -103,19 +166,26 @@ class SignControllerTest {
     }
 
     private ApiResponse createApiErrorResponse(String message) {
-        ApiResponse apiResponse = ApiResponse.error(message);
-        return apiResponse;
+        return ApiResponse.error(message);
     }
 
     private ApiResponse createApiSuccessResponse(SignUpResponse response) {
         return ApiResponse.success(response);
     }
 
+    private ApiResponse createApiFailResponse(String message) {
+        return ApiResponse.fail(message);
+    }
+
     private SignUpResponse createSignUpResponse(String name) {
         return new SignUpResponse(name);
     }
 
-    private SignUpRequest createSignUpRequest(String name) {
-        return new SignUpRequest("jjw@test.com", "1234", name);
+    private SignUpRequest createSignUpRequest(String email, String password, String nickname) {
+        return new SignUpRequest(email, password, nickname);
+    }
+
+    private SignUpRequest createSatisfiedSignUpRequest() {
+        return createSignUpRequest("jjw@test.com", "jjwPassword1!", "jjw");
     }
 }
