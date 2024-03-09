@@ -2,6 +2,7 @@ package com.challenger.fridge.domain;
 
 import com.challenger.fridge.common.MemberRole;
 import com.challenger.fridge.common.StorageStatus;
+import com.challenger.fridge.dto.member.ChangePasswordRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import jakarta.persistence.*;
 
@@ -82,15 +83,15 @@ public class Member {
         storage.changeStorageStatus(StorageStatus.MAIN);
     }
 
-    public void changeInfo(Storage newMainStorage, String newPassword, PasswordEncoder encoder) {
-        changePassword(newPassword, encoder);
-        changeMainStorage(newMainStorage);
-    }
+//    public void changeInfo(Storage newMainStorage, String newPassword, PasswordEncoder encoder) {
+//        changePassword(newPassword, encoder);
+//        changeMainStorage(newMainStorage);
+//    }
 
-    private void changePassword(String newPassword, PasswordEncoder encoder) {
-        if (encoder.matches(newPassword, password)) {
-            throw new IllegalArgumentException("새로운 비밀번호를 입력하세요");
+    public void changePassword(ChangePasswordRequest changePasswordRequest, PasswordEncoder encoder) {
+        if (encoder.matches(changePasswordRequest.getCurrentPassword(), password)) {
+            throw new IllegalArgumentException("현재 비밀번호와 같지 않습니다. 다시 입력해주세요.");
         }
-        this.password = encoder.encode(newPassword);
+        this.password = encoder.encode(changePasswordRequest.getNewPassword());
     }
 }

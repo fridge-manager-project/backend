@@ -8,7 +8,7 @@ import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
-import com.challenger.fridge.dto.member.MemberInfoRequest;
+import com.challenger.fridge.dto.member.ChangePasswordRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.repository.MemberRepository;
@@ -82,10 +82,10 @@ class MemberServiceTest {
     void changeMemberInfoWithSamePassword() {
         String email = EMAIL;
 
-        MemberInfoRequest memberInfoRequest = new MemberInfoRequest(PASSWORD, subStorageId);
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(PASSWORD, subStorageId);
 
         assertThrows(IllegalArgumentException.class, () ->
-                memberService.changeUserInfo(email, memberInfoRequest));
+                memberService.changeUserInfo(email, changePasswordRequest));
     }
 
     @DisplayName("새로운 비밀번호로 회원 정보 수정")
@@ -94,9 +94,9 @@ class MemberServiceTest {
         String email = EMAIL;
         String oldPassword = PASSWORD;
         String newPassword = "4321";
-        MemberInfoRequest memberInfoRequest = new MemberInfoRequest(newPassword, subStorageId);
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(newPassword, subStorageId);
         
-        memberService.changeUserInfo(email, memberInfoRequest);
+        memberService.changeUserInfo(email, changePasswordRequest);
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
         Storage currentMainStorage = storageRepository.findById(subStorageId)
