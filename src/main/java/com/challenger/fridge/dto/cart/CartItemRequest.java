@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class CartItemRequest {
     private Long cartItemId;
-    private Long count;
+//    private Long count;
 }

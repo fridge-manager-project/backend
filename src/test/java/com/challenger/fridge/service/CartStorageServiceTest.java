@@ -65,10 +65,10 @@ class CartStorageServiceTest {
                 .orElseThrow(IllegalArgumentException::new);
         Long boxId = storage.getStorageBoxList().get(1).getId();
         List<CartItemRequest> cartItemRequests = new ArrayList<>();
-        CartItemRequest pork = new CartItemRequest(cartItemIdList.get(0), 1L);
-        CartItemRequest onion = new CartItemRequest(cartItemIdList.get(1), 2L);
-        CartItemRequest greenOnion = new CartItemRequest(cartItemIdList.get(2), 3L);
-        CartItemRequest garlic = new CartItemRequest(cartItemIdList.get(3), 4L);
+        CartItemRequest pork = new CartItemRequest(cartItemIdList.get(0));
+        CartItemRequest onion = new CartItemRequest(cartItemIdList.get(1));
+        CartItemRequest greenOnion = new CartItemRequest(cartItemIdList.get(2));
+        CartItemRequest garlic = new CartItemRequest(cartItemIdList.get(3));
         cartItemRequests.add(pork);
         cartItemRequests.add(onion);
         cartItemRequests.add(greenOnion);
@@ -91,9 +91,9 @@ class CartStorageServiceTest {
         assertThat(storageItemList.get(3).getItem().getItemName()).isEqualTo("마늘");
 
         assertThat(storageItemList.get(0).getQuantity()).isEqualTo(1);
-        assertThat(storageItemList.get(1).getQuantity()).isEqualTo(2);
-        assertThat(storageItemList.get(2).getQuantity()).isEqualTo(3);
-        assertThat(storageItemList.get(3).getQuantity()).isEqualTo(4);
+        assertThat(storageItemList.get(1).getQuantity()).isEqualTo(1);
+        assertThat(storageItemList.get(2).getQuantity()).isEqualTo(1);
+        assertThat(storageItemList.get(3).getQuantity()).isEqualTo(1);
     }
 
     @DisplayName("장바구니에서 선택한 상품을 보관소로 옮기기")
@@ -104,8 +104,8 @@ class CartStorageServiceTest {
                 .orElseThrow(IllegalArgumentException::new);
         Long boxId = storage.getStorageBoxList().get(1).getId();
         List<CartItemRequest> cartItemRequests = new ArrayList<>();
-        CartItemRequest onion = new CartItemRequest(cartItemIdList.get(1), 2L);
-        CartItemRequest greenOnion = new CartItemRequest(cartItemIdList.get(2), 3L);
+        CartItemRequest onion = new CartItemRequest(cartItemIdList.get(1));
+        CartItemRequest greenOnion = new CartItemRequest(cartItemIdList.get(2));
         cartItemRequests.add(onion);
         cartItemRequests.add(greenOnion);
         CartItemMoveRequest cartItemMoveRequest = new CartItemMoveRequest(boxId, cartItemRequests);
@@ -123,8 +123,8 @@ class CartStorageServiceTest {
         assertThat(storageItemList.get(0).getItem().getItemName()).isEqualTo("양파");
         assertThat(storageItemList.get(1).getItem().getItemName()).isEqualTo("대파");
 
-        assertThat(storageItemList.get(0).getQuantity()).isEqualTo(2);
-        assertThat(storageItemList.get(1).getQuantity()).isEqualTo(3);
+        assertThat(storageItemList.get(0).getQuantity()).isEqualTo(1);
+        assertThat(storageItemList.get(1).getQuantity()).isEqualTo(1);
     }
 
     private Item findItem(String itemName) {
