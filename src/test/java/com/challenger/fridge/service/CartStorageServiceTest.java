@@ -9,6 +9,7 @@ import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.dto.cart.CartItemRequest;
 import com.challenger.fridge.dto.cart.CartItemMoveRequest;
 import com.challenger.fridge.dto.cart.CartResponse;
+import com.challenger.fridge.dto.cart.ItemCountRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.repository.StorageBoxRepository;
@@ -76,6 +77,11 @@ class CartStorageServiceTest {
         CartItemMoveRequest cartItemMoveRequest = new CartItemMoveRequest(boxId, cartItemRequests);
 
         //when
+        cartService.changeItemCount(cartItemIdList.get(0), new ItemCountRequest(2L));
+        cartService.changeItemCount(cartItemIdList.get(1), new ItemCountRequest(4L));
+        cartService.changeItemCount(cartItemIdList.get(2), new ItemCountRequest(6L));
+        cartService.changeItemCount(cartItemIdList.get(3), new ItemCountRequest(8L));
+
         cartStorageService.moveItems(cartItemMoveRequest);
         CartResponse cartResponse = cartService.findItems("jjw@test.com");
         StorageBox storageBox = storageBoxRepository.findStorageItemsById(boxId)
@@ -90,10 +96,10 @@ class CartStorageServiceTest {
         assertThat(storageItemList.get(2).getItem().getItemName()).isEqualTo("대파");
         assertThat(storageItemList.get(3).getItem().getItemName()).isEqualTo("마늘");
 
-        assertThat(storageItemList.get(0).getQuantity()).isEqualTo(1);
-        assertThat(storageItemList.get(1).getQuantity()).isEqualTo(1);
-        assertThat(storageItemList.get(2).getQuantity()).isEqualTo(1);
-        assertThat(storageItemList.get(3).getQuantity()).isEqualTo(1);
+        assertThat(storageItemList.get(0).getQuantity()).isEqualTo(2);
+        assertThat(storageItemList.get(1).getQuantity()).isEqualTo(4);
+        assertThat(storageItemList.get(2).getQuantity()).isEqualTo(6);
+        assertThat(storageItemList.get(3).getQuantity()).isEqualTo(8);
     }
 
     @DisplayName("장바구니에서 선택한 상품을 보관소로 옮기기")
