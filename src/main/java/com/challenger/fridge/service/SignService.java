@@ -53,7 +53,7 @@ public class SignService {
     public SignUpResponse registerMember(SignUpRequest request) {
         Cart cart = Cart.createCart();
         Member member = memberRepository.save(Member.from(request, encoder, cart));
-        return new SignUpResponse(member.getName());
+        return new SignUpResponse(member.getNickname());
     }
 
     /**

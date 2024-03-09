@@ -33,7 +33,7 @@ public class Member {
 
     private String password;
 
-    private String name;
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
@@ -55,7 +55,7 @@ public class Member {
         Member member = Member.builder()
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
-                .name(request.getName())
+                .nickname(request.getNickname())
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .cart(cart)

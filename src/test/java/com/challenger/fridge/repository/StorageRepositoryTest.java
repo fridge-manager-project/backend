@@ -25,7 +25,7 @@ class StorageRepositoryTest {
                         .id(1L)
                 .email("tlatms8619@naver.com")
                 .password("1234")
-                .name("심현석")
+                .nickname("심현석")
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .build());
