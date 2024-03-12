@@ -30,7 +30,7 @@ class CartRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        SignUpRequest signUpRequest = new SignUpRequest("test@test.com", "1234", "test");
+        SignUpRequest signUpRequest = new SignUpRequest("springTest123@test.com", "1234", "test");
         signService.registerMember(signUpRequest);
     }
 
