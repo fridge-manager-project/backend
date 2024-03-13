@@ -34,10 +34,13 @@ public class CartItem {
 
     private Long itemCount;
 
+    private Boolean purchaseStatus;
+
     protected CartItem(Cart cart, Item item) {
         this.cart = cart;
         this.item = item;
         this.itemCount = 1L;
+        this.purchaseStatus = false;
     }
 
     public static CartItem createCartItem(Cart cart, Item item) {
@@ -48,5 +51,9 @@ public class CartItem {
 
     public void changeCount(ItemCountRequest itemCountRequest) {
         this.itemCount = itemCountRequest.getItemCount();
+    }
+
+    public void changePurchase() {
+        this.purchaseStatus = !this.purchaseStatus;
     }
 }
