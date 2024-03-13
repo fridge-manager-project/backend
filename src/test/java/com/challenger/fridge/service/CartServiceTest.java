@@ -149,4 +149,21 @@ class CartServiceTest {
         
         assertThat(cartItem.getItemCount()).isEqualTo(5L);
     }
+
+    @DisplayName("장바구니에 담긴 상품 구매 상태 변경")
+    @Test
+    void changeItemPurchase() {
+        String emailWithThreeItems = memberWithThreeItems;
+        Long purchasedCartItemId = cartService.addItem(emailWithThreeItems, 4L);
+        Long cartItemId = cartService.addItem(emailWithThreeItems, 5L);
+
+        cartService.changeItemPurchase(purchasedCartItemId);
+        CartItem purchasedCartItem = cartItemRepository.findById(purchasedCartItemId)
+                .orElseThrow(IllegalArgumentException::new);
+        CartItem CartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(purchasedCartItem.getPurchaseStatus()).isTrue();
+        assertThat(CartItem.getPurchaseStatus()).isFalse();
+    }
 }
