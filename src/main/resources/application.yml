@@ -28,5 +28,5 @@ springdoc:
 
 jwt:
   secret: 35c21b3de74471b7fd035869767f0cdb0b6adc041c74d252a4913df64ff3d3ec
-  access-token-validity-in-seconds: 60 # 30분
+  access-token-validity-in-seconds: 1800 # 30분
   refresh-token-validity-in-seconds: 7200 # 2시간
