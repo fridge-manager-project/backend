@@ -30,7 +30,7 @@ class CartRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        SignUpRequest signUpRequest = new SignUpRequest("test@test.com", "1234", "test");
+        SignUpRequest signUpRequest = new SignUpRequest("springTest123@test.com", "1234", "test");
         signService.registerMember(signUpRequest);
     }
 
@@ -45,6 +45,6 @@ class CartRepositoryTest {
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
 
-        assertThat(member.getName()).isEqualTo(findMember.getName());
+        assertThat(member.getNickname()).isEqualTo(findMember.getNickname());
     }
 }

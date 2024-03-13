@@ -8,6 +8,7 @@ import com.challenger.fridge.dto.sign.TokenInfo;
 import com.challenger.fridge.service.SignService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpCookie;
@@ -45,7 +46,7 @@ public class SignController {
 
     @Operation(summary = "회원가입")
     @PostMapping("/sign-up")
-    public ApiResponse signUp(@RequestBody SignUpRequest request) {
+    public ApiResponse signUp(@Valid @RequestBody SignUpRequest request) {
         return ApiResponse.success(signService.registerMember(request));
     }
 

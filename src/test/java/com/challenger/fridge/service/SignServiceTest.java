@@ -123,6 +123,6 @@ class SignServiceTest extends RedisContainerTest {
         // then
         assertThat(cart).isNotNull();
         assertThat(member.getEmail()).isEqualTo(email);
-        assertThat(member.getName()).isEqualTo(name);
+        assertThat(member.getNickname()).isEqualTo(name);
     }
 }

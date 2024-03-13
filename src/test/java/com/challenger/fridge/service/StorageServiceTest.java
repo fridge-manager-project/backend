@@ -56,7 +56,7 @@ class StorageServiceTest {
                 .id(memberId)
                 .email("jjw@naver.com")
                 .password("1234")
-                .name("jjw")
+                .nickname("jjw")
                 .role(MemberRole.ROLE_USER)
                 .storageList(new ArrayList<>())
                 .createdAt(LocalDateTime.now())
