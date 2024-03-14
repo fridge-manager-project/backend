@@ -8,5 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class CartItemMoveRequest {
     private Long boxId;
-    private List<CartItemRequest> cartItemRequests;
+//    private List<CartItemRequest> cartItemRequests;
 }
