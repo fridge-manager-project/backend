@@ -112,10 +112,10 @@ class SignControllerTest {
     void signUpTestWithWrongNickname() throws Exception {
         String email = "jjw@test.com";
         String password = "jjwPassword1!";
-        String wrongNickname = "틀린닉네임";
+        String wrongNickname = "이닉네임은 잘못된 닉네임";
         SignUpRequest requestWithWrongNickname = createSignUpRequest(email, password, wrongNickname);
 
-        ApiResponse apiResponseWithWrongNickname = createApiFailResponse("닉네임은 영어랑 숫자만 가능합니다.");
+        ApiResponse apiResponseWithWrongNickname = createApiFailResponse("닉네임은 최대 8자입니다.");
         String requestJsonWithWrongNickname = objectMapper.writeValueAsString(requestWithWrongNickname);
         String responseJsonWithWrongNickname = objectMapper.writeValueAsString(apiResponseWithWrongNickname);
 
