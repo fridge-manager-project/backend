@@ -61,14 +61,17 @@ public class CartController {
 
     @Operation(summary = "장바구니 상품을 냉장고로 이동 API")
     @PostMapping("/items")
-    public ResponseEntity<ApiResponse> moveItemToStorage(@RequestBody CartItemMoveRequest cartItemMoveRequest) {
-        cartStorageService.moveItems(cartItemMoveRequest);
+    public ResponseEntity<ApiResponse> moveItemToStorage(@RequestBody CartItemMoveRequest cartItemMoveRequest,
+                                                         @AuthenticationPrincipal User user) {
+        cartStorageService.moveItems(cartItemMoveRequest, user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @Operation(summary = "장바구니 상품 수량 조절 API")
     @PatchMapping("/{cartItemId}")
-    public ResponseEntity<ApiResponse> changeCartItemCount(@PathVariable Long cartItemId, @Valid @RequestBody ItemCountRequest itemCountRequest) {
+    public ResponseEntity<ApiResponse> changeCartItemCount(@PathVariable Long cartItemId,
+                                                           @Valid @RequestBody ItemCountRequest itemCountRequest) {
+
         cartService.changeItemCount(cartItemId, itemCountRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }

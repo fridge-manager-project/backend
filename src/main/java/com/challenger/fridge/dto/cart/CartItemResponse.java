@@ -12,6 +12,7 @@ public class CartItemResponse {
     private Long itemId;
     private String itemName;
     private Long itemCount;
+    private Boolean isPurchased;
     private String subCategoryName;
 
     public CartItemResponse(CartItem cartItem) {
@@ -19,6 +20,7 @@ public class CartItemResponse {
         this.itemId = cartItem.getItem().getId();
         this.itemName = cartItem.getItem().getItemName();
         this.itemCount = cartItem.getItemCount();
+        this.isPurchased = cartItem.getIsPurchased();
         this.subCategoryName = cartItem.getItem().getCategory().getCategoryName();
     }
 }
