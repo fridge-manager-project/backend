@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class MemberNicknameRequest {
 
     @NotBlank(message = "새로운 닉네임을 입력해주세요.")
-    @Size(min = 1, max = 8)
+    @Size(min = 1, max = 8, message = "닉네임은 최대 8자입니다.")
     private String nickname;
 }
