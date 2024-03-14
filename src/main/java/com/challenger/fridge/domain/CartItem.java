@@ -5,7 +5,6 @@ import static jakarta.persistence.FetchType.*;
 import com.challenger.fridge.dto.cart.ItemCountRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,10 +33,13 @@ public class CartItem {
 
     private Long itemCount;
 
+    private Boolean isPurchased;
+
     protected CartItem(Cart cart, Item item) {
         this.cart = cart;
         this.item = item;
         this.itemCount = 1L;
+        this.isPurchased = false;
     }
 
     public static CartItem createCartItem(Cart cart, Item item) {
@@ -48,5 +50,9 @@ public class CartItem {
 
     public void changeCount(ItemCountRequest itemCountRequest) {
         this.itemCount = itemCountRequest.getItemCount();
+    }
+
+    public void changePurchase() {
+        this.isPurchased = !this.isPurchased;
     }
 }

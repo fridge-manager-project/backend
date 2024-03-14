@@ -72,4 +72,11 @@ public class CartController {
         cartService.changeItemCount(cartItemId, itemCountRequest);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
+
+    @Operation(summary = "장바구니 상품 to do check API")
+    @PatchMapping("/{cartItemId}/todo")
+    public ResponseEntity<ApiResponse> changeCartItemPurchase(@PathVariable Long cartItemId) {
+        cartService.changeItemPurchase(cartItemId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }

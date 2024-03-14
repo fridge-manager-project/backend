@@ -74,4 +74,11 @@ public class CartService {
         cartItem.changeCount(itemCountRequest);
         return cartItem.getId();
     }
+
+    @Transactional
+    public void changeItemPurchase(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니에서 해당 상품을 찾을 수 없습니다."));
+        cartItem.changePurchase();
+    }
 }
