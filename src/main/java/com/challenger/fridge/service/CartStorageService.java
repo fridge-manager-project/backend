@@ -28,12 +28,6 @@ public class CartStorageService {
         StorageBox storageBox = storageBoxRepository.findById(cartItemMoveRequest.getBoxId())
                 .orElseThrow(() -> new IllegalArgumentException("세부 보관소를 찾을 수 없습니다."));
 
-        // cartItem 찾고 storageItem 으로 변환해서 저장
-//        List<StorageItem> storageItemList = cartItemMoveRequest.getCartItemRequests().stream()
-//                .map(r -> {
-//                    CartItem cartItem = cartItemRepository.findItemsById(r.getCartItemId());
-//                    return new StorageItem(cartItem.getItemCount(), cartItem.getItem(), storageBox);
-//                }).toList();
         // cartItem 중 isPurchased 된 데이터만 구하기
         List<CartItem> cartItemList = cartItemRepository.findPurchasedItemByEmail(email);
         List<StorageItem> storageItemList = cartItemList.stream()
@@ -44,11 +38,6 @@ public class CartStorageService {
         storageItemRepository.saveAll(storageItemList);
 
         // cartItem 삭제
-//        List<Long> cartItemIdList = cartItemMoveRequest.getCartItemRequests().stream()
-//                .map(CartItemRequest::getCartItemId)
-//                .toList();
-//        cartItemRepository.deleteSelectedItems(cartItemIdList);
-        cartItemRepository.deleteAllInBatch(cartItemList);
-
+        cartItemRepository.deleteMovedItemInBatch(cartItemList);
     }
 }
