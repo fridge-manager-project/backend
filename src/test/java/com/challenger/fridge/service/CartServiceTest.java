@@ -163,7 +163,7 @@ class CartServiceTest {
         CartItem CartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        assertThat(purchasedCartItem.getPurchaseStatus()).isTrue();
-        assertThat(CartItem.getPurchaseStatus()).isFalse();
+        assertThat(purchasedCartItem.getIsPurchased()).isTrue();
+        assertThat(CartItem.getIsPurchased()).isFalse();
     }
 }
