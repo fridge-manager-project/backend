@@ -44,9 +44,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/members/**", "/reissue", "/cart/**", "/items", "/storagebox/**",
                                         "/storage/**").authenticated()
-                                .requestMatchers("/swagger-ui/**", "/v3/**").permitAll()
+                                .requestMatchers("/sign-up", "/swagger-ui/**", "/v3/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/sign-in", "/sign-up").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/sign-in").permitAll()
                                 .anyRequest().denyAll()
                 )
                 .sessionManagement(
