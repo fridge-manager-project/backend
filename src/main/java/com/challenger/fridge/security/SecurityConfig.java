@@ -42,7 +42,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/", "/sign-in", "/sign-up", "/swagger-ui/**", "/v3/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/members/**", "/reissue","/cart/**", "/items", "/storagebox/**", "/storage/**").authenticated()
+                                .anyRequest().denyAll()
                 )
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
