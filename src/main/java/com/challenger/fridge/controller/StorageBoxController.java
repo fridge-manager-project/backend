@@ -21,13 +21,15 @@ import java.util.List;
 @RequestMapping("/storagebox")
 @Tag(name = "storagebox", description = "세부보관소 API")
 public class StorageBoxController {
+
     private final StorageBoxService storageBoxService;
     private final StorageItemRepository storageItemRepository;
 
 
     @PostMapping("/{storageBoxId}/items/new")
     @Operation(summary = "(검색 탭에서)세부 보관소에 상품 추가", description = "세부 보관소에 상품을 추가한다.(검색 탭에서 냉장고로 바로 추가)")
-    public ApiResponse addStorageItemToStorageBox(@RequestBody StorageItemRequest storageItemRequest, @PathVariable("storageBoxId") Long storageBoxId) {
+    public ApiResponse addStorageItemToStorageBox(@RequestBody StorageItemRequest storageItemRequest,
+                                                  @PathVariable("storageBoxId") Long storageBoxId) {
         storageBoxService.saveStorageItem(storageItemRequest, storageBoxId);
         return ApiResponse.success(null);
     }
@@ -48,7 +50,8 @@ public class StorageBoxController {
         //결국에는 단건 조회이기 때문에 양방향에서 찾는다해서 큰 장점을 느낄 수 가 없는거 같다.
         //또한 세부 보관소에서 storageItemId을 찾는건 결국 storageItemId만 필요하다.
         //구지 (컨트롤러 -> 서비스 로직 -> 레포지토리)가 아니라 (컨트롤러 -> 레포지토리 방향으로 가는 것이 나은 것 같다)
-        StorageItem storageItem = storageItemRepository.findById(storageItemId).orElseThrow(() -> new StorageItemNotFoundException("해당하는 상품이 세부 보관소에 없습니다."));
+        StorageItem storageItem = storageItemRepository.findById(storageItemId)
+                .orElseThrow(() -> new StorageItemNotFoundException("해당하는 상품이 세부 보관소에 없습니다."));
         return ApiResponse.success(new StorageItemResponse(storageItem));
     }
 
@@ -61,10 +64,11 @@ public class StorageBoxController {
 
     @PatchMapping("/items/{storageItemId}")
     @Operation(summary = "세부 보관소 상품 단건 수정", description = "세부 보관소안에 있는 상품을 수정한다(소비기한,유통기한,구매날짜,개수)")
-    public ApiResponse modifyStorageItem(@RequestBody StorageItemUpdateRequest storageItemUpdateRequest, @PathVariable Long storageItemId) {
+    public ApiResponse modifyStorageItem(@RequestBody StorageItemUpdateRequest storageItemUpdateRequest,
+                                         @PathVariable Long storageItemId) {
         storageBoxService.updateStorageItem(storageItemUpdateRequest, storageItemId);
-        return ApiResponse.success(storageItemRepository.findById(storageItemId).stream().map(StorageItemResponse::new));
+        return ApiResponse.success(
+                storageItemRepository.findById(storageItemId).stream().map(StorageItemResponse::new));
     }
-
 
 }
