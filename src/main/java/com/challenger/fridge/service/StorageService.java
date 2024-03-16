@@ -28,15 +28,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class StorageService {
+
     private final StorageRepository storageRepository;
     private final MemberRepository memberRepository;
     private final StorageBoxRepository storageBoxRepository;
 
     @Transactional
     public Long saveStorage(StorageSaveRequest storageSaveRequest, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당 이메일을 가진 사용자가 없습니다."));
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UserEmailNotFoundException("해당 이메일을 가진 사용자가 없습니다."));
         //anyMatch :최소한 한개의 요소가 주어진 조건에 만족하는가 (member가 가지고 있는 storage 중에 storageName이 중복되는게 있는가)
-        if (member.getStorageList().stream().anyMatch(storage -> storage.getName().equals(storageSaveRequest.getStorageName()))) {
+        if (member.getStorageList().stream()
+                .anyMatch(storage -> storage.getName().equals(storageSaveRequest.getStorageName()))) {
             throw new StorageNameDuplicateException("보관소의 이름이 중복되었습니다.");
         }
         List<StorageBox> storageBoxList = StorageBox.createStorageBox(storageSaveRequest);
@@ -47,7 +50,8 @@ public class StorageService {
 
     @Transactional
     public Long saveStorageBox(StorageBoxSaveRequest storageBoxSaveRequest, Long storageId) {
-        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 보관소를 찾을 수 없습니다."));
+        Storage storage = storageRepository.findById(storageId)
+                .orElseThrow(() -> new StorageNotFoundException("해당 보관소를 찾을 수 없습니다."));
         StorageMethod storageMethod = storageBoxSaveRequest.getStorageBoxType();
         String storageBoxName = storageBoxSaveRequest.getStorageBoxName();
         //만약에 보관소안에 있는 세부 보관소들의 이름들 중 하나라도 중복되는 것이 있다면 예외를 던짐
@@ -63,45 +67,53 @@ public class StorageService {
 
     @Transactional
     public void updateStorageStatus(StorageUpdateRequest storageUpdateRequest, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
         if (storageUpdateRequest.getStorageId() != null) {
-            Storage storage = storageRepository.findById(storageUpdateRequest.getStorageId()).orElseThrow(() -> new StorageNotFoundException("해당 하는 냉장고가 없습니다"));
+            Storage storage = storageRepository.findById(storageUpdateRequest.getStorageId())
+                    .orElseThrow(() -> new StorageNotFoundException("해당 하는 냉장고가 없습니다"));
             member.changeMainStorage(storage);
         }
     }
 
     public List<StorageResponse> findStorageList(String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UserEmailNotFoundException("해당하는 회원이 없습니다."));
         List<Storage> storageListByMember = storageRepository.findStorageListByMember(member);
         return storageListByMember.stream().map(storage -> new StorageResponse(storage))
                 .collect(Collectors.toList());
-
     }
 
     public StorageResponse findStorage(Long storageId) {
-        Storage storage = storageRepository.findStorageById(storageId).orElseThrow(() -> new StorageNotFoundException("해당 하는 보관소가 없습니다."));
+        Storage storage = storageRepository.findStorageById(storageId)
+                .orElseThrow(() -> new StorageNotFoundException("해당 하는 보관소가 없습니다."));
         return new StorageResponse(storage);
     }
 
     @Transactional
     public void updateStorageBox(StorageBoxUpdateRequest storageBoxUpdateRequest, Long storageBoxId, Long storageId) {
-        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
-        if (storage.getStorageBoxList().stream().anyMatch(storageBox -> storageBox.getName().equals(storageBoxUpdateRequest.getStorageBoxName()))) {
+        Storage storage = storageRepository.findById(storageId)
+                .orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
+        if (storage.getStorageBoxList().stream()
+                .anyMatch(storageBox -> storageBox.getName().equals(storageBoxUpdateRequest.getStorageBoxName()))) {
             throw new StorageBoxNameDuplicateException(storageBoxUpdateRequest.getStorageBoxName() + " 은 이미 존재합니다.");
         }
-        StorageBox storageBox = storageBoxRepository.findById(storageBoxId).orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
+        StorageBox storageBox = storageBoxRepository.findById(storageBoxId)
+                .orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
         storageBox.changeStorageBox(storageBoxUpdateRequest);
     }
 
     @Transactional
     public void deleteStorageBox(Long storageBoxId, Long storageId) {
-        StorageBox storageBox = storageBoxRepository.findById(storageBoxId).orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
+        StorageBox storageBox = storageBoxRepository.findById(storageBoxId)
+                .orElseThrow(() -> new StorageBoxNotFoundException("해당하는 세부 보관소가 없습니다."));
         storageBoxRepository.delete(storageBox);
     }
 
     @Transactional
     public void deleteStorage(Long storageId) {
-        Storage storage = storageRepository.findById(storageId).orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
+        Storage storage = storageRepository.findById(storageId)
+                .orElseThrow(() -> new StorageNotFoundException("해당하는 보관소가 없습니다."));
 
         //메인 냉장고는 삭제할 수 없다 --> 메인 보관소 수정 후 삭제 가능
         if (storage.getStatus() == StorageStatus.MAIN) {
@@ -109,7 +121,6 @@ public class StorageService {
         }
 
         storageRepository.delete(storage);
-
     }
 
 }
