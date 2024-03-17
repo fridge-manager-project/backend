@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class NoticeService {
-    private final FCMService fcmService;
+    private final FCMHttpService fcmHttpService;
     private final MemberRepository memberRepository;
 
-    @Scheduled(fixedRate = 10000) // 10초
+//    @Scheduled(fixedRate = 10000) // 10초
     public void sendTestNotification() {
         List<Member> memberList = memberRepository.findAll();
         try {
-            fcmService.sendTestMessage(memberList);
+            fcmHttpService.sendTestMessage(memberList);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -41,7 +41,7 @@ public class NoticeService {
         }
         //호출
         try {
-            fcmService.sendExpirationMessageTo(memberList);
+            fcmHttpService.sendExpirationMessageTo(memberList);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -59,7 +59,7 @@ public class NoticeService {
         }
         //호출
         try {
-            fcmService.sendCartMessageTo(memberList);
+            fcmHttpService.sendCartMessageTo(memberList);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
