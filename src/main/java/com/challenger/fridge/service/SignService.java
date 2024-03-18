@@ -79,9 +79,7 @@ public class SignService {
     }
 
     private void saveDeviceToken(String email, String deviceToken) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-        member.addDeviceToken(deviceToken);
+        redisService.setFcmTokenWithTimeout("FCM:" + email, deviceToken);
     }
 
     @Transactional
