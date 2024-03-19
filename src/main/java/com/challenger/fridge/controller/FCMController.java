@@ -18,7 +18,7 @@ public class FCMController {
     private final FCMService fcmService;
 
     @Operation(summary = "테스트 알림 보내기")
-    @PostMapping("/test/notification")
+    @PostMapping("/members/test")
     public ResponseEntity<ApiResponse> sendNotification(@RequestBody NotificationRequest notificationRequest)
             throws FirebaseMessagingException {
         fcmService.sendTestNotification(notificationRequest);
