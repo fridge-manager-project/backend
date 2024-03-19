@@ -74,12 +74,7 @@ public class SignService {
         log.info("3. AT, RT 생성 및 Redis 에 RT 저장");
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         saveRefreshToken(authentication.getName(), tokenInfo.getRefreshToken());
-        saveDeviceToken(authentication.getName(), deviceToken);
         return tokenInfo;
-    }
-
-    private void saveDeviceToken(String email, String deviceToken) {
-        redisService.setFcmTokenWithTimeout("FCM:" + email, deviceToken);
     }
 
     @Transactional
