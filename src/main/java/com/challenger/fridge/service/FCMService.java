@@ -1,6 +1,7 @@
 package com.challenger.fridge.service;
 
 import com.challenger.fridge.dto.NotificationRequest;
+import com.challenger.fridge.repository.FCMTokenRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -14,7 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FCMService {
 
+    private final FCMTokenRepository fcmTokenRepository;
     private final FirebaseMessaging firebaseMessaging;
+
+    public void saveToken(String email, String deviceToken) {
+        fcmTokenRepository.saveFCMToken(email, deviceToken);
+    }
 
     public void sendTestNotification(NotificationRequest notificationRequest) throws FirebaseMessagingException {
         Message message = Message.builder()
