@@ -78,7 +78,7 @@ public class FCMService {
         String body = "소비 기간이 얼마 남지 않은 상품이 있어요. 냉장고를 확인 주세요!";
         MulticastMessage message = makeNotificationMessage(deviceTokenList, title, body);
 
-        BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
+        BatchResponse response = firebaseMessaging.sendEachForMulticast(message);
         log.info("총 " + response.getSuccessCount() + " 개의 메시지 전송 성공");
         log.info("총 " + response.getFailureCount() + " 개의 메시지 전송 실패");
 
@@ -110,7 +110,7 @@ public class FCMService {
         String body = "소비 기간이 지난 상품이 있어요. 냉장고를 정리 주세요!";
         MulticastMessage message = makeNotificationMessage(deviceTokenList, title, body);
 
-        BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(message);
+        BatchResponse response = firebaseMessaging.sendEachForMulticast(message);
         log.info("총 " + response.getSuccessCount() + " 개의 메시지 전송 성공");
         log.info("총 " + response.getFailureCount() + " 개의 메시지 전송 실패");
 
