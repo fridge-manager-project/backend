@@ -32,8 +32,6 @@ public abstract class Notification {
     @Column(name = "notification_id")
     private Long id;
 
-    private String message;
-
     private Boolean isRead;
 
     private LocalDate createdDate;
@@ -42,8 +40,7 @@ public abstract class Notification {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected Notification(String message, Member member) {
-        this.message = message;
+    protected Notification(Member member) {
         this.isRead = false;
         this.createdDate = LocalDate.now();
         this.member = member;

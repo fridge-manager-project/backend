@@ -16,8 +16,8 @@ public class Notice extends Notification {
     private String title;
     private String body;
 
-    public Notice(String message, Member member, String title, String body) {
-        super(message, member);
+    public Notice(Member member, String title, String body) {
+        super(member);
         this.title = title;
         this.body = body;
     }
