@@ -17,4 +17,6 @@ public interface StorageItemRepository extends JpaRepository<StorageItem, Long> 
             + " where m.allowNotification = true and si.expirationDate between :startDate and :endDate")
     List<StorageItem> findStorageItemsByExpirationDateBetween(@Param("startDate") LocalDate startDate,
                                                               @Param("endDate") LocalDate endDate);
+
+    List<StorageItem> findStorageItemsByExpirationDateAfter(LocalDate date);
 }
