@@ -1,12 +1,16 @@
-package com.challenger.fridge.domain;
+package com.challenger.fridge.domain.notification;
 
 import static jakarta.persistence.FetchType.*;
 
+import com.challenger.fridge.domain.Member;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -18,8 +22,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "NotificationType")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification {
+public abstract class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,20 +42,11 @@ public class Notification {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    protected Notification(String message, boolean isRead, LocalDate createdDate, Member member) {
+    protected Notification(String message, Member member) {
         this.message = message;
-        this.isRead = isRead;
-        this.createdDate = createdDate;
+        this.isRead = false;
+        this.createdDate = LocalDate.now();
         this.member = member;
-    }
-
-    public static Notification createNotice(Member member, String message) {
-        return new Notification(
-                message,
-                false,
-                LocalDate.now(),
-                member
-        );
     }
 
 }
