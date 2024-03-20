@@ -21,12 +21,13 @@ public class StorageNotification extends Notification {
     @JoinColumn(name = "storage_item_id")
     private StorageItem storageItem;
 
-    public StorageNotification(StorageItem storageItem) {
+    public StorageNotification(Member member, StorageItem storageItem) {
+        super(member);
         this.storageItem = storageItem;
     }
 
-    public StorageNotification(Member member, StorageItem storageItem) {
-        super(member);
+    public StorageNotification(StorageItem storageItem) {
+        super(storageItem.getStorageBox().getStorage().getMember());
         this.storageItem = storageItem;
     }
 }
