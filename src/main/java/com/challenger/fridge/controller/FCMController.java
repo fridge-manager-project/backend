@@ -1,7 +1,7 @@
 package com.challenger.fridge.controller;
 
 import com.challenger.fridge.dto.ApiResponse;
-import com.challenger.fridge.dto.NotificationRequest;
+import com.challenger.fridge.dto.notification.NotificationRequest;
 import com.challenger.fridge.service.FCMService;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;

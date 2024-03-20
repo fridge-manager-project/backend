@@ -1,4 +1,4 @@
-package com.challenger.fridge.dto;
+package com.challenger.fridge.dto.notification;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

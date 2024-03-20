@@ -4,11 +4,9 @@ import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
-import com.challenger.fridge.dto.NotificationRequest;
+import com.challenger.fridge.dto.notification.NotificationRequest;
 import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.repository.FCMTokenRepository;
-import com.challenger.fridge.repository.MemberRepository;
-import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -34,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class FCMService {
 
     private final FCMTokenRepository fcmTokenRepository;
-    private final MemberRepository memberRepository;
     private final StorageItemRepository storageItemRepository;
     private final FirebaseMessaging firebaseMessaging;
 
