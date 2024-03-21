@@ -59,7 +59,7 @@ public class Member {
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .cart(cart)
-                .allowNotification(false)
+                .allowNotification(true)
                 .build();
         cart.allocateMember(member);
         return member;
