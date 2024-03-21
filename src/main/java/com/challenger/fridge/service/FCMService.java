@@ -1,6 +1,5 @@
 package com.challenger.fridge.service;
 
-import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
@@ -8,7 +7,6 @@ import com.challenger.fridge.domain.notification.StorageNotification;
 import com.challenger.fridge.dto.notification.NotificationRequest;
 import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.repository.FCMTokenRepository;
-import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.NotificationRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
 import com.google.firebase.messaging.BatchResponse;
@@ -21,7 +19,6 @@ import com.google.firebase.messaging.SendResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +92,7 @@ public class FCMService {
 
         // 유통기한이 임박한 상품을 가진 사용자 찾기
         List<StorageItem> storageItemsAfterExpirationDate =
-                storageItemRepository.findStorageItemsByExpirationDateAfter(LocalDate.now());
+                storageItemRepository.findStorageItemsByExpirationDateBefore(LocalDate.now());
 
         // 해당 사용자의 email 을 사용하여 deviceTokenList 만들기
         List<String> deviceTokenList = getDeviceTokenListFromStorageItems(storageItemsAfterExpirationDate);

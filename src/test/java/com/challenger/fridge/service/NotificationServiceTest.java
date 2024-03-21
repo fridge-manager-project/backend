@@ -44,6 +44,7 @@ class NotificationServiceTest {
     EntityManager em;
 
     List<Item> eatableItemList;
+    List<Item> unEatableItemList;
     Long storageId;
     Long storageBoxId;
     String email = "jjw@test.com";
@@ -55,29 +56,50 @@ class NotificationServiceTest {
         createTestStorageBox();
 
         eatableItemList = createItemListBetweenIds(1L, 3L);
+        unEatableItemList = createItemListBetweenIds(5L, 10L);
+
         saveStorageItems(eatableItemList, LocalDate.now().plusDays(1));
+        saveStorageItems(unEatableItemList, LocalDate.now().minusDays(1));
 
         List<StorageItem> storageItemsByExpirationDateBetween = storageItemRepository.findStorageItemsByExpirationDateBetween(
                 LocalDate.now(), LocalDate.now().plusDays(3));
+        List<StorageItem> storageItemsByExpirationDateBefore = storageItemRepository.findStorageItemsByExpirationDateBefore(
+                LocalDate.now());
 
         fcmService.saveItemExpirationNotification(storageItemsByExpirationDateBetween);
+        fcmService.saveItemExpirationNotification(storageItemsByExpirationDateBefore);
     }
 
     @Test
     @DisplayName("모든 보관소 알림 조회")
     void findAllStorageNotification() {
+        //given
         String email = "jjw@test.com";
 
+        //when
         NotificationResponse notificationResponse = notificationService.findAllNotification(email);
         List<StorageNotificationResponse> storageNotificationResponses = notificationResponse.getStorageNotificationResponses();
 
-        assertThat(storageNotificationResponses.size()).isEqualTo(eatableItemList.size());
-        for (int i = 0; i < storageNotificationResponses.size(); i++) {
+        //then
+        int eatableItemNotificationSize = eatableItemList.size();
+        int unEatableItemNotificationSize = unEatableItemList.size();
+
+        assertThat(storageNotificationResponses.size()).isEqualTo(eatableItemNotificationSize + unEatableItemNotificationSize);
+
+        for (int i = 0; i < eatableItemNotificationSize; i++) {
             StorageNotificationResponse storageNotificationResponse = storageNotificationResponses.get(i);
             assertThat(storageNotificationResponse.getStorageId()).isEqualTo(storageId);
             assertThat(storageNotificationResponse.getStorageBoxId()).isEqualTo(storageBoxId);
             assertThat(storageNotificationResponse.getItemName()).isEqualTo(eatableItemList.get(i).getItemName());
             assertThat(storageNotificationResponse.getItemExpiration()).isEqualTo(LocalDate.now().plusDays(1));
+        }
+
+        for (int i = eatableItemNotificationSize; i < eatableItemNotificationSize + unEatableItemNotificationSize; i++) {
+            StorageNotificationResponse storageNotificationResponse = storageNotificationResponses.get(i);
+            assertThat(storageNotificationResponse.getStorageId()).isEqualTo(storageId);
+            assertThat(storageNotificationResponse.getStorageBoxId()).isEqualTo(storageBoxId);
+            assertThat(storageNotificationResponse.getItemName()).isEqualTo(unEatableItemList.get(i - eatableItemNotificationSize).getItemName());
+            assertThat(storageNotificationResponse.getItemExpiration()).isEqualTo(LocalDate.now().minusDays(1));
         }
     }
 
@@ -110,8 +132,4 @@ class NotificationServiceTest {
                         expirationDate.toString(), LocalDate.now().toString()))
                 .forEach(storageItemRequest -> storageBoxService.saveStorageItem(storageItemRequest, storageBoxId));
     }
-
-
-
-
 }
