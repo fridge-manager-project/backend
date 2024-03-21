@@ -1,5 +1,6 @@
 package com.challenger.fridge.repository;
 
+import com.challenger.fridge.domain.notification.Notice;
 import com.challenger.fridge.domain.notification.Notification;
 import com.challenger.fridge.domain.notification.StorageNotification;
 import java.util.List;
@@ -16,4 +17,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             + " join fetch sb.storage s"
             + " where sn.member.email = :email")
     List<StorageNotification> findStorageNotificationByEmail(@Param("email") String email);
+
+    @Query("select n from Notice n where n.member.email = :email")
+    List<Notice> findNoticeByEmail(@Param("email") String email);
+
 }

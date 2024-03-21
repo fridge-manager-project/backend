@@ -1,6 +1,7 @@
 package com.challenger.fridge.controller;
 
 import com.challenger.fridge.dto.ApiResponse;
+import com.challenger.fridge.dto.notification.NotificationResponse;
 import com.challenger.fridge.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class NotificationController {
     @Operation(summary = "전체 알림 조회")
     @GetMapping
     public ResponseEntity<ApiResponse> getAllNotification(@AuthenticationPrincipal User user) {
-        notificationService.findAllNotification(user.getUsername());
-        return ResponseEntity.ok(ApiResponse.success(null));
+        NotificationResponse notificationResponse = notificationService.findAllNotification(user.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(notificationResponse));
     }
 }
