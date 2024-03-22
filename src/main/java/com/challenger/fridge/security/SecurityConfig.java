@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/members/**", "/reissue", "/cart/**", "/items", "/storagebox/**",
-                                        "/storage/**").authenticated()
+                                        "/storage/**", "/notification/**").authenticated()
                                 .requestMatchers("/sign-up", "/swagger-ui/**", "/v3/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/sign-in").permitAll()

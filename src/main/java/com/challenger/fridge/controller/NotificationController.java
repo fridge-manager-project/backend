@@ -25,4 +25,6 @@ public class NotificationController {
         NotificationResponse notificationResponse = notificationService.findAllNotification(user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(notificationResponse));
     }
+
+
 }
