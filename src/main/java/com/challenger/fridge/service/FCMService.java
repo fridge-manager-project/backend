@@ -1,11 +1,13 @@
 package com.challenger.fridge.service;
 
+import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.domain.notification.StorageNotification;
 import com.challenger.fridge.dto.notification.NotificationRequest;
 import com.challenger.fridge.dto.sign.SignInRequest;
+import com.challenger.fridge.repository.CartRepository;
 import com.challenger.fridge.repository.FCMTokenRepository;
 import com.challenger.fridge.repository.NotificationRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
@@ -36,6 +38,7 @@ public class FCMService {
     private final StorageItemRepository storageItemRepository;
     private final FirebaseMessaging firebaseMessaging;
     private final NotificationRepository notificationRepository;
+    private final CartRepository cartRepository;
 
     public void saveToken(SignInRequest signInRequest, String deviceToken) {
         fcmTokenRepository.saveFCMToken(signInRequest.getEmail(), deviceToken);
@@ -116,6 +119,39 @@ public class FCMService {
         }
 
         saveItemExpirationNotification(storageItemsAfterExpirationDate);
+    }
+
+    @Scheduled(cron = "0 0 18 * * *")
+    public void sendCartItemNotification() throws FirebaseMessagingException {
+        log.info("장바구니에 상품 있을 경우 푸시 알림 보내기");
+
+        // 장바구니에 상품이 담긴 사용자 찾기
+        List<Cart> cartList = cartRepository.findWithItemsByMemberEmailAndNotificationAllowed();
+
+        // 해당 사용자의 email 을 사용하여 deviceTokenList 만들기
+        List<String> deviceTokenList = cartList.stream()
+                .filter(cart -> cart.getCartItemList().size() > 0)
+                .map(Cart::getMember)
+                .map(member -> fcmTokenRepository.getFCMToken(member.getEmail()))
+                .collect(Collectors.toList());
+
+        if (deviceTokenList.isEmpty()) {
+            log.info("deviceToken 이 비었습니다.");
+            return;
+        }
+
+        // 해당 List 로 푸시 알림 보내기
+        String title = "집가는 길에 마트 어떠세요!";
+        String body = "장바구니에 남아 있는 상품이 있어요. 장바구니를 확인 주세요!";
+        MulticastMessage message = makeNotificationMessage(deviceTokenList, title, body);
+
+        BatchResponse response = firebaseMessaging.sendEachForMulticast(message);
+        log.info("총 " + response.getSuccessCount() + " 개의 메시지 전송 성공");
+        log.info("총 " + response.getFailureCount() + " 개의 메시지 전송 실패");
+
+        if (response.getFailureCount() > 0) {
+            checkFailedNotificationResponse(deviceTokenList, response);
+        }
     }
 
     private List<String> getDeviceTokenListFromStorageItems(List<StorageItem> storageItemList) {
