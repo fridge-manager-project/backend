@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDate;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,7 @@ public abstract class Notification {
 
     private Boolean isRead;
 
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
@@ -42,7 +43,7 @@ public abstract class Notification {
 
     protected Notification(Member member) {
         this.isRead = false;
-        this.createdDate = LocalDate.now();
+        this.createdDate = LocalDateTime.now();
         this.member = member;
     }
 

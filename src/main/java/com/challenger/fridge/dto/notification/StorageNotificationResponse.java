@@ -5,6 +5,7 @@ import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.domain.notification.StorageNotification;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class StorageNotificationResponse {
     private String storageBoxName;
     private LocalDate itemExpiration;
     private Boolean isRead;
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     public static StorageNotificationResponse from(StorageNotification storageNotification) {
         StorageItem storageItem = storageNotification.getStorageItem();
@@ -38,7 +39,7 @@ public class StorageNotificationResponse {
                 .storageBoxName(storageBox.getName())
                 .itemExpiration(storageItem.getExpirationDate())
                 .isRead(false)
-                .createdDate(LocalDate.now())
+                .createdDate(LocalDateTime.now())
                 .build();
     }
 }

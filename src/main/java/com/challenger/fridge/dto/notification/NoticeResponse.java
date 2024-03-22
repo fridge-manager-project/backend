@@ -2,6 +2,8 @@ package com.challenger.fridge.dto.notification;
 
 import com.challenger.fridge.domain.notification.Notice;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class NoticeResponse {
     private Long notificationId;
     private String title;
     private String body;
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     public static NoticeResponse from(Notice notice) {
         return NoticeResponse.builder()
