@@ -15,10 +15,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             + " join fetch si.item i"
             + " join fetch si.storageBox sb"
             + " join fetch sb.storage s"
-            + " where sn.member.email = :email")
+            + " where sn.member.email = :email"
+            + " order by sn.createdDate desc")
     List<StorageNotification> findStorageNotificationByEmail(@Param("email") String email);
 
-    @Query("select n from Notice n where n.member.email = :email")
+    @Query("select n from Notice n where n.member.email = :email order by n.createdDate desc")
     List<Notice> findNoticeByEmail(@Param("email") String email);
 
 }
