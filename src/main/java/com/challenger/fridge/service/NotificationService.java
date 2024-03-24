@@ -31,4 +31,11 @@ public class NotificationService {
 
         return new NotificationResponse(storageNotificationResponses, noticeResponses);
     }
+
+    public Long readNotificationById(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+        notification.read();
+        return notification.getId();
+    }
 }

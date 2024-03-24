@@ -32,6 +32,7 @@ public class StorageNotificationResponse {
         Storage storage = storageBox.getStorage();
 
         return StorageNotificationResponse.builder()
+                .notificationId(storageNotification.getId())
                 .itemName(storageItem.getItem().getItemName())
                 .storageId(storage.getId())
                 .storageName(storage.getName())

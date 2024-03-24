@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,5 +28,11 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success(notificationResponse));
     }
 
+    @Operation(summary = "알림 읽기 API")
+    @PatchMapping("/{notificationId}")
+    public ResponseEntity<ApiResponse> readNotification(@PathVariable("notificationId") Long notificationId) {
+        Long readNotificationId = notificationService.readNotificationById(notificationId);
+        return ResponseEntity.ok(ApiResponse.success(readNotificationId));
+    }
 
 }

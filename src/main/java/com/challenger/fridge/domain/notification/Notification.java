@@ -47,4 +47,7 @@ public abstract class Notification {
         this.member = member;
     }
 
+    public void read() {
+        this.isRead = true;
+    }
 }
