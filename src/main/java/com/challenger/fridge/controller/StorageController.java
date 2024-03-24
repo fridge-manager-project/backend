@@ -25,6 +25,7 @@ import java.util.List;
 @RequestMapping("/storage")
 @Tag(name = "storage", description = "보관소 API")
 public class StorageController {
+    
     private final StorageService storageService;
     private final StorageBoxRepository storageBoxRepository;
 
@@ -82,12 +83,15 @@ public class StorageController {
     public ApiResponse modifyStorageBox(@RequestBody StorageBoxUpdateRequest storageBoxUpdateRequest
             , @PathVariable Long storageBoxId
             , @PathVariable Long storageId) {
+
         //현재 수정해야할 필드(세부 보관소 이름) 하나이고 만약에 Patch메소드라 자원을 수정하지 않고 넘어오면 null값이 들어오게 된다 그렇다면 그냥 기존의 storageBox 정보를 넘겨준다.
         if (storageBoxUpdateRequest.getStorageBoxName() == null) {
-            return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream().map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
+            return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream()
+                    .map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
         }
         storageService.updateStorageBox(storageBoxUpdateRequest, storageBoxId, storageId);
-        return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream().map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
+        return ApiResponse.success(storageBoxRepository.findById(storageBoxId).stream()
+                .map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox)));
     }
 
     @DeleteMapping("/{storageId}/storagebox/{storageBoxId}")
@@ -98,6 +102,5 @@ public class StorageController {
 
         return ApiResponse.success(null);
     }
-
 
 }

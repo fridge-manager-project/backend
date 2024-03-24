@@ -60,7 +60,7 @@ public class SignService {
      * 로그인
      */
     @Transactional
-    public TokenInfo signIn(SignInRequest request) {
+    public TokenInfo signIn(SignInRequest request, String deviceToken) {
         // 1. email, password 기반 Authentication 객체 생성. -> 인증 여부를 확인하는 authenticated 값이 false
         log.info("1. email, password 기반 Authentication 객체 생성.");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

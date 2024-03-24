@@ -39,3 +39,4 @@ out/
 
 data.sql
 application-aws.yml
+resources/firebase/

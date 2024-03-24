@@ -20,13 +20,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public abstract class StorageBox {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "storage_box_id")
     private Long id;
 
     private String name;
-    
+
     @Column(name = "DTYPE", insertable = false, updatable = false)
     private String dtype;
 
@@ -75,16 +76,14 @@ public abstract class StorageBox {
                 throw new StorageMethodMatchingException("보관 저장 방식이 잘못되었습니다.");
         }
     }
+
     /**
      * storageBox 변경 로직
      *
      * @param storageBoxUpdateRequest
      */
-    public void changeStorageBox(StorageBoxUpdateRequest storageBoxUpdateRequest)
-    {
-        this.name=storageBoxUpdateRequest.getStorageBoxName();
+    public void changeStorageBox(StorageBoxUpdateRequest storageBoxUpdateRequest) {
+        this.name = storageBoxUpdateRequest.getStorageBoxName();
     }
-
-
 
 }

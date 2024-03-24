@@ -2,6 +2,7 @@ package com.challenger.fridge.dto.item.request;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 
 @Data
+@AllArgsConstructor
 @Schema(description = "보관 아이템을 나타내는 DTO")
 public class StorageItemRequest {
     @Schema(description = "아이템의 고유 식별자")
