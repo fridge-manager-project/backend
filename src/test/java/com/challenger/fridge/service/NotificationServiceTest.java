@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.StorageItem;
+import com.challenger.fridge.domain.notification.Notification;
 import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageMethod;
 import com.challenger.fridge.dto.item.request.StorageItemRequest;
@@ -11,6 +12,7 @@ import com.challenger.fridge.dto.notification.NotificationResponse;
 import com.challenger.fridge.dto.notification.StorageNotificationResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.repository.NotificationRepository;
 import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
 import jakarta.persistence.EntityManager;
@@ -28,20 +30,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class NotificationServiceTest {
 
-    @Autowired
-    NotificationService notificationService;
-    @Autowired
-    SignService signService;
-    @Autowired
-    StorageService storageService;
-    @Autowired
-    StorageBoxService storageBoxService;
-    @Autowired
-    FCMService fcmService;
-    @Autowired
-    StorageItemRepository storageItemRepository;
-    @Autowired
-    EntityManager em;
+    @Autowired NotificationService notificationService;
+    @Autowired SignService signService;
+    @Autowired StorageService storageService;
+    @Autowired StorageBoxService storageBoxService;
+    @Autowired FCMService fcmService;
+    @Autowired StorageItemRepository storageItemRepository;
+    @Autowired NotificationRepository notificationRepository;
+    @Autowired EntityManager em;
 
     List<Item> eatableItemList;
     List<Item> unEatableItemList;
@@ -104,6 +100,30 @@ class NotificationServiceTest {
                     unEatableItemList.get(i - eatableItemNotificationSize).getItemName());
             assertThat(storageNotificationResponse.getItemExpiration()).isEqualTo(LocalDate.now().minusDays(1));
         }
+    }
+
+
+    @Test
+    @DisplayName("알림 읽기 테스트")
+    void readNotification() {
+        //given
+        String email = "jjw@test.com";
+        NotificationResponse notificationResponse = notificationService.findAllNotification(email);
+        List<StorageNotificationResponse> storageNotificationResponses = notificationResponse.getStorageNotificationResponses();
+
+        if (storageNotificationResponses.isEmpty()) {
+            fail("상품을 보관소에 넣은 후 알림을 생성해주세요");
+        }
+
+        Long notificationId = storageNotificationResponses.get(0).getNotificationId();
+
+        //when
+        Long readNotificationId = notificationService.readNotificationById(notificationId);
+        Notification readNotification = notificationRepository.findById(readNotificationId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        //then
+        assertThat(readNotification.getIsRead()).isTrue();
     }
 
     private void createTestMember(String email) {
