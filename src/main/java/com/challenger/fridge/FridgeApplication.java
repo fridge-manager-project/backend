@@ -7,8 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @OpenAPIDefinition(servers = {@Server(url = "https://naenggeul.life", description = "도메인 설명")})
+@EnableScheduling
 @SpringBootApplication
 @ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com\\.challenger\\.fridge\\.util\\..*"))
 public class FridgeApplication {

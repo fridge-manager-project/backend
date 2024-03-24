@@ -20,12 +20,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     void deleteByEmail(String email);
 
 
-    @Query("select m from Member m " +
-            "join fetch m.storageList s " +
-            "join fetch s.storageBoxList sb " +
-            "join fetch sb.storageItemList si " +
-            "where si.expirationDate >= :startDate and si.expirationDate <= :endDate and m.allowNotification=true ")
-    List<Member> findMembersWithExpiringItemsAndNotificationAllow(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("select m from Member m" +
+            " join fetch m.storageList s" +
+            " join fetch s.storageBoxList sb" +
+            " join fetch sb.storageItemList si" +
+            " where si.expirationDate >= :startDate and si.expirationDate <= :endDate and m.allowNotification=true")
+    List<Member> findMembersWithExpiringItemsAndNotificationAllow(@Param("startDate") LocalDate startDate,
+                                                                  @Param("endDate") LocalDate endDate);
 
     @Query("select m from Member m " +
             "join fetch m.cart c ")
