@@ -128,7 +128,7 @@ public class JwtTokenProvider {
     }
 
     public long getTokenExpirationTime(String refreshToken) {
-        return parseClaims(refreshToken).getExpiration().getTime();
+        return parseClaims(refreshToken).getExpiration().getTime() - new Date().getTime();
     }
 
     public boolean validateRefreshToken(String refreshToken) {
