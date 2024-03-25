@@ -6,9 +6,11 @@ import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class MemberInfoResponse {
 
@@ -27,5 +29,15 @@ public class MemberInfoResponse {
         this.storageBoxes = storage.getStorageBoxList().stream()
                 .map(StorageBoxNameResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    public static MemberInfoResponse createInfoWithoutStorage(Member member) {
+        return MemberInfoResponse.builder()
+                .username(member.getNickname())
+                .email(member.getEmail())
+                .mainStorageId(null)
+                .mainStorageName(null)
+                .storageBoxes(null)
+                .build();
     }
 }

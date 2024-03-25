@@ -22,6 +22,9 @@ public class MemberService {
     public MemberInfoResponse findUserInfo(String email) {
         Member member = memberRepository.findMemberStorageByEmail(email, StorageStatus.MAIN)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        if (member.getStorageList().isEmpty()) {
+            return MemberInfoResponse.createInfoWithoutStorage(member);
+        }
         return new MemberInfoResponse(member);
     }
 
