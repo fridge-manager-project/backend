@@ -47,16 +47,16 @@ class SignServiceTest extends RedisContainerTest {
 
     @BeforeEach
     void setUp() {
-        String registeredEmail = "jjw@test.com";
+        String registeredEmail = "springTest@test.com";
         String password = "1234";
-        String name = "jjw";
+        String name = "springTest";
         signService.registerMember(new SignUpRequest(registeredEmail, password, name));
     }
 
     @DisplayName("사용중인 이메일 입력 시 예외 발생")
     @Test
     void createDuplicateEmailException() {
-        String registeredEmail = "jjw@test.com";
+        String registeredEmail = "springTest@test.com";
         assertThatThrownBy(() -> signService.checkDuplicateEmail(registeredEmail))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 사용중인 이메일입니다.");
@@ -82,7 +82,7 @@ class SignServiceTest extends RedisContainerTest {
     @DisplayName("틀린 비밀번호로 로그인")
     @Test
     void signInWithWrongPassword() {
-        String registeredEmail = "jjw@test.com";
+        String registeredEmail = "springTest@test.com";
         String wrongPassword = "12345";
         SignInRequest request = new SignInRequest(registeredEmail, wrongPassword);
 
@@ -94,7 +94,7 @@ class SignServiceTest extends RedisContainerTest {
     @Test
     void signIn() {
         //given
-        String email = "jjw@test.com";
+        String email = "springTest@test.com";
         String password = "1234";
 
         //when

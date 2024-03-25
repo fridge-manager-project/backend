@@ -38,14 +38,15 @@ class CartStorageServiceTest {
     @Autowired StorageBoxRepository storageBoxRepository;
     @Autowired CartStorageService cartStorageService;
 
+    static String EMAIL = "springTest@test.com";
     Long storageId;
     List<Item> itemList = new ArrayList<>();
     List<Long> cartItemIdList;
 
     @BeforeEach
     void setUp() {
-        String email = "jjw@test.com";
-        signService.registerMember(new SignUpRequest("jjw@test.com", "1234", "jjj"));
+        String email = EMAIL;
+        signService.registerMember(new SignUpRequest(EMAIL, "1234", "springTest"));
         StorageSaveRequest storageSaveRequest = new StorageSaveRequest("퍼스트 냉장고", 3L, 2L);
         storageId = createStorageConfig(email, storageSaveRequest);
 
@@ -63,7 +64,7 @@ class CartStorageServiceTest {
     @Test
     void moveItemsToBox() {
         //given
-        String email = "jjw@test.com";
+        String email = EMAIL;
         Storage storage = storageRepository.findById(storageId)
                 .orElseThrow(IllegalArgumentException::new);
         Long boxId = storage.getStorageBoxList().get(1).getId();
@@ -75,7 +76,7 @@ class CartStorageServiceTest {
         cartStorageService.moveItems(cartItemMoveRequest, email);
         System.out.println("=================");
 
-        CartResponse cartResponse = cartService.findItems("jjw@test.com");
+        CartResponse cartResponse = cartService.findItems(EMAIL);
         StorageBox storageBox = storageBoxRepository.findStorageItemsById(boxId)
                 .orElseThrow(IllegalArgumentException::new);
         List<StorageItem> storageItemList = storageBox.getStorageItemList();
@@ -98,7 +99,7 @@ class CartStorageServiceTest {
     @Test
     void moveSelectedItemsToBox() {
         //given
-        String email = "jjw@test.com";
+        String email = EMAIL;
         Storage storage = storageRepository.findById(storageId)
                 .orElseThrow(IllegalArgumentException::new);
         Long boxId = storage.getStorageBoxList().get(1).getId();
@@ -111,7 +112,7 @@ class CartStorageServiceTest {
         cartService.changeItemPurchase(greenOnionId);
         cartStorageService.moveItems(cartItemMoveRequest, email);
 
-        CartResponse cartResponse = cartService.findItems("jjw@test.com");
+        CartResponse cartResponse = cartService.findItems(EMAIL);
         StorageBox storageBox = storageBoxRepository.findStorageItemsById(boxId)
                 .orElseThrow(IllegalArgumentException::new);
         List<StorageItem> storageItemList = storageBox.getStorageItemList();
