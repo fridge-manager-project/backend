@@ -53,14 +53,14 @@ public class SignService {
     public SignUpResponse registerMember(SignUpRequest request) {
         Cart cart = Cart.createCart();
         Member member = memberRepository.save(Member.from(request, encoder, cart));
-        return new SignUpResponse(member.getName());
+        return new SignUpResponse(member.getNickname());
     }
 
     /**
      * 로그인
      */
     @Transactional
-    public TokenInfo signIn(SignInRequest request) {
+    public TokenInfo signIn(SignInRequest request, String deviceToken) {
         // 1. email, password 기반 Authentication 객체 생성. -> 인증 여부를 확인하는 authenticated 값이 false
         log.info("1. email, password 기반 Authentication 객체 생성.");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

@@ -3,9 +3,11 @@ package com.challenger.fridge.handler;
 import com.challenger.fridge.dto.ApiResponse;
 
 import com.challenger.fridge.exception.*;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class ExceptionResponseHandler {
 
@@ -94,5 +97,12 @@ public class ExceptionResponseHandler {
     @ExceptionHandler(CannotDeleteException.class)
     public ResponseEntity<ApiResponse> handleCannotDeleteException(CannotDeleteException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(FirebaseMessagingException.class)
+    public ResponseEntity<ApiResponse> handleFirebaseMessagingException(FirebaseMessagingException e) {
+        log.error("FCM Error Msg : {}", e.getMessage());
+        log.error("FCM Error Localized Msg : {}", e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error("FCM 오류 : " + e.getMessage()));
     }
 }

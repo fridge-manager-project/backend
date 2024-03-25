@@ -70,7 +70,7 @@ class SignServiceUnitTest {
                 .id(memberId)
                 .email("jjw@naver.com")
                 .password("1234")
-                .name("jjw")
+                .nickname("jjw")
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .build();

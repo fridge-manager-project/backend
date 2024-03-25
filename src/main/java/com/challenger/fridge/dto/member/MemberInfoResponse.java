@@ -19,7 +19,7 @@ public class MemberInfoResponse {
     private List<StorageBoxNameResponse> storageBoxes;
 
     public MemberInfoResponse(Member member) {
-        this.username = member.getName();
+        this.username = member.getNickname();
         this.email = member.getEmail();
         Storage storage = member.getStorageList().get(0);
         this.mainStorageId = storage.getId();

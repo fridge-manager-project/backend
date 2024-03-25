@@ -12,4 +12,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select c from Cart c join fetch c.member where c.member.email = :email")
     Optional<Cart> findByMemberEmail(@Param("email") String email);
 
+    @Query("select c from Cart c"
+            + " join fetch c.member m"
+            + " join fetch c.cartItemList ci"
+            + " where m.allowNotification = true")
+    List<Cart> findWithItemsByMemberEmailAndNotificationAllowed();
 }

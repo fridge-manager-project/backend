@@ -76,7 +76,7 @@ class SignServiceTest extends RedisContainerTest {
         String password = "1234";
         SignInRequest request = new SignInRequest(unregisteredEmail, password);
 
-        assertThrows(BadCredentialsException.class, () -> signService.signIn(request));
+        assertThrows(BadCredentialsException.class, () -> signService.signIn(request, "deviceToken"));
     }
 
     @DisplayName("틀린 비밀번호로 로그인")
@@ -86,8 +86,8 @@ class SignServiceTest extends RedisContainerTest {
         String wrongPassword = "12345";
         SignInRequest request = new SignInRequest(registeredEmail, wrongPassword);
 
-        assertThrows(BadCredentialsException.class, () -> signService.signIn(request));
-        assertThrows(AuthenticationException.class, () -> signService.signIn(request));
+        assertThrows(BadCredentialsException.class, () -> signService.signIn(request, "deviceToken"));
+        assertThrows(AuthenticationException.class, () -> signService.signIn(request, "deviceToken"));
     }
 
     @DisplayName("등록된 이메일과 비밀번호로 로그인 - 성공")
@@ -98,7 +98,7 @@ class SignServiceTest extends RedisContainerTest {
         String password = "1234";
 
         //when
-        TokenInfo tokenInfo = signService.signIn(new SignInRequest(email, password));
+        TokenInfo tokenInfo = signService.signIn(new SignInRequest(email, password), "deviceToken");
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
 
         //then
@@ -123,6 +123,6 @@ class SignServiceTest extends RedisContainerTest {
         // then
         assertThat(cart).isNotNull();
         assertThat(member.getEmail()).isEqualTo(email);
-        assertThat(member.getName()).isEqualTo(name);
+        assertThat(member.getNickname()).isEqualTo(name);
     }
 }

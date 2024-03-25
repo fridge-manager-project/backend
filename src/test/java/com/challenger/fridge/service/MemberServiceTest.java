@@ -8,7 +8,8 @@ import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
-import com.challenger.fridge.dto.member.MemberInfoRequest;
+import com.challenger.fridge.dto.member.ChangePasswordRequest;
+import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.repository.MemberRepository;
@@ -77,35 +78,56 @@ class MemberServiceTest {
         assertThat(storageBoxes.get(4).getStorageBoxName()).isEqualTo("냉동고3");
     }
 
-    @DisplayName("저장된 비밀번호로 회원 정보 수정시 예외 발생")
+    @DisplayName("현재 비밀번호칸에 틀린 비밀번호 입력시 예외 발생")
     @Test
     void changeMemberInfoWithSamePassword() {
         String email = EMAIL;
+        String currentPassword = "4321";
+        String newPassword = "newPassword";
 
-        MemberInfoRequest memberInfoRequest = new MemberInfoRequest(PASSWORD, subStorageId);
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(currentPassword, newPassword);
 
         assertThrows(IllegalArgumentException.class, () ->
-                memberService.changeUserInfo(email, memberInfoRequest));
+                memberService.changeUserInfo(email, changePasswordRequest));
     }
 
     @DisplayName("새로운 비밀번호로 회원 정보 수정")
     @Test
     void changeMemberInfoWithNewPassword() {
         String email = EMAIL;
-        String oldPassword = PASSWORD;
-        String newPassword = "4321";
-        MemberInfoRequest memberInfoRequest = new MemberInfoRequest(newPassword, subStorageId);
+        String currentPassword = PASSWORD;
+        String newPassword = "newPassword";
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(currentPassword, newPassword);
         
-        memberService.changeUserInfo(email, memberInfoRequest);
+        memberService.changeUserInfo(email, changePasswordRequest);
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(IllegalArgumentException::new);
-        Storage currentMainStorage = storageRepository.findById(subStorageId)
-                .orElseThrow(IllegalArgumentException::new);
-        Storage currentSubStorage = storageRepository.findById(mainStorageId)
                 .orElseThrow(IllegalArgumentException::new);
 
         assertThat(encoder.matches(newPassword, member.getPassword())).isTrue();
-        assertThat(currentMainStorage.getStatus()).isEqualTo(StorageStatus.MAIN);
-        assertThat(currentSubStorage.getStatus()).isEqualTo(StorageStatus.NORMAL);
+    }
+
+    @DisplayName("현재 닉네임과 같은 닉네임 입력시 예외 발생")
+    @Test
+    void changeToSameNickname() {
+        String email = EMAIL;
+        String newNickname = NAME;
+        MemberNicknameRequest memberNicknameRequest = new MemberNicknameRequest(newNickname);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                memberService.changeUserNickname(email, memberNicknameRequest));
+    }
+
+    @DisplayName("닉네임 변경 테스트")
+    @Test
+    void changeNickname() {
+        String email = EMAIL;
+        String newNickname = "newNickname";
+        MemberNicknameRequest memberNicknameRequest = new MemberNicknameRequest(newNickname);
+
+        Long memberId = memberService.changeUserNickname(email, memberNicknameRequest);
+        Member memberWithNewNickname = memberRepository.findById(memberId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(memberWithNewNickname.getNickname()).isEqualTo(newNickname);
     }
 }
