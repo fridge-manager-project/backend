@@ -43,11 +43,11 @@ class NotificationServiceTest {
     List<Item> unEatableItemList;
     Long storageId;
     Long storageBoxId;
-    String email = "jjw@test.com";
+    static String EMAIL = "springTest@test.com";
 
     @BeforeEach
     void setUp() {
-        createTestMember(email);
+        createTestMember(EMAIL);
         createTestStorage();
         createTestStorageBox();
 
@@ -70,7 +70,7 @@ class NotificationServiceTest {
     @DisplayName("모든 보관소 알림 조회")
     void findAllStorageNotification() {
         //given
-        String email = "jjw@test.com";
+        String email = EMAIL;
 
         //when
         NotificationResponse notificationResponse = notificationService.findAllNotification(email);
@@ -107,7 +107,7 @@ class NotificationServiceTest {
     @DisplayName("알림 읽기 테스트")
     void readNotification() {
         //given
-        String email = "jjw@test.com";
+        String email = EMAIL;
         NotificationResponse notificationResponse = notificationService.findAllNotification(email);
         List<StorageNotificationResponse> storageNotificationResponses = notificationResponse.getStorageNotificationResponses();
 
@@ -127,13 +127,13 @@ class NotificationServiceTest {
     }
 
     private void createTestMember(String email) {
-        SignUpRequest signUpRequest = new SignUpRequest(email, "Abcdedf1!", "jjw");
+        SignUpRequest signUpRequest = new SignUpRequest(email, "Abcdedf1!", "springTest");
         signService.registerMember(signUpRequest);
     }
 
     private void createTestStorage() {
         StorageSaveRequest storageSaveRequest = new StorageSaveRequest("테스트 보관소", 1L, 1L);
-        storageId = storageService.saveStorage(storageSaveRequest, email);
+        storageId = storageService.saveStorage(storageSaveRequest, EMAIL);
     }
 
     private void createTestStorageBox() {
