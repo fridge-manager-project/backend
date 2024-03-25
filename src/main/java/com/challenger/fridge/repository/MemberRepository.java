@@ -33,8 +33,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findMembersAndCarts();
 
     @Query("select m from Member m left join fetch m.storageList s"
-            + " where m.email = :email and s.status = :status")
-    Optional<Member> findMemberStorageByEmail(@Param("email") String email, @Param("status") StorageStatus status);
+            + " where m.email = :email")
+    Optional<Member> findMemberStorageByEmail(@Param("email") String email);
 
     @Query("select m from Member m join fetch m.storageList s"
             + " where m.email = :email")

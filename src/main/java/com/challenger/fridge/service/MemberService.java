@@ -20,7 +20,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public MemberInfoResponse findUserInfo(String email) {
-        Member member = memberRepository.findMemberStorageByEmail(email, StorageStatus.MAIN)
+        Member member = memberRepository.findMemberStorageByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         if (member.getStorageList().isEmpty()) {
             return MemberInfoResponse.createInfoWithoutStorage(member);

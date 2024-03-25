@@ -40,24 +40,30 @@ class MemberServiceTest {
     @Autowired
     StorageRepository storageRepository;
 
-    private static final String EMAIL = "jjw@test.com";
+    private static final String EMAIL = "springTest@test.com";
     private static final String PASSWORD = "1234";
-    private static final String NAME = "jjw";
+    private static final String NAME = "springTest";
+
+    private static final String EMAILWITHOUTSTORAGE = "noStorage@test.com";
+    private static final String NAMEWITHOUTSTORAGE = "noStorage";
+
     private static final Long fridgeCount = 2L;
     private static final Long freezerCount = 3L;
+
     private Long mainStorageId;
     private Long subStorageId;
     private Long subStorageId2;
 
     @BeforeEach
     void setUp() {
+        signService.registerMember(new SignUpRequest(EMAILWITHOUTSTORAGE, PASSWORD, NAMEWITHOUTSTORAGE));
         signService.registerMember(new SignUpRequest(EMAIL, PASSWORD, NAME));
         mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", fridgeCount, freezerCount), EMAIL);
         subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
         subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L), EMAIL);
     }
 
-    @DisplayName("회원 정보 조회")
+    @DisplayName("메인 보관소가 있는 회원 정보 조회")
     @Test
     void memberInfo() {
         String email = EMAIL;
@@ -65,8 +71,8 @@ class MemberServiceTest {
         MemberInfoResponse memberInfo = memberService.findUserInfo(email);
         List<StorageBoxNameResponse> storageBoxes = memberInfo.getStorageBoxes();
 
-        assertThat(memberInfo.getUsername()).isEqualTo("jjw");
-        assertThat(memberInfo.getEmail()).isEqualTo("jjw@test.com");
+        assertThat(memberInfo.getUsername()).isEqualTo(NAME);
+        assertThat(memberInfo.getEmail()).isEqualTo(EMAIL);
         assertThat(memberInfo.getMainStorageId()).isEqualTo(mainStorageId);
         assertThat(memberInfo.getMainStorageName()).isEqualTo("메인저장소");
 
@@ -76,6 +82,20 @@ class MemberServiceTest {
         assertThat(storageBoxes.get(2).getStorageBoxName()).isEqualTo("냉동고1");
         assertThat(storageBoxes.get(3).getStorageBoxName()).isEqualTo("냉동고2");
         assertThat(storageBoxes.get(4).getStorageBoxName()).isEqualTo("냉동고3");
+    }
+
+    @DisplayName("메인 보관소가 없는 회원 정보 조회")
+    @Test
+    void memberInfoWithoutStorage() {
+        String email = EMAILWITHOUTSTORAGE;
+
+        MemberInfoResponse memberInfo = memberService.findUserInfo(email);
+
+        assertThat(memberInfo.getUsername()).isEqualTo(NAMEWITHOUTSTORAGE);
+        assertThat(memberInfo.getEmail()).isEqualTo(EMAILWITHOUTSTORAGE);
+        assertThat(memberInfo.getMainStorageId()).isNull();
+        assertThat(memberInfo.getMainStorageName()).isNull();
+        assertThat(memberInfo.getStorageBoxes()).isNull();
     }
 
     @DisplayName("현재 비밀번호칸에 틀린 비밀번호 입력시 예외 발생")
