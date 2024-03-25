@@ -60,19 +60,10 @@ public class JwtTokenProvider {
         Long now = System.currentTimeMillis();
 
         // access Token 생성
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("auth", authorities)
-                .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String accessToken = generateAccessToken(authentication, authorities, now);
 
         // refresh Token 생성
-        String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
-                .setSubject("refresh-token")
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String refreshToken = generateRefreshToken(now);
 
         return TokenInfo.builder()
                 .grantType("Bearer")
@@ -81,6 +72,22 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    private String generateAccessToken(Authentication authentication, String authorities, Long now) {
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim("auth", authorities)
+                .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    private String generateRefreshToken(Long now) {
+        return Jwts.builder()
+                .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
+                .setSubject("refresh-token")
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
     /**
      * access token 을 복호화 하여 인증정보를 생성
      */
