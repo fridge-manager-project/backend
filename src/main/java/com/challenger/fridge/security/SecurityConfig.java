@@ -26,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationEntryPoint entryPoint;
 
@@ -41,6 +42,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .anonymous(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers("/members/**", "/reissue", "/cart/**", "/items", "/storagebox/**",
                                         "/storage/**", "/notification/**").authenticated()
@@ -53,7 +55,8 @@ public class SecurityConfig {
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
-                .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint))
+                .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
                 .build();
     }
 
