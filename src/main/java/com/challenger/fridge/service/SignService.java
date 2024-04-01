@@ -130,4 +130,19 @@ public class SignService {
         }
         return null;
     }
+
+    @Transactional
+    public void logout(String requestAccessTokenInHeader) {
+        String accessToken = resolveToken(requestAccessTokenInHeader);
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+
+        // redis 에서 refreshToken 삭제
+//        if (redisService.hasKey("RT:" + username)) {
+//            redisService.deleteValues("RT:" + username);
+//        }
+
+        // redis 에 현재 사용중인 accessToken 블랙리스트로 설정
+        redisService.setValuesWithTimeout("BlackList:" + accessToken, accessToken,
+                jwtTokenProvider.getTokenExpirationTime(accessToken));
+    }
 }

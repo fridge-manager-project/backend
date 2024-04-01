@@ -19,6 +19,7 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+#    org.springframework.security: trace
 
 springdoc:
   swagger-ui:
