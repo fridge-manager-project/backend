@@ -7,9 +7,11 @@ import com.challenger.fridge.dto.sign.SignInRequest;
 import com.challenger.fridge.dto.sign.SignInResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.sign.SignUpResponse;
+import com.challenger.fridge.repository.FCMTokenRepository;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.security.JwtTokenProvider;
 import com.challenger.fridge.dto.sign.TokenInfo;
+import io.netty.util.internal.ObjectUtil;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -31,6 +34,7 @@ public class SignService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
+    private final FCMTokenRepository fcmTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisService redisService;
@@ -39,7 +43,6 @@ public class SignService {
      * 회원 이메일 중복 확인 요청
      */
     public boolean checkDuplicateEmail(String email) {
-        log.info("Service : email={}", email);
         if (memberRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
@@ -70,7 +73,15 @@ public class SignService {
         log.info("2. 검증 진행 - CustomUserDetailsService.loadUserByUsername 메서드가 실행");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // 3. AT, RT 생성 및 Redis 에 RT 저장
+        // 3. deviceToken 이 있다면 저장하고 알림 켜기, 없다면 그냥 두기
+        if (StringUtils.hasText(deviceToken)) {
+            Member member = memberRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+            member.receiveNotification();
+            fcmTokenRepository.saveFCMToken(member.getEmail(), deviceToken);
+        }
+
+        // 4. AT, RT 생성 및 Redis 에 RT 저장
         log.info("3. AT, RT 생성 및 Redis 에 RT 저장");
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         saveRefreshToken(authentication.getName(), tokenInfo.getRefreshToken());
@@ -129,20 +140,5 @@ public class SignService {
             return requestAccessTokenInHeader.substring(7);
         }
         return null;
-    }
-
-    @Transactional
-    public void logout(String requestAccessTokenInHeader) {
-        String accessToken = resolveToken(requestAccessTokenInHeader);
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-
-        // redis 에서 refreshToken 삭제
-//        if (redisService.hasKey("RT:" + username)) {
-//            redisService.deleteValues("RT:" + username);
-//        }
-
-        // redis 에 현재 사용중인 accessToken 블랙리스트로 설정
-        redisService.setValuesWithTimeout("BlackList:" + accessToken, accessToken,
-                jwtTokenProvider.getTokenExpirationTime(accessToken));
     }
 }

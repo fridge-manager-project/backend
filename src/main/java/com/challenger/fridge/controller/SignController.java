@@ -57,9 +57,6 @@ public class SignController {
     public ResponseEntity<ApiResponse> signIn(@RequestBody SignInRequest request,
                                               @RequestHeader(name = "device_token", required = false) String deviceToken) {
         TokenInfo tokenInfo = signService.signIn(request, deviceToken);
-        if(deviceToken != null){
-            fcmService.saveToken(request, deviceToken);
-        }
 
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenInfo.getRefreshToken())
                 .maxAge(COOKIE_EXPIRATION)
