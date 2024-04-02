@@ -99,4 +99,8 @@ public class Member {
     public void receiveNotification() {
         this.allowNotification = true;
     }
+
+    public void preventNotification() {
+        this.allowNotification = false;
+    }
 }
