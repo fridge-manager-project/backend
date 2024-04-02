@@ -59,7 +59,7 @@ public class Member {
                 .role(MemberRole.ROLE_USER)
                 .createdAt(LocalDateTime.now())
                 .cart(cart)
-                .allowNotification(true)
+                .allowNotification(false)
                 .build();
         cart.allocateMember(member);
         return member;
@@ -96,4 +96,11 @@ public class Member {
         this.nickname = memberNicknameRequest.getNickname();
     }
 
+    public void receiveNotification() {
+        this.allowNotification = true;
+    }
+
+    public void preventNotification() {
+        this.allowNotification = false;
+    }
 }

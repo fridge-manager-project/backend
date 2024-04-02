@@ -1,6 +1,6 @@
 package com.challenger.fridge.security;
 
-import com.challenger.fridge.exception.TokenNotFoundException;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,12 +38,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = resolveToken(request);
         try {
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+                log.info("accessToken 만료 안됨");
+                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                log.info("SecurityContext 에 인증객체 저장");
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.debug("Save authentication in SecurityContextHolder.");
+            }
+        } catch (ExpiredJwtException e) {
+            if (request.getRequestURI().equals("/reissue")) {
+                log.info("accessToken 만료됨. reissue 시작");
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 log.info("SecurityContext 에 인증객체 저장");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Save authentication in SecurityContextHolder.");
             } else {
-                throw new TokenNotFoundException("토큰이 없습니다. 다시 시도해주세요");
+                request.setAttribute("exception", e);
             }
         } catch (Exception e) {
             log.info("JwtFilter - doFilterInternal() 오류 발생");
