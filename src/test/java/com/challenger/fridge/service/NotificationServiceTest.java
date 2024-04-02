@@ -3,6 +3,7 @@ package com.challenger.fridge.service;
 import static org.assertj.core.api.Assertions.*;
 
 import com.challenger.fridge.domain.Item;
+import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.domain.notification.Notification;
 import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
@@ -12,6 +13,7 @@ import com.challenger.fridge.dto.notification.NotificationResponse;
 import com.challenger.fridge.dto.notification.StorageNotificationResponse;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.NotificationRepository;
 import com.challenger.fridge.repository.StorageBoxRepository;
 import com.challenger.fridge.repository.StorageItemRepository;
@@ -37,6 +39,7 @@ class NotificationServiceTest {
     @Autowired FCMService fcmService;
     @Autowired StorageItemRepository storageItemRepository;
     @Autowired NotificationRepository notificationRepository;
+    @Autowired MemberRepository memberRepository;
     @Autowired EntityManager em;
 
     List<Item> eatableItemList;
@@ -129,11 +132,15 @@ class NotificationServiceTest {
     private void createTestMember(String email) {
         SignUpRequest signUpRequest = new SignUpRequest(email, "Abcdedf1!", "springTest");
         signService.registerMember(signUpRequest);
+
     }
 
     private void createTestStorage() {
         StorageSaveRequest storageSaveRequest = new StorageSaveRequest("테스트 보관소", 1L, 1L);
         storageId = storageService.saveStorage(storageSaveRequest, EMAIL);
+        Member member = memberRepository.findByEmail(EMAIL)
+                .orElseThrow(IllegalArgumentException::new);
+        member.receiveNotification();
     }
 
     private void createTestStorageBox() {
