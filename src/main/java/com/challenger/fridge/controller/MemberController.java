@@ -9,12 +9,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,6 +49,15 @@ public class MemberController {
     public ResponseEntity<ApiResponse> changeNickname(@AuthenticationPrincipal User user,
                                                       @Valid @RequestBody MemberNicknameRequest memberNicknameRequest) {
         memberService.changeUserNickname(user.getUsername(), memberNicknameRequest);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @Operation(summary = "알림 설정 on off")
+    @PatchMapping("/info/notification")
+    public ResponseEntity<ApiResponse> changeNotificationReception
+            (@RequestHeader(name = "device_token", required = false) String deviceToken,
+             @AuthenticationPrincipal User user) {
+        memberService.changeNotificationReception(deviceToken, user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

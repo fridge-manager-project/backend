@@ -40,10 +40,6 @@ public class FCMService {
     private final NotificationRepository notificationRepository;
     private final CartRepository cartRepository;
 
-    public void saveToken(SignInRequest signInRequest, String deviceToken) {
-        fcmTokenRepository.saveFCMToken(signInRequest.getEmail(), deviceToken);
-    }
-
     public void sendTestNotification(NotificationRequest notificationRequest) throws FirebaseMessagingException {
         Message message = Message.builder()
                 .setToken(notificationRequest.getDeviceToken())
