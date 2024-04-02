@@ -75,6 +75,7 @@ public class SignService {
 
         // 3. deviceToken 이 있다면 저장하고 알림 켜기, 없다면 그냥 두기
         if (StringUtils.hasText(deviceToken)) {
+            log.info("deviceToken={} 있음", deviceToken);
             Member member = memberRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
             member.receiveNotification();
