@@ -41,4 +41,4 @@ data.sql
 application-aws.yml
 application-jwt.yml
 application-fcm.yml
-/firebase/firebase/
+firebase/
