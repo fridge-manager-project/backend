@@ -72,7 +72,7 @@ class SignServiceUnitTest {
                 .password("1234")
                 .nickname("jjw")
                 .role(MemberRole.ROLE_USER)
-                .createdAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
                 .build();
     }
 

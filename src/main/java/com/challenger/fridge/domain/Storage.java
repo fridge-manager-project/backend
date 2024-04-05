@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Storage {
+public class Storage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +28,8 @@ public class Storage {
 
     @Enumerated(EnumType.STRING)
     private StorageStatus status;
+
+    private Long storageImage;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")

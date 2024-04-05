@@ -1,5 +1,6 @@
 package com.challenger.fridge.domain.box;
 
+import com.challenger.fridge.domain.BaseEntity;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
 import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
@@ -19,7 +20,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "DTYPE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public abstract class StorageBox {
+public abstract class StorageBox extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
