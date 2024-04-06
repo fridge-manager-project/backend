@@ -2,6 +2,7 @@ package com.challenger.fridge.domain.notification;
 
 import static jakarta.persistence.FetchType.*;
 
+import com.challenger.fridge.domain.BaseEntity;
 import com.challenger.fridge.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "NotificationType")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Notification {
+public abstract class Notification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +36,7 @@ public abstract class Notification {
 
     private Boolean isRead;
 
-    private LocalDateTime createdDate;
+//    private LocalDateTime createdDate;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
@@ -43,7 +44,7 @@ public abstract class Notification {
 
     protected Notification(Member member) {
         this.isRead = false;
-        this.createdDate = LocalDateTime.now();
+//        this.createdDate = LocalDateTime.now();
         this.member = member;
     }
 

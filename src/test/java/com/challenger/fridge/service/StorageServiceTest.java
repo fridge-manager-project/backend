@@ -59,7 +59,7 @@ class StorageServiceTest {
                 .nickname("jjw")
                 .role(MemberRole.ROLE_USER)
                 .storageList(new ArrayList<>())
-                .createdAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
                 .build();
     }
 

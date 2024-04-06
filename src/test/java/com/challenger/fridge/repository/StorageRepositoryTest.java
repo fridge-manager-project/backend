@@ -27,7 +27,7 @@ class StorageRepositoryTest {
                 .password("1234")
                 .nickname("심현석")
                 .role(MemberRole.ROLE_USER)
-                .createdAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
                 .build());
 
 

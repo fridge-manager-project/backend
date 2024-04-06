@@ -16,10 +16,10 @@ public class Item {
 
     private String itemName;
 
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-
 
 }
