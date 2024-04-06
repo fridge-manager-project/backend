@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,25 +83,24 @@ class NotificationServiceTest {
         //then
         int eatableItemNotificationSize = eatableItemList.size();
         int unEatableItemNotificationSize = unEatableItemList.size();
+        int totalNotificationSize = eatableItemNotificationSize + unEatableItemNotificationSize;
 
-        assertThat(storageNotificationResponses.size()).isEqualTo(
-                eatableItemNotificationSize + unEatableItemNotificationSize);
+        assertThat(storageNotificationResponses.size()).isEqualTo(totalNotificationSize);
 
-        for (int i = 0; i < eatableItemNotificationSize; i++) {
+        for (int i = totalNotificationSize - 1; i >= totalNotificationSize - eatableItemNotificationSize; i--) {
             StorageNotificationResponse storageNotificationResponse = storageNotificationResponses.get(i);
             assertThat(storageNotificationResponse.getStorageId()).isEqualTo(storageId);
             assertThat(storageNotificationResponse.getStorageBoxId()).isEqualTo(storageBoxId);
-            assertThat(storageNotificationResponse.getItemName()).isEqualTo(eatableItemList.get(i).getItemName());
+            assertThat(storageNotificationResponse.getItemName()).isEqualTo(eatableItemList.get(totalNotificationSize - i - 1).getItemName());
             assertThat(storageNotificationResponse.getItemExpiration()).isEqualTo(LocalDate.now().plusDays(1));
         }
 
-        for (int i = eatableItemNotificationSize; i < eatableItemNotificationSize + unEatableItemNotificationSize;
-             i++) {
+        for (int i = unEatableItemNotificationSize - 1; i >= 0; i--) {
             StorageNotificationResponse storageNotificationResponse = storageNotificationResponses.get(i);
             assertThat(storageNotificationResponse.getStorageId()).isEqualTo(storageId);
             assertThat(storageNotificationResponse.getStorageBoxId()).isEqualTo(storageBoxId);
             assertThat(storageNotificationResponse.getItemName()).isEqualTo(
-                    unEatableItemList.get(i - eatableItemNotificationSize).getItemName());
+                    unEatableItemList.get(unEatableItemNotificationSize - i - 1).getItemName());
             assertThat(storageNotificationResponse.getItemExpiration()).isEqualTo(LocalDate.now().minusDays(1));
         }
     }

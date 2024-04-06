@@ -39,4 +39,6 @@ out/
 
 data.sql
 application-aws.yml
-resources/firebase/
+application-jwt.yml
+application-fcm.yml
+firebase/

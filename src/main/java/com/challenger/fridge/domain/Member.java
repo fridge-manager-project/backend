@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    private LocalDateTime createdAt;
+//    private LocalDateTime createdAt;
 
     @Builder.Default
     @OneToMany(mappedBy = "member")
@@ -57,7 +57,7 @@ public class Member {
                 .password(encoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
                 .role(MemberRole.ROLE_USER)
-                .createdAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
                 .cart(cart)
                 .allowNotification(false)
                 .build();
