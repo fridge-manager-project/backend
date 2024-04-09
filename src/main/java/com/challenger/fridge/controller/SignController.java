@@ -56,6 +56,9 @@ public class SignController {
     @PostMapping("/sign-in")
     public ResponseEntity<ApiResponse> signIn(@RequestBody SignInRequest request,
                                               @RequestHeader(name = "device_token", required = false) String deviceToken) {
+        if (deviceToken != null) {
+            log.info("deviceToken = {}", deviceToken);
+        }
         TokenInfo tokenInfo = signService.signIn(request, deviceToken);
 
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenInfo.getRefreshToken())
