@@ -58,4 +58,8 @@ public class MemberService {
         }
         member.preventNotification();
     }
+
+    public void withdraw(String email) {
+        memberRepository.deleteByEmail(email);
+    }
 }

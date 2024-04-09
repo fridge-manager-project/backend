@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,6 +58,13 @@ public class MemberController {
             (@RequestHeader(name = "device_token", required = false) String deviceToken,
              @AuthenticationPrincipal User user) {
         memberService.changeNotificationReception(deviceToken, user.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @Operation
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
+        memberService.withdraw(user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
