@@ -42,3 +42,4 @@ application-aws.yml
 application-jwt.yml
 application-fcm.yml
 firebase/
+firebase_service_key.json
