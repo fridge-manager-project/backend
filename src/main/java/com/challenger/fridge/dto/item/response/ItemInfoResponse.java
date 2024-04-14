@@ -9,10 +9,12 @@ public class ItemInfoResponse {
     private Long itemId;
     private String itemName;
     private String categoryName;
+    private String itemImageUrl;
 
     public ItemInfoResponse(Item item) {
         this.itemId = item.getId();
         this.itemName = item.getItemName();
         this.categoryName = item.getCategory().getCategoryName();
+        this.itemImageUrl = item.getImageUrl();
     }
 }
