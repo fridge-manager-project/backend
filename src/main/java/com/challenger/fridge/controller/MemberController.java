@@ -61,10 +61,10 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @Operation
-    @DeleteMapping
-    public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
-        memberService.withdraw(user.getUsername());
-        return ResponseEntity.ok(ApiResponse.success(null));
-    }
+//    @Operation
+//    @DeleteMapping
+//    public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
+//        memberService.withdraw(user.getUsername());
+//        return ResponseEntity.ok(ApiResponse.success(null));
+//    }
 }

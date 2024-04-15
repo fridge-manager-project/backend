@@ -4,8 +4,16 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.challenger.fridge.common.StorageStatus;
+import com.challenger.fridge.domain.Cart;
+import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
+import com.challenger.fridge.domain.StorageItem;
+import com.challenger.fridge.domain.notification.Notice;
+import com.challenger.fridge.domain.notification.StorageNotification;
+import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
+import com.challenger.fridge.dto.box.request.StorageMethod;
+import com.challenger.fridge.dto.item.request.StorageItemRequest;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
@@ -14,7 +22,10 @@ import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.StorageRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +50,12 @@ class MemberServiceTest {
     PasswordEncoder encoder;
     @Autowired
     StorageRepository storageRepository;
+    @Autowired
+    StorageBoxService storageBoxService;
+    @Autowired
+    EntityManager em;
+    @Autowired
+    CartService cartService;
 
     private static final String EMAIL = "springTest@test.com";
     private static final String PASSWORD = "1234";
@@ -59,8 +76,47 @@ class MemberServiceTest {
         signService.registerMember(new SignUpRequest(EMAILWITHOUTSTORAGE, PASSWORD, NAMEWITHOUTSTORAGE));
         signService.registerMember(new SignUpRequest(EMAIL, PASSWORD, NAME));
         mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", fridgeCount, freezerCount), EMAIL);
-        subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
-        subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L), EMAIL);
+//        subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
+//        subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L), EMAIL);
+        Long testStorageBoxId = addTestStorageBox();
+        addTestStorageItem(testStorageBoxId);
+        addNotifications();
+        cartService.addItem(EMAIL, 11L);
+    }
+
+    private void addNotifications() {
+        List<StorageItem> storageItemList = em.createQuery(
+                        "select si from StorageItem si where si.storageBox.storage.member.email = :email", StorageItem.class)
+                .setParameter("email", EMAIL)
+                .getResultList();
+        em.persist(new Notice(findMember(), "테스트공지", "테스트요"));
+        em.persist(new StorageNotification(storageItemList.get(0)));
+    }
+
+    private Member findMember() {
+        return memberRepository.findByEmail(EMAIL).orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Long addTestStorageBox() {
+        return storageService.saveStorageBox(new StorageBoxSaveRequest("테스트냉장실", StorageMethod.FRIDGE),
+                mainStorageId);
+    }
+
+    private void addTestStorageItem(Long testStorageBoxId) {
+        List<Item> itemList = em.createQuery("select i from Item i where i.id between :firstId and :lastId",
+                        Item.class)
+                .setParameter("firstId", 1)
+                .setParameter("lastId", 5)
+                .getResultList();
+        itemList.stream()
+                .map(item -> new StorageItemRequest(item.getId(), item.getItemName(), 2L, "테스트상품", "2024-04-20",
+                        "2024-04-20"))
+                .forEach(storageItemRequest -> storageBoxService.saveStorageItem(storageItemRequest, testStorageBoxId));
+    }
+
+    @Test
+    void test() {
+
     }
 
     @DisplayName("메인 보관소가 있는 회원 정보 조회")
@@ -118,7 +174,7 @@ class MemberServiceTest {
         String currentPassword = PASSWORD;
         String newPassword = "newPassword";
         ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(currentPassword, newPassword);
-        
+
         memberService.changeUserInfo(email, changePasswordRequest);
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
@@ -149,5 +205,56 @@ class MemberServiceTest {
                 .orElseThrow(IllegalArgumentException::new);
 
         assertThat(memberWithNewNickname.getNickname()).isEqualTo(newNickname);
+    }
+
+    @DisplayName("회원 탈퇴 테스트")
+    @Test
+    void withdrawMember() {
+        String email = EMAIL;
+
+        System.out.println("========================");
+        deleteNotifications(email);
+        deleteStorageItem(email);
+        deleteStorageBox(email);
+        deleteStorage(email);
+        deleteCartItems(email);
+        memberService.withdraw(email);
+        em.flush();
+        em.clear();
+        System.out.println("========================");
+
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        assertThat(optionalMember.isPresent()).isFalse();
+        assertThat(memberRepository.existsByEmail(email)).isFalse();
+    }
+
+    private void deleteStorage(String email) {
+        em.createQuery("delete from Storage s where s.member.email = :email")
+                .setParameter("email", email)
+                .executeUpdate();
+    }
+
+    private void deleteStorageBox(String email) {
+        em.createQuery("delete from StorageBox sb where sb.storage.member.email = :email")
+                .setParameter("email", email)
+                .executeUpdate();
+    }
+
+    private void deleteStorageItem(String email) {
+        em.createQuery("delete from StorageItem si where si.storageBox.storage.member.email = :email")
+                .setParameter("email", email)
+                .executeUpdate();
+    }
+
+    private void deleteNotifications(String email) {
+        em.createQuery("delete from Notification n where n.member.email = :email")
+                .setParameter("email", email)
+                .executeUpdate();
+    }
+
+    private void deleteCartItems(String email) {
+        em.createQuery("delete from CartItem ci where ci.cart.member.email = :email")
+                .setParameter("email", email)
+                .executeUpdate();
     }
 }
