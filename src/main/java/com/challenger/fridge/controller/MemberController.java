@@ -5,6 +5,7 @@ import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
 import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.service.MemberService;
+import com.challenger.fridge.service.MemberWithdrawService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberWithdrawService memberWithdrawService;
 
     @Operation(summary = "회원 정보 조회")
     @GetMapping("/info")
@@ -61,10 +63,10 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-//    @Operation
-//    @DeleteMapping
-//    public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
-//        memberService.withdraw(user.getUsername());
-//        return ResponseEntity.ok(ApiResponse.success(null));
-//    }
+    @Operation
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
+        memberWithdrawService.withdrawMember(user.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }

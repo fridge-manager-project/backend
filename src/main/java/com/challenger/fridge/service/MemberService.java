@@ -1,6 +1,7 @@
 package com.challenger.fridge.service;
 
 import com.challenger.fridge.common.StorageStatus;
+import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
@@ -59,7 +60,4 @@ public class MemberService {
         member.preventNotification();
     }
 
-    public void withdraw(String email) {
-        memberRepository.deleteByEmail(email);
-    }
 }
