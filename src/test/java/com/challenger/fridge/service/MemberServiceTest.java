@@ -3,13 +3,15 @@ package com.challenger.fridge.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.challenger.fridge.common.StorageStatus;
 import com.challenger.fridge.domain.Cart;
+import com.challenger.fridge.domain.CartItem;
 import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.Member;
 import com.challenger.fridge.domain.Storage;
 import com.challenger.fridge.domain.StorageItem;
+import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.domain.notification.Notice;
+import com.challenger.fridge.domain.notification.Notification;
 import com.challenger.fridge.domain.notification.StorageNotification;
 import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageMethod;
@@ -20,15 +22,20 @@ import com.challenger.fridge.dto.member.ChangePasswordRequest;
 import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
+import com.challenger.fridge.repository.CartItemRepository;
 import com.challenger.fridge.repository.MemberRepository;
+import com.challenger.fridge.repository.NotificationRepository;
+import com.challenger.fridge.repository.StorageBoxRepository;
+import com.challenger.fridge.repository.StorageItemRepository;
 import com.challenger.fridge.repository.StorageRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,13 +63,21 @@ class MemberServiceTest {
     EntityManager em;
     @Autowired
     CartService cartService;
+    @Autowired
+    StorageBoxRepository storageBoxRepository;
+    @Autowired
+    StorageItemRepository storageItemRepository;
+    @Autowired
+    CartItemRepository cartItemRepository;
+    @Autowired
+    NotificationRepository notificationRepository;
 
     private static final String EMAIL = "springTest@test.com";
     private static final String PASSWORD = "1234";
     private static final String NAME = "springTest";
 
-    private static final String EMAILWITHOUTSTORAGE = "noStorage@test.com";
-    private static final String NAMEWITHOUTSTORAGE = "noStorage";
+    private static final String EMAIL_WITHOUT_BOX = "noStorage@test.com";
+    private static final String NAME_WITHOUT_BOX = "noStorage";
 
     private static final Long fridgeCount = 2L;
     private static final Long freezerCount = 3L;
@@ -73,15 +88,18 @@ class MemberServiceTest {
 
     @BeforeEach
     void setUp() {
-        signService.registerMember(new SignUpRequest(EMAILWITHOUTSTORAGE, PASSWORD, NAMEWITHOUTSTORAGE));
+        signService.registerMember(new SignUpRequest(EMAIL_WITHOUT_BOX, PASSWORD, NAME_WITHOUT_BOX));
         signService.registerMember(new SignUpRequest(EMAIL, PASSWORD, NAME));
         mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", fridgeCount, freezerCount), EMAIL);
+        storageService.saveStorage(new StorageSaveRequest("메인저장소", 0L, 0L), EMAIL_WITHOUT_BOX);
 //        subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
 //        subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L), EMAIL);
         Long testStorageBoxId = addTestStorageBox();
         addTestStorageItem(testStorageBoxId);
         addNotifications();
         cartService.addItem(EMAIL, 11L);
+        cartService.addItem(EMAIL, 12L);
+        cartService.addItem(EMAIL, 13L);
     }
 
     private void addNotifications() {
@@ -90,7 +108,8 @@ class MemberServiceTest {
                 .setParameter("email", EMAIL)
                 .getResultList();
         em.persist(new Notice(findMember(), "테스트공지", "테스트요"));
-        em.persist(new StorageNotification(storageItemList.get(0)));
+        storageItemList.forEach(storageItem -> em.persist(new StorageNotification(storageItem)));
+//        em.persist(new StorageNotification(storageItemList.get(0)));
     }
 
     private Member findMember() {
@@ -143,12 +162,12 @@ class MemberServiceTest {
     @DisplayName("메인 보관소가 없는 회원 정보 조회")
     @Test
     void memberInfoWithoutStorage() {
-        String email = EMAILWITHOUTSTORAGE;
+        String email = EMAIL_WITHOUT_BOX;
 
         MemberInfoResponse memberInfo = memberService.findUserInfo(email);
 
-        assertThat(memberInfo.getUsername()).isEqualTo(NAMEWITHOUTSTORAGE);
-        assertThat(memberInfo.getEmail()).isEqualTo(EMAILWITHOUTSTORAGE);
+        assertThat(memberInfo.getUsername()).isEqualTo(NAME_WITHOUT_BOX);
+        assertThat(memberInfo.getEmail()).isEqualTo(EMAIL_WITHOUT_BOX);
         assertThat(memberInfo.getMainStorageId()).isNull();
         assertThat(memberInfo.getMainStorageName()).isNull();
         assertThat(memberInfo.getStorageBoxes()).isNull();
@@ -208,53 +227,34 @@ class MemberServiceTest {
     }
 
     @DisplayName("회원 탈퇴 테스트")
-    @Test
-    void withdrawMember() {
-        String email = EMAIL;
+    @ParameterizedTest
+    @ValueSource(strings = {EMAIL, EMAIL_WITHOUT_BOX})
+    void lastOne(String email) {
+        Member member = memberRepository.findMemberAndCartByEmail(email).orElseThrow(IllegalArgumentException::new);
+        Cart cart = member.getCart();
 
-        System.out.println("========================");
-        deleteNotifications(email);
-        deleteStorageItem(email);
-        deleteStorageBox(email);
-        deleteStorage(email);
-        deleteCartItems(email);
-        memberService.withdraw(email);
-        em.flush();
-        em.clear();
-        System.out.println("========================");
+        System.out.println("============");
+        if(!cart.getCartItemList().isEmpty()) {
+            List<CartItem> cartItemList = cartItemRepository.findCartItemsByCartEquals(cart);
+            cartItemRepository.deleteAllInBatch(cartItemList);
+        }
+
+        List<Notification> notificationList = notificationRepository.findAllByMemberEquals(member);
+        if(!notificationList.isEmpty()) notificationRepository.deleteAllInListIn(notificationList);
+
+        List<Storage> storageList = storageRepository.findStorageListByMember(member);
+        List<StorageBox> storageBoxList = storageBoxRepository.findStorageBoxesByStorageListIn(storageList);
+        List<StorageItem> storageItemList = storageItemRepository.findStorageItemsByStorageBoxIn(storageBoxList);
+
+        if(!storageItemList.isEmpty()) storageItemRepository.deleteAllInList(storageItemList);
+        if(!storageBoxList.isEmpty()) storageBoxRepository.deleteAllListIn(storageBoxList);
+        if(!storageList.isEmpty()) storageRepository.deleteAllInList(storageList);
+        memberRepository.delete(member);
+        System.out.println("============");
 
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         assertThat(optionalMember.isPresent()).isFalse();
         assertThat(memberRepository.existsByEmail(email)).isFalse();
     }
 
-    private void deleteStorage(String email) {
-        em.createQuery("delete from Storage s where s.member.email = :email")
-                .setParameter("email", email)
-                .executeUpdate();
-    }
-
-    private void deleteStorageBox(String email) {
-        em.createQuery("delete from StorageBox sb where sb.storage.member.email = :email")
-                .setParameter("email", email)
-                .executeUpdate();
-    }
-
-    private void deleteStorageItem(String email) {
-        em.createQuery("delete from StorageItem si where si.storageBox.storage.member.email = :email")
-                .setParameter("email", email)
-                .executeUpdate();
-    }
-
-    private void deleteNotifications(String email) {
-        em.createQuery("delete from Notification n where n.member.email = :email")
-                .setParameter("email", email)
-                .executeUpdate();
-    }
-
-    private void deleteCartItems(String email) {
-        em.createQuery("delete from CartItem ci where ci.cart.member.email = :email")
-                .setParameter("email", email)
-                .executeUpdate();
-    }
 }
