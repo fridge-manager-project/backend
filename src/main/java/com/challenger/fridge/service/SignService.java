@@ -63,23 +63,26 @@ public class SignService {
      * 로그인
      */
     @Transactional
-    public TokenInfo signIn(SignInRequest request, String deviceToken) {
+    public TokenInfo signIn(SignInRequest signInRequest) {
         // 1. email, password 기반 Authentication 객체 생성. -> 인증 여부를 확인하는 authenticated 값이 false
         log.info("1. email, password 기반 Authentication 객체 생성.");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                request.getEmail(), request.getPassword());
+                signInRequest.getEmail(), signInRequest.getPassword());
 
         // 2. 검증 진행 - CustomUserDetailsService.loadUserByUsername 메서드가 실행
         log.info("2. 검증 진행 - CustomUserDetailsService.loadUserByUsername 메서드가 실행");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 3. deviceToken 이 있다면 저장하고 알림 켜기, 없다면 그냥 두기
+        String deviceToken = signInRequest.getDeviceToken();
         if (StringUtils.hasText(deviceToken)) {
             log.info("deviceToken={} 있음", deviceToken);
-            Member member = memberRepository.findByEmail(request.getEmail())
+            Member member = memberRepository.findByEmail(signInRequest.getEmail())
                     .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
             member.receiveNotification();
             fcmTokenRepository.saveFCMToken(member.getEmail(), deviceToken);
+        } else {
+            log.info("deviceToken 없음.");
         }
 
         // 4. AT, RT 생성 및 Redis 에 RT 저장
