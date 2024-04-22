@@ -18,6 +18,8 @@ public class StorageResponse {
     private StorageStatus storageStatus;
     @Schema(description = "보관소 이름")
     private String storageName;
+    @Schema(description = "보관소 이미지 번호")
+    private Long storageImage;
     @Schema(description = "보관소 내 세부 보관소 정보 리스트")
     private List<StorageBoxResponse> storageBoxes;
 
@@ -25,6 +27,7 @@ public class StorageResponse {
         this.storageId = storage.getId();
         this.storageStatus = storage.getStatus();
         this.storageName = storage.getName();
+        this.storageImage = storage.getStorageImage();
         this.storageBoxes = storage.getStorageBoxList().stream()
                 .map(storageBox -> StorageBoxResponse.createStorageBoxResponse(storageBox))
                 .collect(Collectors.toList());

@@ -42,6 +42,7 @@ public class Storage extends BaseEntity {
         this.name = name;
         this.status = status;
         this.member = member;
+        this.storageImage = 1L;
     }
 
     public void addStorageBox(StorageBox storageBox) {
