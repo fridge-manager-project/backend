@@ -13,9 +13,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    public boolean existsByEmail(String email);
 
-    public Optional<Member> findByEmail(String email);
+    boolean existsByEmail(String email);
+
+    Optional<Member> findByEmail(String email);
 
     void deleteByEmail(String email);
 
@@ -40,4 +41,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             + " where m.email = :email")
     Optional<Member> findMemberAndStorageByEmail(@Param("email") String email);
 
+    @Query("select m from Member m join fetch m.cart c where m.email = :email")
+    Optional<Member> findMemberAndCartByEmail(@Param("email") String email);
 }

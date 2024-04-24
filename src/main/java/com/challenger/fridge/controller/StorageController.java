@@ -4,6 +4,7 @@ import com.challenger.fridge.dto.ApiResponse;
 import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
 import com.challenger.fridge.dto.box.response.StorageBoxResponse;
+import com.challenger.fridge.dto.storage.request.StorageInfoUpdateRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.dto.storage.request.StorageUpdateRequest;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
@@ -15,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +60,14 @@ public class StorageController {
     @Operation(summary = "보관소 단건 조회", description = "보관소 정보를 단건 조회한다.")
     public ApiResponse getStorage(@PathVariable("storageId") Long storageId) {
         StorageResponse storageResponse = storageService.findStorage(storageId);
+        return ApiResponse.success(storageResponse);
+    }
+
+    @PatchMapping("/{storageId}")
+    @Operation(summary = "보관소 단건 수정", description = "보관소 정보를 단건 조회한다.")
+    public ApiResponse modifyStorageInfo(@PathVariable("storageId") Long storageId,
+                                     @RequestBody StorageInfoUpdateRequest storageInfoUpdateRequest) {
+        StorageResponse storageResponse = storageService.updateStorageInfo(storageId, storageInfoUpdateRequest);
         return ApiResponse.success(storageResponse);
     }
 

@@ -22,8 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-/*@WebMvcTest(SignController.class)
-@MockBean(JpaMetamodelMappingContext.class)*/
 @SpringBootTest
 @AutoConfigureMockMvc
 class SignControllerTest {
@@ -36,12 +34,6 @@ class SignControllerTest {
 
     @MockBean
     private SignService signService;
-
-   /* @MockBean
-    private MemberRepository memberRepository;
-
-    @MockBean
-    private StorageRepository storageRepository;*/
 
     @Test
     @DisplayName("POST 회원 등록 컨트롤러 로직 확인")
