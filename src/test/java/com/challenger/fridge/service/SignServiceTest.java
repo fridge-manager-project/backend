@@ -74,9 +74,9 @@ class SignServiceTest extends RedisContainerTest {
     void signInWithWrongEmail() {
         String unregisteredEmail = "cjw@test.com";
         String password = "1234";
-        SignInRequest request = new SignInRequest(unregisteredEmail, password);
+        SignInRequest request = new SignInRequest(unregisteredEmail, password, null);
 
-        assertThrows(BadCredentialsException.class, () -> signService.signIn(request, "deviceToken"));
+        assertThrows(BadCredentialsException.class, () -> signService.signIn(request));
     }
 
     @DisplayName("틀린 비밀번호로 로그인")
@@ -84,10 +84,10 @@ class SignServiceTest extends RedisContainerTest {
     void signInWithWrongPassword() {
         String registeredEmail = "springTest@test.com";
         String wrongPassword = "12345";
-        SignInRequest request = new SignInRequest(registeredEmail, wrongPassword);
+        SignInRequest request = new SignInRequest(registeredEmail, wrongPassword, null);
 
-        assertThrows(BadCredentialsException.class, () -> signService.signIn(request, "deviceToken"));
-        assertThrows(AuthenticationException.class, () -> signService.signIn(request, "deviceToken"));
+        assertThrows(BadCredentialsException.class, () -> signService.signIn(request));
+        assertThrows(AuthenticationException.class, () -> signService.signIn(request));
     }
 
     @DisplayName("등록된 이메일과 비밀번호로 로그인 - 성공")
@@ -98,7 +98,7 @@ class SignServiceTest extends RedisContainerTest {
         String password = "1234";
 
         //when
-        TokenInfo tokenInfo = signService.signIn(new SignInRequest(email, password), "deviceToken");
+        TokenInfo tokenInfo = signService.signIn(new SignInRequest(email, password, null));
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
 
         //then

@@ -1,5 +1,6 @@
 package com.challenger.fridge.repository;
 
+import com.challenger.fridge.domain.Cart;
 import com.challenger.fridge.domain.CartItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,14 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("delete from CartItem ci where ci in :cartItemList")
     void deleteMovedItemInBatch(@Param("cartItemList") List<CartItem> cartItemList);
+
+    @Modifying(flushAutomatically = true)
+    @Query("delete from CartItem ci where ci.cart.member.email in :email")
+    void deleteByMemberEmail(@Param("email") String email);
+
+    @Modifying(flushAutomatically = true)
+    @Query("delete from CartItem ci where ci in :cartItemList")
+    void deleteAllByInList(@Param("cartItemList") List<CartItem> cartItemList);
+
+    List<CartItem> findCartItemsByCartEquals(Cart cart);
 }

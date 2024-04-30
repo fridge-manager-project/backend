@@ -45,7 +45,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<Storage> storageList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
     //해당 회원의 알림 설정 유무

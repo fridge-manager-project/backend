@@ -8,6 +8,7 @@ import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
 import com.challenger.fridge.dto.box.request.StorageBoxUpdateRequest;
 import com.challenger.fridge.dto.box.request.StorageMethod;
+import com.challenger.fridge.dto.storage.request.StorageInfoUpdateRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.dto.storage.request.StorageUpdateRequest;
 import com.challenger.fridge.dto.storage.response.StorageResponse;
@@ -123,4 +124,11 @@ public class StorageService {
         storageRepository.delete(storage);
     }
 
+    @Transactional
+    public StorageResponse updateStorageInfo(Long storageId, StorageInfoUpdateRequest storageInfoUpdateRequest) {
+        Storage storage = storageRepository.findById(storageId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 보관소가 없습니다."));
+        storage.changeInfo(storageInfoUpdateRequest);
+        return new StorageResponse(storage);
+    }
 }

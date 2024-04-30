@@ -3,9 +3,14 @@ package com.challenger.fridge.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.challenger.fridge.common.StorageStatus;
+import com.challenger.fridge.domain.Item;
 import com.challenger.fridge.domain.Member;
-import com.challenger.fridge.domain.Storage;
+import com.challenger.fridge.domain.StorageItem;
+import com.challenger.fridge.domain.notification.Notice;
+import com.challenger.fridge.domain.notification.StorageNotification;
+import com.challenger.fridge.dto.box.request.StorageBoxSaveRequest;
+import com.challenger.fridge.dto.box.request.StorageMethod;
+import com.challenger.fridge.dto.item.request.StorageItemRequest;
 import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.box.response.StorageBoxNameResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
@@ -14,10 +19,14 @@ import com.challenger.fridge.dto.sign.SignUpRequest;
 import com.challenger.fridge.dto.storage.request.StorageSaveRequest;
 import com.challenger.fridge.repository.MemberRepository;
 import com.challenger.fridge.repository.StorageRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,13 +48,21 @@ class MemberServiceTest {
     PasswordEncoder encoder;
     @Autowired
     StorageRepository storageRepository;
+    @Autowired
+    StorageBoxService storageBoxService;
+    @Autowired
+    EntityManager em;
+    @Autowired
+    CartService cartService;
+    @Autowired
+    MemberWithdrawService memberWithdrawService;
 
     private static final String EMAIL = "springTest@test.com";
     private static final String PASSWORD = "1234";
     private static final String NAME = "springTest";
 
-    private static final String EMAILWITHOUTSTORAGE = "noStorage@test.com";
-    private static final String NAMEWITHOUTSTORAGE = "noStorage";
+    private static final String EMAIL_WITHOUT_BOX = "noStorage@test.com";
+    private static final String NAME_WITHOUT_BOX = "noStorage";
 
     private static final Long fridgeCount = 2L;
     private static final Long freezerCount = 3L;
@@ -56,11 +73,53 @@ class MemberServiceTest {
 
     @BeforeEach
     void setUp() {
-        signService.registerMember(new SignUpRequest(EMAILWITHOUTSTORAGE, PASSWORD, NAMEWITHOUTSTORAGE));
+        signService.registerMember(new SignUpRequest(EMAIL_WITHOUT_BOX, PASSWORD, NAME_WITHOUT_BOX));
         signService.registerMember(new SignUpRequest(EMAIL, PASSWORD, NAME));
         mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", fridgeCount, freezerCount), EMAIL);
+//        storageService.saveStorage(new StorageSaveRequest("메인저장소", 0L, 0L), EMAIL_WITHOUT_BOX);
         subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
         subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L), EMAIL);
+        Long testStorageBoxId = addTestStorageBox();
+        addTestStorageItem(testStorageBoxId);
+        addNotifications();
+        cartService.addItem(EMAIL, 11L);
+        cartService.addItem(EMAIL, 12L);
+        cartService.addItem(EMAIL, 13L);
+    }
+
+    private void addNotifications() {
+        List<StorageItem> storageItemList = em.createQuery(
+                        "select si from StorageItem si where si.storageBox.storage.member.email = :email", StorageItem.class)
+                .setParameter("email", EMAIL)
+                .getResultList();
+        em.persist(new Notice(findMember(), "테스트공지", "테스트요"));
+        storageItemList.forEach(storageItem -> em.persist(new StorageNotification(storageItem)));
+    }
+
+    private Member findMember() {
+        return memberRepository.findByEmail(EMAIL).orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Long addTestStorageBox() {
+        return storageService.saveStorageBox(new StorageBoxSaveRequest("테스트냉장실", StorageMethod.FRIDGE),
+                mainStorageId);
+    }
+
+    private void addTestStorageItem(Long testStorageBoxId) {
+        List<Item> itemList = em.createQuery("select i from Item i where i.id between :firstId and :lastId",
+                        Item.class)
+                .setParameter("firstId", 1)
+                .setParameter("lastId", 5)
+                .getResultList();
+        itemList.stream()
+                .map(item -> new StorageItemRequest(item.getId(), item.getItemName(), 2L, "테스트상품", "2024-04-20",
+                        "2024-04-20"))
+                .forEach(storageItemRequest -> storageBoxService.saveStorageItem(storageItemRequest, testStorageBoxId));
+    }
+
+    @Test
+    void test() {
+
     }
 
     @DisplayName("메인 보관소가 있는 회원 정보 조회")
@@ -87,12 +146,12 @@ class MemberServiceTest {
     @DisplayName("메인 보관소가 없는 회원 정보 조회")
     @Test
     void memberInfoWithoutStorage() {
-        String email = EMAILWITHOUTSTORAGE;
+        String email = EMAIL_WITHOUT_BOX;
 
         MemberInfoResponse memberInfo = memberService.findUserInfo(email);
 
-        assertThat(memberInfo.getUsername()).isEqualTo(NAMEWITHOUTSTORAGE);
-        assertThat(memberInfo.getEmail()).isEqualTo(EMAILWITHOUTSTORAGE);
+        assertThat(memberInfo.getUsername()).isEqualTo(NAME_WITHOUT_BOX);
+        assertThat(memberInfo.getEmail()).isEqualTo(EMAIL_WITHOUT_BOX);
         assertThat(memberInfo.getMainStorageId()).isNull();
         assertThat(memberInfo.getMainStorageName()).isNull();
         assertThat(memberInfo.getStorageBoxes()).isNull();
@@ -118,7 +177,7 @@ class MemberServiceTest {
         String currentPassword = PASSWORD;
         String newPassword = "newPassword";
         ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest(currentPassword, newPassword);
-        
+
         memberService.changeUserInfo(email, changePasswordRequest);
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(IllegalArgumentException::new);
@@ -150,4 +209,17 @@ class MemberServiceTest {
 
         assertThat(memberWithNewNickname.getNickname()).isEqualTo(newNickname);
     }
+
+    @DisplayName("회원 탈퇴 테스트")
+    @ParameterizedTest
+    @ValueSource(strings = {EMAIL, EMAIL_WITHOUT_BOX})
+    void lastOne(String email) {
+
+        memberWithdrawService.withdrawMember(email);
+
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        assertThat(optionalMember.isPresent()).isFalse();
+        assertThat(memberRepository.existsByEmail(email)).isFalse();
+    }
+
 }

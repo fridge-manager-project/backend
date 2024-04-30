@@ -5,6 +5,7 @@ import com.challenger.fridge.dto.member.MemberInfoResponse;
 import com.challenger.fridge.dto.member.ChangePasswordRequest;
 import com.challenger.fridge.dto.member.MemberNicknameRequest;
 import com.challenger.fridge.service.MemberService;
+import com.challenger.fridge.service.MemberWithdrawService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberWithdrawService memberWithdrawService;
 
     @Operation(summary = "회원 정보 조회")
     @GetMapping("/info")
@@ -57,6 +60,13 @@ public class MemberController {
             (@RequestHeader(name = "device_token", required = false) String deviceToken,
              @AuthenticationPrincipal User user) {
         memberService.changeNotificationReception(deviceToken, user.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
+        memberWithdrawService.withdrawMember(user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

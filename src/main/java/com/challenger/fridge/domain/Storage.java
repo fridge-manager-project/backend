@@ -7,6 +7,8 @@ import com.challenger.fridge.domain.box.Freeze;
 import com.challenger.fridge.domain.box.Fridge;
 import com.challenger.fridge.domain.box.StorageBox;
 import com.challenger.fridge.dto.box.request.StorageMethod;
+import com.challenger.fridge.dto.storage.request.StorageInfoUpdateRequest;
+import com.challenger.fridge.dto.storage.request.StorageUpdateRequest;
 import com.challenger.fridge.exception.StorageBoxLimitExceededException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,6 +44,7 @@ public class Storage extends BaseEntity {
         this.name = name;
         this.status = status;
         this.member = member;
+        this.storageImage = 1L;
     }
 
     public void addStorageBox(StorageBox storageBox) {
@@ -91,6 +94,23 @@ public class Storage extends BaseEntity {
     }
 
 
+    public void changeInfo(StorageInfoUpdateRequest storageInfoUpdateRequest) {
+        if (storageInfoUpdateRequest.getStorageName() != null) {
+            changeStorageName(storageInfoUpdateRequest.getStorageName());
+        }
+
+        if (storageInfoUpdateRequest.getStorageImage() != null) {
+            changeStorageImage(storageInfoUpdateRequest.getStorageImage());
+        }
+    }
+
+    private void changeStorageImage(Long storageImage) {
+        this.storageImage = storageImage;
+    }
+
+    private void changeStorageName(String storageName) {
+        this.name = storageName;
+    }
 }
 
 
