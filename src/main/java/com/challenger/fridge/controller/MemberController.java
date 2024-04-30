@@ -63,7 +63,7 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @Operation
+    @Operation(summary = "회원 탈퇴")
     @DeleteMapping
     public ResponseEntity<ApiResponse> withdrawMember(@AuthenticationPrincipal User user) {
         memberWithdrawService.withdrawMember(user.getUsername());
