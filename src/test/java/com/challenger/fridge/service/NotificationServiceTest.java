@@ -136,7 +136,7 @@ class NotificationServiceTest {
     }
 
     private void createTestStorage() {
-        StorageSaveRequest storageSaveRequest = new StorageSaveRequest("테스트 보관소", 1L, 1L);
+        StorageSaveRequest storageSaveRequest = new StorageSaveRequest("테스트 보관소", 1L, 1L, 1L);
         storageId = storageService.saveStorage(storageSaveRequest, EMAIL);
         Member member = memberRepository.findByEmail(EMAIL)
                 .orElseThrow(IllegalArgumentException::new);

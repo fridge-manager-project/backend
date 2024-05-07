@@ -40,11 +40,11 @@ public class Storage extends BaseEntity {
     @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StorageBox> storageBoxList = new ArrayList<>();
 
-    public Storage(String name, StorageStatus status, Member member) {
+    public Storage(String name, Long storageImage, StorageStatus status, Member member) {
         this.name = name;
         this.status = status;
         this.member = member;
-        this.storageImage = 1L;
+        this.storageImage = storageImage;
     }
 
     public void addStorageBox(StorageBox storageBox) {
@@ -52,12 +52,12 @@ public class Storage extends BaseEntity {
         storageBox.setStorage(this);
     }
 
-    public static Storage createStorage(String storageName, List<StorageBox> storageBoxList, Member member) {
+    public static Storage createStorage(String storageName, Long storageImage, List<StorageBox> storageBoxList, Member member) {
         StorageStatus storageStatus = StorageStatus.NORMAL;
         if (member.getStorageList().isEmpty()) {
             storageStatus = StorageStatus.MAIN;
         }
-        Storage storage = new Storage(storageName, storageStatus, member);
+        Storage storage = new Storage(storageName, storageImage, storageStatus, member);
         member.getStorageList().add(storage);
         for (StorageBox storageBox : storageBoxList) {
             storage.addStorageBox(storageBox);

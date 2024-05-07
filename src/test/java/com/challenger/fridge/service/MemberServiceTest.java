@@ -75,10 +75,10 @@ class MemberServiceTest {
     void setUp() {
         signService.registerMember(new SignUpRequest(EMAIL_WITHOUT_BOX, PASSWORD, NAME_WITHOUT_BOX));
         signService.registerMember(new SignUpRequest(EMAIL, PASSWORD, NAME));
-        mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", fridgeCount, freezerCount), EMAIL);
+        mainStorageId = storageService.saveStorage(new StorageSaveRequest("메인저장소", 1L,fridgeCount, freezerCount), EMAIL);
 //        storageService.saveStorage(new StorageSaveRequest("메인저장소", 0L, 0L), EMAIL_WITHOUT_BOX);
-        subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L), EMAIL);
-        subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L), EMAIL);
+        subStorageId = storageService.saveStorage(new StorageSaveRequest("서브저장소", 1L, 1L, 1L), EMAIL);
+        subStorageId2 = storageService.saveStorage(new StorageSaveRequest("두번째서브저장소", 1L, 1L, 1L), EMAIL);
         Long testStorageBoxId = addTestStorageBox();
         addTestStorageItem(testStorageBoxId);
         addNotifications();

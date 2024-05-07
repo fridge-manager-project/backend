@@ -44,7 +44,7 @@ public class StorageService {
             throw new StorageNameDuplicateException("보관소의 이름이 중복되었습니다.");
         }
         List<StorageBox> storageBoxList = StorageBox.createStorageBox(storageSaveRequest);
-        Storage storage = Storage.createStorage(storageSaveRequest.getStorageName(), storageBoxList, member);
+        Storage storage = Storage.createStorage(storageSaveRequest.getStorageName(), storageSaveRequest.getStorageImage(), storageBoxList, member);
         Storage savedStorage = storageRepository.save(storage);
         return savedStorage.getId();
     }

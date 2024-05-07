@@ -24,4 +24,12 @@ public class FCMController {
         fcmService.sendTestNotification(notificationRequest);
         return ResponseEntity.ok(ApiResponse.success("FCM 테스트 메시지 보내기 성공"));
     }
+
+    @Operation(summary = "테스트 보관소 알림 보내기")
+    @PostMapping("/members/test/storage")
+    public ResponseEntity<ApiResponse> sendNotification()
+            throws FirebaseMessagingException {
+        fcmService.sendEatableItemNotificationInStorage();
+        return ResponseEntity.ok(ApiResponse.success("FCM 보관소 물품테스트 메시지 보내기 성공"));
+    }
 }
