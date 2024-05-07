@@ -47,7 +47,7 @@ class CartStorageServiceTest {
     void setUp() {
         String email = EMAIL;
         signService.registerMember(new SignUpRequest(EMAIL, "1234", "springTest"));
-        StorageSaveRequest storageSaveRequest = new StorageSaveRequest("퍼스트 냉장고", 3L, 2L);
+        StorageSaveRequest storageSaveRequest = new StorageSaveRequest("퍼스트 냉장고", 1L, 3L, 2L);
         storageId = createStorageConfig(email, storageSaveRequest);
 
         Item pork = findItem("돼지고기");

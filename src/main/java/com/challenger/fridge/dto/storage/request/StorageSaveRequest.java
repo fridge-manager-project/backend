@@ -17,6 +17,10 @@ public class StorageSaveRequest {
     @NotEmpty(message = "보관소의 이름을 필수로 입력하세요")
     private String storageName;
 
+    @Schema(description = "보관소의 이름")
+    @NotEmpty(message = "보관소 이미지를 선택해주세요")
+    private Long storageImage;
+
     @Schema(description = "냉장고 개수")
     @NotNull
     @Max(value = 10, message = "냉장고 개수는 10개 이하여야 합니다")
