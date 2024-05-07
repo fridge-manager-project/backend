@@ -65,7 +65,7 @@ class StorageServiceTest {
 
     //보관소 이름 중복만을 위해 필요한 필드만 주입
     private Storage createTestStorage(String storageName, StorageStatus storageStatus,Member member) {
-        Storage storage = new Storage(storageName,storageStatus,member);
+        Storage storage = new Storage(storageName,1L, storageStatus,member);
         return storage;
     }
 
