@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -32,6 +34,7 @@ public class NotificationService {
         return new NotificationResponse(storageNotificationResponses, noticeResponses);
     }
 
+    @Transactional
     public Long readNotificationById(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));

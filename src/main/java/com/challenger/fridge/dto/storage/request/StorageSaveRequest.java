@@ -2,6 +2,7 @@ package com.challenger.fridge.dto.storage.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,8 @@ public class StorageSaveRequest {
     private String storageName;
 
     @Schema(description = "보관소의 이름")
-    @NotEmpty(message = "보관소 이미지를 선택해주세요")
+    @Min(value = 0, message = "보관소 이미지 번호는 0부터 8까지 입니다.")
+    @Max(value = 8, message = "보관소 이미지 번호는 0부터 8까지 입니다.")
     private Long storageImage;
 
     @Schema(description = "냉장고 개수")
