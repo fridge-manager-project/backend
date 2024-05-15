@@ -17,7 +17,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StorageNotificationResponse {
     private Long notificationId;
+    private Long storageItemId;
     private String itemName;
+    private String itemImageUrl;
     private Long storageId;
     private String storageName;
     private Long storageBoxId;
@@ -33,7 +35,9 @@ public class StorageNotificationResponse {
 
         return StorageNotificationResponse.builder()
                 .notificationId(storageNotification.getId())
+                .storageItemId(storageItem.getId())
                 .itemName(storageItem.getItem().getItemName())
+                .itemImageUrl(storageItem.getItem().getImageUrl())
                 .storageId(storage.getId())
                 .storageName(storage.getName())
                 .storageBoxId(storageBox.getId())
