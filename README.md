@@ -45,5 +45,10 @@
 ---
 ## 서버 아키텍쳐
 <img width="1667" alt="스크린샷 2024-07-12 오전 2 30 20" src="https://github.com/fridge-manager-project/backend/assets/86510667/0e5ad88d-c1eb-4eac-9c92-363335d422cf">
----
 
+---
+## ERD
+
+![Copy of 냉장고관리어플리케이션 Erd 버전1](https://github.com/user-attachments/assets/f98153f3-38f2-4026-ae60-29920e2e041a)
+
+---
